@@ -24,8 +24,9 @@ public class InicioController {
 
     @FXML
     private void mostrarBusquedaHash() {
-        System.out.println("Clic en Búsqueda Hash");
+        loadPanel("busquedaHash.fxml");
     }
+
 
     @FXML
     private void mostrarEstructuraEstatica() {
