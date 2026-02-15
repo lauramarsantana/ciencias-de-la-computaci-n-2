@@ -26,7 +26,7 @@ public class BusquedaLinealController {
 
     @FXML
     public void initialize() {
-        // llenar choice de dígitos (ajústalo si quieres más)
+        // llenar choice de dígitos 
         digitosChoice.getItems().addAll(1, 2, 3, 4);
         digitosChoice.setValue(2);
 
@@ -49,7 +49,7 @@ public class BusquedaLinealController {
 
         data.clear();
         for (int i = 0; i < n; i++) {
-            data.add(new SlotClave(i, "")); // clave vacía
+            data.add(new SlotClave(i + 1, "")); // clave vacía
         }
 
         creada = true;
@@ -60,6 +60,7 @@ public class BusquedaLinealController {
     private void insertarClave() {
         if (!creada) {
             resultadoLabel.setText("Primero debes crear la estructura.");
+            limpiarInsercion();
             return;
         }
 
@@ -67,15 +68,17 @@ public class BusquedaLinealController {
         claveInsertField.setText(claveTxt); // para que el usuario vea el 0 agregado
 
         if (!claveValidaPorDigitos(claveTxt, digitos)) {
-            resultadoLabel.setText("La clave debe tener exactamente " + digitos + " dígitos (solo números).");
+            resultadoLabel.setText("La clave debe tener exactamente " + digitos + " dígitos. ");
+            limpiarInsercion();
             return;
         }
 
 
-        // Evitar repetidos (opcional, pero recomendado)
+        // Evitar repetidos
         for (SlotClave s : data) {
             if (claveTxt.equals(s.getClave())) {
                 resultadoLabel.setText("Esa clave ya existe en la estructura.");
+                limpiarInsercion();
                 return;
             }
         }
@@ -86,25 +89,29 @@ public class BusquedaLinealController {
                 s.setClave(claveTxt);
                 tabla.refresh();
                 resultadoLabel.setText("Clave " + claveTxt + " insertada en posición " + s.getPosicion() + ".");
+                limpiarInsercion();
                 return;
             }
         }
 
         resultadoLabel.setText("No hay espacio: la estructura está llena.");
+        limpiarInsercion();
     }
 
     @FXML
     private void buscarClave() {
         if (!creada) {
             resultadoLabel.setText("Primero debes crear la estructura.");
+            limpiarBusqueda();
             return;
         }
 
-        String claveTxt = normalizarClave(claveInsertField.getText(), digitos);
-        claveInsertField.setText(claveTxt); // para que el usuario vea el 0 agregado
+        String claveTxt = normalizarClave(claveBuscarField.getText(), digitos);
+        claveBuscarField.setText(claveTxt); // para que el usuario vea el 0 agregado
 
         if (!claveValidaPorDigitos(claveTxt, digitos)) {
-            resultadoLabel.setText("La clave debe tener exactamente " + digitos + " dígitos (solo números).");
+            resultadoLabel.setText("La clave debe tener exactamente " + digitos + " dígitos. ");
+            limpiarBusqueda();
             return;
         }
 
@@ -121,12 +128,14 @@ public class BusquedaLinealController {
                 resultadoLabel.setText("Encontrada en posición " + s.getPosicion()
                         + " | Comparaciones: " + comparaciones
                         + " | Tiempo: " + (fin - inicio) + " ns");
+                limpiarBusqueda();
                 return;
             }
         }
 
         long fin = System.nanoTime();
         resultadoLabel.setText("No encontrada | Comparaciones: " + comparaciones + " | Tiempo: " + (fin - inicio) + " ns");
+        limpiarBusqueda();
     }
     
     @FXML
@@ -155,6 +164,8 @@ public class BusquedaLinealController {
 
         tabla.refresh();
         resultadoLabel.setText("Claves ordenadas de menor a mayor.");
+        limpiarInsercion();
+        limpiarBusqueda();
     }
 
 
@@ -173,12 +184,23 @@ public class BusquedaLinealController {
 
     clave = clave.trim();
 
-    // Si no son números, la devolvemos igual 
+    // Si no son números, se deuvuelve igual
     if (!clave.matches("\\d+")) return clave;
 
-    // Completa con ceros a la izquierda
+    // Completar con ceros a la izquierda
     return String.format("%0" + digitos + "d", Integer.parseInt(clave));
     }
+    
+    private void limpiarBusqueda() {
+    claveBuscarField.clear();
+    claveBuscarField.requestFocus();
+    }
+
+    private void limpiarInsercion() {
+        claveInsertField.clear();
+        claveInsertField.requestFocus();
+    }
+
 
     private boolean claveValidaPorDigitos(String clave, int digitos) {
         if (clave == null) return false;
