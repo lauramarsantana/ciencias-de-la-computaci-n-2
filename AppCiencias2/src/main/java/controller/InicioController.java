@@ -18,8 +18,9 @@ public class InicioController {
     
     @FXML
     private void mostrarBusquedaBinario() {
-        System.out.println("Clic en Búsqueda Binaria");
+        loadPanel("busquedaBinaria.fxml");
     }
+
 
     @FXML
     private void mostrarBusquedaHash() {
