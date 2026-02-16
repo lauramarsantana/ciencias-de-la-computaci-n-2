@@ -34,11 +34,6 @@ public class InicioController {
         loadPanel("grafos.fxml");
     }
 
-    @FXML
-    private void mostrarBusquedaLineal() {
-        System.out.println("Abriendo busquedaLineal.fxml");
-        loadPanel("busquedaLineal.fxml");
-    }
 // configurando cada boton del menu desplegable
     @FXML
     public void initialize() {
@@ -74,6 +69,21 @@ public class InicioController {
         boolean isVisible = subMenuInternas.isVisible();
         subMenuInternas.setVisible(!isVisible);
         subMenuInternas.setManaged(!isVisible);
+    }
+    @FXML
+    private void mostrarBusquedaLineal(javafx.scene.input.MouseEvent event) {
+        System.out.println("Abriendo busquedaLineal.fxml");
+        loadPanel("busquedaLineal.fxml");
+    }
+    @FXML
+    private void openBinario(javafx.scene.input.MouseEvent event){
+        System.out.println("abriendo busquedaBinaria.fxml");
+        loadPanel("busquedaBinaria.fxml");
+    }
+    @FXML
+    private void openFuncionHash(javafx.scene.input.MouseEvent event){
+        System.out.println("abriendo busquedaHash.fxml");
+        loadPanel("busquedaHash.fxml");
     }
 
     @FXML

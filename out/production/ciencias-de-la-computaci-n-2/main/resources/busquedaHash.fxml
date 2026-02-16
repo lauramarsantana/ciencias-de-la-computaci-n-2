@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controller.BusquedaHashController"
+      spacing="12">
+
+    <padding>
+        <Insets top="16" right="16" bottom="16" left="16"/>
+    </padding>
+
+    <Label text="Búsqueda por Función Hash (MOD 100 + sondeo lineal)" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+
+    <HBox spacing="10">
+        <Label text="Tamaño tabla (N):"/>
+        <TextField fx:id="nField" promptText="Ej: 10 ó 100" prefWidth="110"/>
+
+        <Label text="Dígitos clave:"/>
+        <ChoiceBox fx:id="digitosChoice" prefWidth="80"/>
+
+        <Label text="MOD:"/>
+        <TextField fx:id="modField" text="100" prefWidth="80"/>
+
+        <Button text="Crear" onAction="#crearEstructura"/>
+    </HBox>
+
+    <TableView fx:id="tabla" prefHeight="260">
+        <columns>
+            <TableColumn fx:id="colPos" text="Posición" prefWidth="110"/>
+            <TableColumn fx:id="colClave" text="Clave" prefWidth="160"/>
+        </columns>
+    </TableView>
+
+    <HBox spacing="10">
+        <Label text="Insertar clave:"/>
+        <TextField fx:id="claveInsertField" promptText="Ej: 4 (autocompleta)" prefWidth="120"/>
+        <Button text="Insertar" onAction="#insertarClave"/>
+    </HBox>
+
+    <HBox spacing="10">
+        <Label text="Buscar clave:"/>
+        <TextField fx:id="claveBuscarField" promptText="Ej: 43 o 043" prefWidth="120"/>
+        <Button text="Buscar" onAction="#buscarClave"/>
+    </HBox>
+
+    <Label fx:id="resultadoLabel" text="Listo." style="-fx-font-size: 14px;"/>
+
+</VBox>

@@ -23,12 +23,14 @@ public class BusquedasInternasController {
 
     @FXML
     private void openBinario(javafx.scene.input.MouseEvent event){
-        System.out.println("abriendo busquedaIBinario.fxml...");
+        System.out.println("abriendo busquedaBinaria.fxml...");
+        loadPanel("busquedaBinaria.fxml");
     }
 
     @FXML
     private void openFuncionHash(javafx.scene.input.MouseEvent event){
-        System.out.println("abriendo busquedaIFuncionHash.fxml...");
+        System.out.println("abriendo busquedaHash.fxml...");
+        loadPanel("busquedaHash.fxml");
     }
 
     private void loadPanel(String fxml) {

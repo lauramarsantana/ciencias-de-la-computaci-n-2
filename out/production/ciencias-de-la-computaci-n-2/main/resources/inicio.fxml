@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.geometry.Rectangle2D?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="contentPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.InicioController">
+    <!--agregar la hoja de estilos-->
+    <stylesheets>
+        <URL value="@styles.css" />
+    </stylesheets>
+    <children>
+        <BorderPane prefHeight="400.0" prefWidth="600.0">
+            
+         <top>
+            <VBox alignment="CENTER" prefHeight="34.0" prefWidth="600.0" style="-fx-background-color: #2262C6;">
+               <children>
+                  <HBox alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <ImageView fitHeight="150.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@logo-CienciasII.png" />
+                           </image>
+                           <viewport>
+                              <Rectangle2D />
+                           </viewport>
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                        </ImageView>
+                        <Region maxHeight="39.0" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="39.0" prefWidth="207.0" />
+                        <ImageView fx:id="btnMenu" accessibleRole="BUTTON" fitWidth="30.0" nodeOrientation="RIGHT_TO_LEFT" onMouseClicked="#openMenu" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@icno-hambuguerMenu.png" />
+                           </image>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                        </ImageView>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </top>
+         <center>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+               <children>
+                  <VBox alignment="CENTER" prefHeight="361.0" prefWidth="266.0">
+                     <children>
+                        <ImageView fx:id="btnBusquedas" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#openBusquedas" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@icono-busquedas.png" />
+                           </image>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </ImageView>
+                        <Label text="BUSQUEDAS" textFill="#2262c6">
+                           <font>
+                              <Font name="Myanmar Text" size="24.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </VBox>
+                  <VBox alignment="CENTER" prefHeight="361.0" prefWidth="278.0">
+                     <children>
+                        <ImageView fx:id="btnGrafos" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#openGrafos" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@icono-grafos.png" />
+                           </image>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </ImageView>
+                        <Label text="GRAFOS" textFill="#2262c6">
+                           <font>
+                              <Font name="Myanmar Text" size="24.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+         </center>
+        </BorderPane>
+      <AnchorPane fx:id="menuPane" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #2262C6;" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <HBox alignment="CENTER_RIGHT" layoutX="-1.0" prefHeight="45.0" prefWidth="201.0">
+               <children>
+                  <ImageView fx:id="btnClose" accessibleRole="BUTTON" fitHeight="30.0" fitWidth="100.0" onMouseClicked="#closeMenu" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icono-cerrar.png" />
+                     </image>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </ImageView>
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <padding>
+                  <Insets right="30.0" />
+               </padding>
+            </HBox>
+            <VBox fx:id="menuVBox" layoutX="27.0" layoutY="58.0" prefHeight="200.0" prefWidth="146.0">
+               <children>
+                  <Label fx:id="btnBusquedas" accessibleRole="BUTTON" onMouseClicked="#openMenuBusquedas" text="Busquedas" textFill="WHITE">
+                     <font>
+                        <Font name="Myanmar Text Bold" size="18.0" />
+                     </font>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Label>
+                  <VBox fx:id="subMenuBusquedas" prefHeight="60.0" prefWidth="146.0">
+                     <children>
+                        <Label accessibleRole="BUTTON" onMouseClicked="#openMenuInternas" text="Internas" textFill="#fdfdfd">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </Label>
+                        <VBox fx:id="subMenuInternas" prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <Label text="Lineal" textFill="WHITE">
+                                 <font>
+                                    <Font name="Myanmar Text" size="14.0" />
+                                 </font>
+                              </Label>
+                              <Label text="Binario" textFill="WHITE">
+                                 <font>
+                                    <Font name="Myanmar Text" size="14.0" />
+                                 </font>
+                              </Label>
+                              <Label text="Función Hash" textFill="WHITE">
+                                 <font>
+                                    <Font name="Myanmar Text" size="14.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                           <padding>
+                              <Insets left="20.0" />
+                           </padding>
+                        </VBox>
+                        <Label text="Externas" textFill="WHITE">
+                           <font>
+                              <Font name="Myanmar Text" size="18.0" />
+                           </font>
+                        </Label>
+                     </children>
+                     <padding>
+                        <Insets left="20.0" />
+                     </padding>
+                  </VBox>
+                  <Label text="Grafos" textFill="WHITE">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+               </children>
+            </VBox>
+         </children>
+      </AnchorPane>
+    </children>
+</AnchorPane>

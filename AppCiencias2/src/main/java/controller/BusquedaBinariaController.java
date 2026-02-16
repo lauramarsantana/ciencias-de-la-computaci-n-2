@@ -3,8 +3,11 @@ package controller;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
 import utilities.SlotClave;
 
 
@@ -20,6 +23,8 @@ public class BusquedaBinariaController {
     @FXML private TextField claveInsertField;
     @FXML private TextField claveBuscarField;
     @FXML private Label resultadoLabel;
+
+    @FXML private VBox bBinarioPane;
 
     private final ObservableList<SlotClave> data = FXCollections.observableArrayList();
     private boolean creada = false;
@@ -37,6 +42,12 @@ public class BusquedaBinariaController {
         colPos.setCellValueFactory(new PropertyValueFactory<>("posicion"));
         colClave.setCellValueFactory(new PropertyValueFactory<>("clave"));
         tabla.setItems(data);
+    }
+
+    @FXML
+    private void openInternas(javafx.scene.input.MouseEvent event){
+        System.out.println("Abriedno busquedasInternas.fxml");
+        loadPanel("busquedasInternas.fxml");
     }
 
     @FXML
@@ -213,6 +224,19 @@ public class BusquedaBinariaController {
         clave = clave.trim();
         if (!clave.matches("\\d+")) return clave;
         return String.format("%0" + digitos + "d", Integer.parseInt(clave));
+    }
+
+    private void loadPanel(String fxml) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/" + fxml));
+            Parent panel = loader.load();
+
+            bBinarioPane.getChildren().clear();
+            bBinarioPane.getChildren().add(panel);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
 

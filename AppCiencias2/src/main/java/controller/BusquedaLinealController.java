@@ -3,8 +3,11 @@ package controller;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
 import utilities.SlotClave;
 
 public class BusquedaLinealController {
@@ -19,6 +22,7 @@ public class BusquedaLinealController {
     @FXML private TextField claveInsertField;
     @FXML private TextField claveBuscarField;
     @FXML private Label resultadoLabel;
+    @FXML private VBox linealPane;
 
     private final ObservableList<SlotClave> data = FXCollections.observableArrayList();
     private int digitos = 2; // por defecto
@@ -201,6 +205,24 @@ public class BusquedaLinealController {
         claveInsertField.requestFocus();
     }
 
+    @FXML
+    private void openInternas(javafx.scene.input.MouseEvent event){
+        System.out.println("Abriendo busquedasInternas.fxml...");
+        loadPanel("busquedasInternas.fxml");
+    }
+
+    private void loadPanel(String fxml) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/" + fxml));
+            Parent panel = loader.load();
+
+            linealPane.getChildren().clear();
+            linealPane.getChildren().add(panel);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     private boolean claveValidaPorDigitos(String clave, int digitos) {
         if (clave == null) return false;
