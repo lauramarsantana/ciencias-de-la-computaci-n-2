@@ -39,7 +39,6 @@ public class BusquedaHashController {
         });
 
         colPos.setCellValueFactory(new PropertyValueFactory<>("posicion"));
-        colHash.setCellValueFactory(new PropertyValueFactory<>("hash"));
         colClave.setCellValueFactory(new PropertyValueFactory<>("clave"));
 
         tabla.setItems(data);

@@ -31,7 +31,6 @@
     <TableView fx:id="tabla" prefHeight="260">
         <columns>
             <TableColumn fx:id="colPos" text="Posición" prefWidth="110"/>
-            <TableColumn fx:id="colHash" text="Hash" prefWidth="110"/>
             <TableColumn fx:id="colClave" text="Clave" prefWidth="160"/>
         </columns>
     </TableView>
