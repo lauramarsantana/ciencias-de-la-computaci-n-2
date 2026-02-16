@@ -37,3 +37,7 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+# Ignorar configuraciones de IntelliJ
+.idea/
+out/

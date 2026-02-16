@@ -16,7 +16,7 @@ public class App extends Application {
     @Override
     public void start(Stage stage) throws Exception {
 
-        AnchorPane load = FXMLLoader.load(getClass().getResource(Paths.inicio)); // aqui adentro esta la vista cargada
+        AnchorPane load = FXMLLoader.load(getClass().getResource("/inicio.fxml")); // aqui adentro esta la vista cargada
         Scene scene = new Scene(load); // escena donde entra todos
         stage.setScene(scene);
 
