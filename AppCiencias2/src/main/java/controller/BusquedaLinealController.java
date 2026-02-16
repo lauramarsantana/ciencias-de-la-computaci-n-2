@@ -149,7 +149,7 @@ public class BusquedaLinealController {
         }
 
         // 3) Reinsertar en orden desde la posición 0
-        for (int i = 0; i < claves.size(); i++) {
+        for (int i =1; i <= claves.size(); i++) {
             data.get(i).setClave(claves.get(i));
         }
 
