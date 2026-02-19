@@ -28,7 +28,6 @@
         <ChoiceBox fx:id="digitosChoice" prefWidth="80" />
 
         <Button onAction="#crearEstructura" text="Crear" />
-        <Button onAction="#ordenarClaves" text="Ordenar" />
 
     </HBox>
 

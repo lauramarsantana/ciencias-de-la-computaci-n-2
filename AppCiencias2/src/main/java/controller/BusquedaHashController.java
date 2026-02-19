@@ -91,7 +91,7 @@ public class BusquedaHashController {
         claveInsertField.setText(claveTxt);
 
         if (!claveValidaPorDigitos(claveTxt, digitos)) {
-            resultadoLabel.setText("La clave debe tener exactamente " + digitos + " dígitos (solo números).");
+            resultadoLabel.setText("La clave debe tener exactamente " + digitos + " dígitos.");
             limpiarInsercion();
             return;
         }

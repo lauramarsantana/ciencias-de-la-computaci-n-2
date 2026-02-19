@@ -28,6 +28,7 @@ public class BusquedaLinealController {
     private int digitos = 2; // por defecto
     private boolean creada = false;
 
+    
     @FXML
     public void initialize() {
         // llenar choice de dígitos 
@@ -76,6 +77,7 @@ public class BusquedaLinealController {
             limpiarInsercion();
             return;
         }
+        
 
 
         // Evitar repetidos
@@ -86,20 +88,45 @@ public class BusquedaLinealController {
                 return;
             }
         }
+        
+        //¿Hay espacio?
+        int usados = contarClaves();
+        if (usados >= data.size()) {
+            resultadoLabel.setText("La estructura está llena. No se puede insertar más.");
+            limpiarInsercion();
+            return;
+        }
 
-        // Inserción simple: primera posición libre
+        // Insertar en la primera posición vacía
         for (SlotClave s : data) {
-            if (s.getClave() == null || s.getClave().isBlank()) {
-                s.setClave(claveTxt);
-                tabla.refresh();
-                resultadoLabel.setText("Clave " + claveTxt + " insertada en posición " + s.getPosicion() + ".");
-                limpiarInsercion();
-                return;
+                if (s.getClave() == null || s.getClave().isBlank()) {
+                   s.setClave(claveTxt);
+                break; 
             }
         }
 
-        resultadoLabel.setText("No hay espacio: la estructura está llena.");
+        var clavesOrdenadas = data.stream()
+                .map(SlotClave::getClave)
+                .filter(c -> c != null && !c.isBlank())
+                .sorted()
+                .toList();
+
+        // limpiar toda la estructura
+        for (SlotClave s : data) {
+            s.setClave("");
+        }
+
+        // reinsertar ordenadas
+        int limite = Math.min(clavesOrdenadas.size(), data.size());
+        for (int i = 0; i < limite; i++) {
+            data.get(i).setClave(clavesOrdenadas.get(i));
+        }
+
+        tabla.refresh();
+        resultadoLabel.setText("Insertada y ordenada automáticamente.");
         limpiarInsercion();
+        
+    
     }
 
     @FXML
@@ -181,6 +208,14 @@ public class BusquedaLinealController {
         } catch (Exception e) {
             return null;
         }
+    }
+    
+    private int contarClaves() {
+        int count = 0;
+        for (SlotClave s : data) {
+            if (s.getClave() != null && !s.getClave().isBlank()) count++;
+        }
+        return count;
     }
     
     private String normalizarClave(String clave, int digitos) {
