@@ -73,9 +73,9 @@
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </ImageView>
-                        <Label text="LINEAL" textFill="#2262c6">
+                        <Label text="LINEAL">
                            <font>
-                              <Font name="Myanmar Text" size="24.0" />
+                              <Font name="Myanmar Text Bold" size="24.0" />
                            </font>
                         </Label>
                      </children>
@@ -90,9 +90,9 @@
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </ImageView>
-                        <Label text="BINARIO" textFill="#2262c6">
+                        <Label text="BINARIO">
                            <font>
-                              <Font name="Myanmar Text" size="24.0" />
+                              <Font name="Myanmar Text Bold" size="24.0" />
                            </font>
                         </Label>
                      </children>
@@ -107,9 +107,9 @@
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </ImageView>
-                        <Label text="FUNCIÓN HASH" textFill="#2262c6">
+                        <Label text="FUNCIÓN HASH">
                            <font>
-                              <Font name="Myanmar Text" size="24.0" />
+                              <Font name="Myanmar Text Bold" size="24.0" />
                            </font>
                         </Label>
                      </children>

@@ -47,28 +47,49 @@ public class BusquedasInternasController {
         subMenuBusquedas.setVisible(!isVisible);
         subMenuBusquedas.setManaged(!isVisible);
     }
+    @FXML
+    private void openMenuInternas(javafx.scene.input.MouseEvent event){
+        System.out.println("abriendo submenu de busquedas internas...");
+        boolean isVisible = subMenuInternas.isVisible();
+        subMenuInternas.setVisible(!isVisible);
+        subMenuInternas.setManaged(!isVisible);
+    }
+    @FXML
+    private void mostrarBusquedaLineal(javafx.scene.input.MouseEvent event) {
+        System.out.println("Abriendo busquedaLineal.fxml");
+        loadPanel("busquedaLineal.fxml");
+    }
+    @FXML
+    private void openBinario(javafx.scene.input.MouseEvent event){
+        System.out.println("abriendo busquedaBinaria.fxml");
+        loadPanel("busquedaBinaria.fxml");
+    }
+    @FXML
+    private void openFuncionHash(javafx.scene.input.MouseEvent event){
+        System.out.println("abriendo busquedaHash.fxml");
+        loadPanel("busquedaHash.fxml");
+    }
+    @FXML
+    private void openGrafos(javafx.scene.input.MouseEvent event){
+        System.out.println("Abriendo grafos.fxml...");
+        loadPanel("grafos.fxml");
+    }
 
     @FXML
     private void openInicio(javafx.scene.input.MouseEvent event){
-        System.out.println("abriendo inicio.fxml...");
+        System.out.println("Abriendo inicio.fxml...");
         loadPanel("inicio.fxml");
     }
+    @FXML
+    private void openInternas(javafx.scene.input.MouseEvent event){
+        System.out.println("abriendo busquedasInternas.fxml...");
+        loadPanel("busquedasInternas.fxml");
+    }
+
     @FXML
     private void openLineal(javafx.scene.input.MouseEvent event) {
         System.out.println("abriendo busquedaILineal.fxml...");
         loadPanel("busquedaLineal.fxml");
-    }
-
-    @FXML
-    private void openBinario(javafx.scene.input.MouseEvent event){
-        System.out.println("abriendo busquedaBinaria.fxml...");
-        loadPanel("busquedaBinaria.fxml");
-    }
-
-    @FXML
-    private void openFuncionHash(javafx.scene.input.MouseEvent event){
-        System.out.println("abriendo busquedaHash.fxml...");
-        loadPanel("busquedaHash.fxml");
     }
 
     private void loadPanel(String fxml) {

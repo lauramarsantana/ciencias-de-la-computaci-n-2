@@ -67,9 +67,9 @@
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </ImageView>
-                        <Label text="BUSQUEDAS" textFill="#2262c6">
+                        <Label text="BUSQUEDAS" textFill="#000204">
                            <font>
-                              <Font name="Myanmar Text" size="24.0" />
+                              <Font name="Myanmar Text Bold" size="24.0" />
                            </font>
                         </Label>
                      </children>
@@ -84,9 +84,9 @@
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </ImageView>
-                        <Label text="GRAFOS" textFill="#2262c6">
+                        <Label text="GRAFOS">
                            <font>
-                              <Font name="Myanmar Text" size="24.0" />
+                              <Font name="Myanmar Text Bold" size="24.0" />
                            </font>
                         </Label>
                      </children>
