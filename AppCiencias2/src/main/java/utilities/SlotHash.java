@@ -20,4 +20,13 @@ public class SlotHash {
     public boolean isVacio() {
         return clave == null || clave.isBlank();
     }
+    private final java.util.List<String> colisiones = new java.util.ArrayList<>();
+
+    public java.util.List<String> getColisiones() {
+        return colisiones;
+    }
+
+    public String getColisionesTexto() {
+        return String.join(", ", colisiones);
+    }
 }

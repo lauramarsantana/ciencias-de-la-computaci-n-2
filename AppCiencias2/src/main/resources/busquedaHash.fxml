@@ -66,46 +66,65 @@
             </VBox>
          </top>
          <center>
-            <VBox spacing="12" BorderPane.alignment="CENTER">
-               <padding>
-                  <Insets bottom="16" left="16" right="16" top="16" />
-               </padding>
-               <children>
-                  <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Búsqueda por Función Hash (MOD 100 + sondeo lineal)" />
-                  <HBox spacing="10">
-                     <children>
-                        <Label text="Tamaño tabla (N):" />
-                        <TextField fx:id="nField" prefWidth="110" promptText="Ej: 10 ó 100" />
-                        <Label text="Dígitos clave:" />
-                        <ChoiceBox fx:id="digitosChoice" prefWidth="80" />
-                        <Label text="MOD:" />
-                        <TextField fx:id="modField" prefWidth="80" text="100" />
-                        <Button onAction="#crearEstructura" text="Crear" />
-                     </children>
-                  </HBox>
-                  <TableView fx:id="tabla" prefHeight="260">
+             <VBox xmlns="http://javafx.com/javafx/17"
+                   xmlns:fx="http://javafx.com/fxml/1"
+                   spacing="12">
+
+                 <padding>
+                     <Insets top="16" right="16" bottom="16" left="16"/>
+                 </padding>
+
+                 <Label text="Búsqueda por Función Hash" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+
+                 <!-- Configuración -->
+                 <HBox spacing="10">
+                     <Label text="Tamaño tabla (N):"/>
+                     <TextField fx:id="nField" promptText="Ej: 10 ó 100" prefWidth="90"/>
+
+                     <Label text="Dígitos:"/>
+                     <ChoiceBox fx:id="digitosChoice" prefWidth="70"/>
+
+                     <Label text="MOD:"/>
+                     <TextField fx:id="modField" promptText="Ej: 100" prefWidth="80"/>
+
+                     <Label text="Función:"/>
+                     <ChoiceBox fx:id="hashChoice" prefWidth="170"/>
+
+                     <Label text="Colisión:"/>
+                     <ChoiceBox fx:id="colisionChoice" prefWidth="170"/>
+
+                     <CheckBox fx:id="resolverCheck" text="Resolver inmediatamente" selected="true"/>
+
+                     <Button text="Crear" onAction="#crearEstructura"/>
+                     <Button text="Arreglar Colisiones" onAction="#arreglarColisiones"/>
+                 </HBox>
+
+                 <!-- Tabla -->
+                 <TableView fx:id="tabla" prefHeight="260">
                      <columns>
-                        <TableColumn fx:id="colPos" prefWidth="110" text="Posición" />
-                        <TableColumn fx:id="colClave" prefWidth="160" text="Clave" />
+                         <TableColumn fx:id="colPos" text="Posición" prefWidth="90"/>
+                         <TableColumn fx:id="colClave" text="Clave" prefWidth="140"/>
+                         <TableColumn fx:id="colColisiones" text="Colisiones" prefWidth="330"/>
                      </columns>
-                  </TableView>
-                  <HBox spacing="10">
-                     <children>
-                        <Label text="Insertar clave:" />
-                        <TextField fx:id="claveInsertField" prefWidth="120" promptText="Ej: 4 (autocompleta)" />
-                        <Button onAction="#insertarClave" text="Insertar" />
-                     </children>
-                  </HBox>
-                  <HBox spacing="10">
-                     <children>
-                        <Label text="Buscar clave:" />
-                        <TextField fx:id="claveBuscarField" prefWidth="120" promptText="Ej: 43 o 043" />
-                        <Button onAction="#buscarClave" text="Buscar" />
-                     </children>
-                  </HBox>
-                  <Label fx:id="resultadoLabel" style="-fx-font-size: 14px;" text="Listo." />
-               </children>
-            </VBox>
+                 </TableView>
+
+                 <!-- Insertar -->
+                 <HBox spacing="10">
+                     <Label text="Insertar clave:"/>
+                     <TextField fx:id="claveInsertField" promptText="Ej: 4 (autocompleta)" prefWidth="120"/>
+                     <Button text="Insertar" onAction="#insertarClave"/>
+                 </HBox>
+
+                 <!-- Buscar -->
+                 <HBox spacing="10">
+                     <Label text="Buscar clave:"/>
+                     <TextField fx:id="claveBuscarField" promptText="Ej: 43 o 043" prefWidth="120"/>
+                     <Button text="Buscar" onAction="#buscarClave"/>
+                 </HBox>
+
+                 <Label fx:id="resultadoLabel" text="Listo." style="-fx-font-size: 14px;"/>
+
+             </VBox>
          </center>
       </BorderPane>
       <AnchorPane fx:id="menuPane" layoutX="-2.0" prefHeight="381.0" prefWidth="223.0" style="-fx-background-color: #2262C6;">
@@ -217,3 +236,4 @@
       </AnchorPane>
    </children>
 </AnchorPane>
+
