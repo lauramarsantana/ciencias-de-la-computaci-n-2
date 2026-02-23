@@ -57,6 +57,11 @@ public class InicioController {
         menuPane.setManaged(false);// lo quita de la primera capa, para liberar el espacio
     }
     @FXML
+    private void openInicio(javafx.scene.input.MouseEvent event){
+        System.out.println("abriendo inicio.fxml...");
+        loadPanel("inicio.fxml");
+    }
+    @FXML
     private void openMenuBusquedas(javafx.scene.input.MouseEvent event){
         System.out.println("abriendo submenu de busquedas...");
         boolean isVisible = subMenuBusquedas.isVisible();
@@ -83,17 +88,6 @@ public class InicioController {
     @FXML
     private void openFuncionHash(javafx.scene.input.MouseEvent event){
         System.out.println("abriendo busquedaHash.fxml");
-        loadPanel("busquedaHash.fxml");
-    }
-
-    @FXML
-    private void mostrarBusquedaBinario() {
-        loadPanel("busquedaBinaria.fxml");
-    }
-
-
-    @FXML
-    private void mostrarBusquedaHash() {
         loadPanel("busquedaHash.fxml");
     }
 

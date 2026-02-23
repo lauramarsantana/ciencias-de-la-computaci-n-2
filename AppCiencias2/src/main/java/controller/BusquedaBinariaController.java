@@ -189,8 +189,8 @@ public class BusquedaBinariaController {
 
     // Helpers
     private void limpiarBusqueda() {
-        claveBuscarField.clear();
-        claveBuscarField.requestFocus();
+        this.claveBuscarField.clear();
+        this.claveBuscarField.requestFocus();
     }
     
     private void limpiarInsercion() {

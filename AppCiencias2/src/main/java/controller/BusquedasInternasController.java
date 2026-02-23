@@ -4,11 +4,49 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 
 public class BusquedasInternasController {
 
     @FXML
     private AnchorPane internasPane;
+    @FXML
+    private AnchorPane menuPane;
+    @FXML
+    private VBox subMenuBusquedas;
+    @FXML
+    private VBox subMenuInternas;
+
+    // configurando cada boton del menu desplegable
+    @FXML
+    public void initialize() {
+        menuPane.setVisible(false);
+        menuPane.setManaged(false);
+        subMenuBusquedas.setVisible(false);
+        subMenuBusquedas.setManaged(false);
+        subMenuInternas.setVisible(false);
+        subMenuInternas.setManaged(false);
+    }
+    @FXML
+    private void openMenu(javafx.scene.input.MouseEvent event){
+        System.out.println("abriendo menu...");
+        menuPane.setVisible(true); // para que el panel del menu se vea
+        menuPane.setManaged(true);// posiciona de primeras al panel
+    }
+    @FXML
+    private void closeMenu(javafx.scene.input.MouseEvent event){
+        System.out.println("cerrando menu...");
+        menuPane.setVisible(false);// para que el panel del menu se oculte
+        menuPane.setManaged(false);// lo quita de la primera capa, para liberar el espacio
+    }
+
+    @FXML
+    private void openMenuBusquedas(javafx.scene.input.MouseEvent event){
+        System.out.println("abriendo submenu de busquedas...");
+        boolean isVisible = subMenuBusquedas.isVisible();
+        subMenuBusquedas.setVisible(!isVisible);
+        subMenuBusquedas.setManaged(!isVisible);
+    }
 
     @FXML
     private void openInicio(javafx.scene.input.MouseEvent event){

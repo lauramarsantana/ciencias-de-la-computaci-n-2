@@ -2,6 +2,7 @@
 
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>
+<?import javafx.geometry.Point3D?>
 <?import javafx.geometry.Rectangle2D?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Label?>
@@ -10,7 +11,6 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
@@ -23,22 +23,10 @@
         <BorderPane prefHeight="400.0" prefWidth="600.0">
             
          <top>
-            <VBox alignment="CENTER" prefHeight="34.0" prefWidth="600.0" style="-fx-background-color: #2262C6;">
+            <VBox alignment="CENTER" prefHeight="34.0" prefWidth="600.0" style="-fx-background-color: #2262C6;" BorderPane.alignment="CENTER">
                <children>
-                  <HBox alignment="CENTER" nodeOrientation="LEFT_TO_RIGHT" prefHeight="100.0" prefWidth="200.0">
+                  <HBox alignment="CENTER_LEFT" nodeOrientation="LEFT_TO_RIGHT" prefHeight="107.0" prefWidth="600.0">
                      <children>
-                        <ImageView fitHeight="150.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@logo-CienciasII.png" />
-                           </image>
-                           <viewport>
-                              <Rectangle2D />
-                           </viewport>
-                           <HBox.margin>
-                              <Insets />
-                           </HBox.margin>
-                        </ImageView>
-                        <Region maxHeight="39.0" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="39.0" prefWidth="207.0" />
                         <ImageView fx:id="btnMenu" accessibleRole="BUTTON" fitWidth="30.0" nodeOrientation="RIGHT_TO_LEFT" onMouseClicked="#openMenu" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@icno-hambuguerMenu.png" />
@@ -46,6 +34,17 @@
                            <cursor>
                               <Cursor fx:constant="HAND" />
                            </cursor>
+                           <HBox.margin>
+                              <Insets left="20.0" right="120.0" />
+                           </HBox.margin>
+                        </ImageView>
+                        <ImageView fitHeight="150.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@logo-CienciasII.png" />
+                           </image>
+                           <viewport>
+                              <Rectangle2D />
+                           </viewport>
                            <HBox.margin>
                               <Insets />
                            </HBox.margin>
@@ -96,17 +95,23 @@
             </HBox>
          </center>
         </BorderPane>
-      <AnchorPane fx:id="menuPane" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #2262C6;" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <AnchorPane fx:id="menuPane" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #2262C6;" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <HBox alignment="CENTER_RIGHT" layoutX="-1.0" prefHeight="45.0" prefWidth="201.0">
+            <HBox alignment="CENTER_LEFT" layoutX="-1.0" prefHeight="45.0" prefWidth="201.0">
                <children>
-                  <ImageView fx:id="btnClose" accessibleRole="BUTTON" fitHeight="30.0" fitWidth="100.0" onMouseClicked="#closeMenu" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="btnClose" accessibleRole="BUTTON" fitHeight="30.0" fitWidth="50.0" onMouseClicked="#closeMenu" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@icono-cerrar.png" />
                      </image>
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
+                     <rotationAxis>
+                        <Point3D />
+                     </rotationAxis>
+                     <HBox.margin>
+                        <Insets left="20.0" />
+                     </HBox.margin>
                   </ImageView>
                </children>
                <opaqueInsets>
@@ -118,6 +123,14 @@
             </HBox>
             <VBox fx:id="menuVBox" layoutX="27.0" layoutY="58.0" prefHeight="200.0" prefWidth="146.0">
                <children>
+                  <Label accessibleRole="BUTTON" onMouseClicked="#openInicio" text="Inicio" textFill="WHITE">
+                     <font>
+                        <Font name="Myanmar Text Bold" size="18.0" />
+                     </font>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Label>
                   <Label fx:id="btnBusquedas" accessibleRole="BUTTON" onMouseClicked="#openMenuBusquedas" text="Busquedas" textFill="WHITE">
                      <font>
                         <Font name="Myanmar Text Bold" size="18.0" />
@@ -138,20 +151,29 @@
                         </Label>
                         <VBox fx:id="subMenuInternas" prefHeight="200.0" prefWidth="100.0">
                            <children>
-                              <Label text="Lineal" textFill="WHITE">
+                              <Label fx:id="btnLineal" accessibleRole="BUTTON" onMouseClicked="#mostrarBusquedaLineal" text="Lineal" textFill="WHITE">
                                  <font>
                                     <Font name="Myanmar Text" size="14.0" />
                                  </font>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
                               </Label>
-                              <Label text="Binario" textFill="WHITE">
+                              <Label accessibleRole="BUTTON" onMouseClicked="#openBinario" text="Binario" textFill="WHITE">
                                  <font>
                                     <Font name="Myanmar Text" size="14.0" />
                                  </font>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
                               </Label>
-                              <Label text="Función Hash" textFill="WHITE">
+                              <Label accessibleRole="BUTTON" onMouseClicked="#openFuncionHash" text="Función Hash" textFill="WHITE">
                                  <font>
                                     <Font name="Myanmar Text" size="14.0" />
                                  </font>
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
                               </Label>
                            </children>
                            <padding>
@@ -168,10 +190,13 @@
                         <Insets left="20.0" />
                      </padding>
                   </VBox>
-                  <Label text="Grafos" textFill="WHITE">
+                  <Label accessibleRole="BUTTON" onMouseClicked="#openGrafos" text="Grafos" textFill="WHITE">
                      <font>
-                        <Font size="18.0" />
+                        <Font name="Myanmar Text Bold" size="18.0" />
                      </font>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
                   </Label>
                </children>
             </VBox>
