@@ -50,11 +50,7 @@
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </ImageView>
-                        <Label text="GRAFOS" textFill="WHITE">
-                           <font>
-                              <Font name="Myanmar Text Bold" size="36.0" />
-                           </font>
-                        </Label>
+                        <Label text="GRAFOS" id="titleLabel" textFill="WHITE"/>
                      </children>
                   </HBox>
                </children>

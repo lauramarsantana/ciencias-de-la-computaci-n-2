@@ -13,6 +13,8 @@ import utilities.SlotClave;
 
 public class BusquedaLinealController {
 
+    private Integer n; // tamaño máximo de la estructura
+
     @FXML private AnchorPane linealPane;
     @FXML
     private AnchorPane menuPane;
@@ -55,6 +57,13 @@ public class BusquedaLinealController {
         colClave.setCellValueFactory(new PropertyValueFactory<>("clave"));
 
         tabla.setItems(data);
+        tabla.getColumns().setAll(colPos, colClave);
+        tabla.getColumns().setAll(colPos, colClave);
+
+        // Opcional: ajustar ancho proporcional
+        colPos.prefWidthProperty().bind(tabla.widthProperty().multiply(0.3));
+        colClave.prefWidthProperty().bind(tabla.widthProperty().multiply(0.7));
+
     }
 
     // configurando cada boton del menu desplegable
@@ -114,18 +123,15 @@ public class BusquedaLinealController {
 
     @FXML
     private void crearEstructura() {
-        Integer n = leerEntero(nField);
-        if (n == null || n < 1) {
+        this.n = leerEntero(nField);
+        if (this.n == null || this.n < 1) {
             resultadoLabel.setText("N debe ser un número >= 1.");
             return;
         }
 
         digitos = digitosChoice.getValue() != null ? digitosChoice.getValue() : 2;
 
-        data.clear();
-        for (int i = 0; i < n; i++) {
-            data.add(new SlotClave(i + 1, "")); // clave vacía
-        }
+        data.clear(); // no agrega filas vacías
 
         creada = true;
         resultadoLabel.setText("Estructura creada con N=" + n + " y claves de " + digitos + " dígitos.");
@@ -161,19 +167,25 @@ public class BusquedaLinealController {
         
         //¿Hay espacio?
         int usados = contarClaves();
-        if (usados >= data.size()) {
+        if (usados >= n) {
             resultadoLabel.setText("La estructura está llena. No se puede insertar más.");
             limpiarInsercion();
             return;
         }
 
         // Insertar en la primera posición vacía
+        /*
+
+        ya no tenemos filas vacías, ya no funciona esto
         for (SlotClave s : data) {
                 if (s.getClave() == null || s.getClave().isBlank()) {
                    s.setClave(claveTxt);
-                break; 
+                break;
             }
-        }
+        }*/
+
+        int posicion = usados + 1; // siguiente posición disponible
+        data.add(new SlotClave(posicion, claveTxt));
 
         var clavesOrdenadas = data.stream()
                 .map(SlotClave::getClave)

@@ -22,3 +22,149 @@
 .menu-item:hover {
     -fx-background-color: #1b4e99;
 }
+.text-field {
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #2262C6;
+    -fx-border-width: 2;
+    -fx-pref-height: 30px;
+}
+.text-field:focused {
+    -fx-border-color: #4A90E2;
+    -fx-background-color: #F0F8FF;
+}
+
+.table-view {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #2262C6;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-table-cell-border-color: transparent;
+    -fx-padding: 8;
+}
+.scroll-bar:vertical, .scroll-bar:horizontal {
+    -fx-background-color: transparent;
+    -fx-background-radius: 8;
+}
+
+/* El thumb (parte que se arrastra) */
+.scroll-bar .thumb {
+    -fx-background-color: #4A90E2;   /* color del bloque que se mueve */
+    -fx-background-radius: 8;
+}
+
+/* Botones de flechas */
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button {
+    -fx-background-color: #2262C6;   /* color de las flechas */
+    -fx-background-radius: 8;
+}
+
+/* Iconos de flechas */
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow {
+    -fx-background-color: white;     /* color del símbolo de la flecha */
+}
+
+
+.table-view .column-header-background {
+    -fx-background-color: linear-gradient(to right, #2262C6, #4A90E2);
+    -fx-background-radius: 10 10 0 0;
+}
+
+.table-view .column-header, .table-view .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-alignment: CENTER;
+    -fx-background-color:  #2262C6;
+}
+
+
+.table-cell {
+    -fx-padding: 4 8 4 8;   /* reduce espacio interno */
+    -fx-font-size: 13px;    /* tipografía más pequeña */
+    -fx-alignment: CENTER;  /* centra el contenido */
+}
+.table-row-cell {
+    -fx-background-color: #f9f9f9;
+}
+.table-row-cell:odd {
+    -fx-background-color: #eef6ff;
+}
+.table-row-cell:selected {
+    -fx-background-color: #cce0ff;
+}
+
+.button {
+    -fx-background-color: linear-gradient(to right, #2262C6, #4A90E2);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-background-radius: 12;
+    -fx-padding: 8 16 8 16;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 4, 0.5, 2, 2);
+}
+.button:hover {
+    -fx-background-color: linear-gradient(to right, #4A90E2, #2262C6);
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+.choice-box {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #2262C6;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-font-family: "Segoe UI Semibold";
+    -fx-font-size: 10px;
+    -fx-pref-height: 30px;
+    -fx-pref-width: 80px;
+}
+.choice-box:hover {
+    -fx-border-color: #4A90E2;
+}
+
+/* Texto del campo principal (cuando está cerrado) */
+.choice-box .label {
+    -fx-text-fill: #333333;   /* visible sobre fondo blanco */
+    -fx-font-weight: bold;
+}
+
+/* Fondo del menú desplegado */
+.choice-box .context-menu {
+    -fx-background-color: #2262C6;   /* azul */
+}
+
+/* Opciones dentro del menú desplegado */
+.choice-box .menu-item .label {
+    -fx-text-fill: white;            /* texto blanco */
+    -fx-background-color: #2262C6;   /* fondo azul */
+}
+
+/* Hover sobre opción */
+.choice-box .menu-item:focused .label {
+    -fx-background-color: #4A90E2;   /* azul más claro */
+    -fx-text-fill: white;
+}
+
+
+.label {
+    -fx-font-family: "Segoe UI Semibold";
+    -fx-font-size: 16px;
+    -fx-text-fill: #333333;
+}
+
+#titleLabel{
+    -fx-font-family: "Myanmar Text";
+    -fx-font-size: 24px;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+//todos los label que usan mensajes
+#resultadoLabel {
+    -fx-text-fill: #2262C6;   /* azul */
+    -fx-font-weight: bold;    /* negrita */
+    -fx-font-size: 14px;
+}

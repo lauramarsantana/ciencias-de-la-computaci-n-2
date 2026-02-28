@@ -24,7 +24,7 @@
       <URL value="@/styles.css" />
    </stylesheets>
    <children>
-      <BorderPane prefHeight="400.0" prefWidth="600.0">
+      <BorderPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: fff;">
          <top>
             <VBox alignment="CENTER" prefHeight="34.0" prefWidth="600.0" style="-fx-background-color: #2262C6;">
                <children>
@@ -55,58 +55,65 @@
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </ImageView>
-                        <Label text="BUSQUEDA LINEAL" textFill="WHITE">
+                        <Label id="titleLabel" text="BUSQUEDA LINEAL" textFill="WHITE">
                            <font>
-                              <Font name="Myanmar Text Bold" size="36.0" />
-                           </font>
-                        </Label>
+                              <Font name="Myanmar Text Bold" size="24.0" />
+                           </font></Label>
                      </children>
                   </HBox>
                </children>
             </VBox>
          </top>
          <center>
-            <VBox spacing="12" BorderPane.alignment="CENTER">
+            <VBox spacing="12" style="-fx-background-color: fff;" BorderPane.alignment="CENTER">
                <padding>
                   <Insets bottom="16" left="16" right="16" top="16" />
                </padding>
                <children>
-                  <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Búsqueda Lineal" />
-                  <HBox spacing="10">
+                  <HBox alignment="CENTER" spacing="10">
                      <children>
                         <Label text="Tamaño estructura (N):" />
-                        <TextField fx:id="nField" prefWidth="100" promptText="Ej: 10" />
+                        <TextField fx:id="nField" prefHeight="25.0" prefWidth="50.0" promptText="Ej: 10">
+                           <cursor>
+                              <Cursor fx:constant="TEXT" />
+                           </cursor></TextField>
                         <Label text="Dígitos clave:" />
-                        <ChoiceBox fx:id="digitosChoice" prefWidth="80" />
+                        <ChoiceBox fx:id="digitosChoice" maxHeight="20.0" prefWidth="30.0"/>
                         <Button onAction="#crearEstructura" text="Crear" />
                      </children>
                   </HBox>
                   <TableView fx:id="tabla" prefHeight="260">
                      <columns>
-                        <TableColumn fx:id="colPos" prefWidth="120" text="Posición" />
-                        <TableColumn fx:id="colClave" prefWidth="200" text="Clave" />
+                        <TableColumn fx:id="colPos" prefWidth="80" text="Posición" />
+                        <TableColumn fx:id="colClave" prefWidth="120" text="Clave" />
                      </columns>
                   </TableView>
-                  <HBox spacing="10">
+                  <HBox alignment="CENTER" spacing="10">
                      <children>
                         <Label text="Insertar clave:" />
-                        <TextField fx:id="claveInsertField" prefWidth="120" promptText="Ej: 24" />
+                        <TextField fx:id="claveInsertField" prefWidth="50.0" promptText="Ej: 24" />
                         <Button onAction="#insertarClave" text="Insertar" />
-                     </children>
-                  </HBox>
-                  <HBox spacing="10">
-                     <children>
                         <Label text="Buscar clave:" />
-                        <TextField fx:id="claveBuscarField" prefWidth="120" promptText="Ej: 24" />
+                        <TextField fx:id="claveBuscarField" prefWidth="50.0" promptText="Ej: 24" />
                         <Button onAction="#buscarClave" text="Buscar" />
                      </children>
                   </HBox>
-                  <Label fx:id="resultadoLabel" style="-fx-font-size: 14px;" text="Listo." />
+                  <HBox spacing="10" style="-fx-background-color: white;" />
                </children>
             </VBox>
          </center>
+         <bottom>
+            <Label fx:id="resultadoLabel" style="-fx-font-size: 14px;" text="Listo." textFill="#0e2ebe" BorderPane.alignment="CENTER">
+               <font>
+                  <Font name="Myanmar Text Bold" size="24.0" />
+               </font>
+               <padding>
+                  <Insets bottom="10.0" />
+               </padding>
+            </Label>
+         </bottom>
       </BorderPane>
-      <AnchorPane fx:id="menuPane" layoutY="1.0" prefHeight="370.0" prefWidth="211.0" style="-fx-background-color: #2262C6;">
+      <AnchorPane fx:id="menuPane" layoutY="1.0" prefHeight="370.0" prefWidth="211.0" style="-fx-background-color: #2262C6;" visible="false">
          <children>
             <HBox alignment="CENTER_LEFT" layoutX="-1.0" prefHeight="45.0" prefWidth="201.0">
                <children>

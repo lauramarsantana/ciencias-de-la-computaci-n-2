@@ -14,6 +14,8 @@ import utilities.SlotClave;
 
 public class BusquedaBinariaController {
 
+    private Integer n; // tamaño máximo de la estructura
+
     @FXML private TextField nField;
     @FXML private ChoiceBox<Integer> digitosChoice;
 
@@ -57,6 +59,10 @@ public class BusquedaBinariaController {
         colPos.setCellValueFactory(new PropertyValueFactory<>("posicion"));
         colClave.setCellValueFactory(new PropertyValueFactory<>("clave"));
         tabla.setItems(data);
+        tabla.getColumns().setAll(colPos, colClave);
+        tabla.getColumns().setAll(colPos, colClave);
+        colPos.prefWidthProperty().bind(tabla.widthProperty().multiply(0.3));
+        colClave.prefWidthProperty().bind(tabla.widthProperty().multiply(0.7));
     }
 
     @FXML
@@ -67,8 +73,8 @@ public class BusquedaBinariaController {
 
     @FXML
     private void crearEstructura() {
-        Integer n = leerEntero(nField.getText());
-        if (n == null || n <= 0) {
+        this.n = leerEntero(nField.getText());
+        if (this.n == null || this.n <= 0) {
             resultadoLabel.setText("Ingresa un N válido (mayor que 0).");
             return;
         }
@@ -76,9 +82,6 @@ public class BusquedaBinariaController {
         digitos = digitosChoice.getValue() == null ? 2 : digitosChoice.getValue();
 
         data.clear();
-        for (int i = 0; i < n; i++) {
-            data.add(new SlotClave(i + 1, "")); 
-        }
 
         creada = true;
         resultadoLabel.setText("Estructura creada (1.." + n + ").");
@@ -113,12 +116,13 @@ public class BusquedaBinariaController {
 
         // ¿Hay espacio?
         int usados = contarClaves();
-        if (usados >= data.size()) {
+        if (usados >= n) {
             resultadoLabel.setText("La estructura está llena. No se puede insertar más.");
             limpiarInsercion();
             return;
         }
 
+        /* debido a que ya no contamos las filas vacias esto ya no funciona
         // 1) obtener todas las claves existentes + la nueva, ordenarlas
         var clavesOrdenadas = data.stream()
                 .map(SlotClave::getClave)
@@ -132,9 +136,24 @@ public class BusquedaBinariaController {
         // 2) limpiar y reinsertar desde posición 1
         for (SlotClave s : data) s.setClave("");
         for (int i = 0; i < lista.size(); i++) data.get(i).setClave(lista.get(i));
+        */
+
+        // Insertar nueva clave
+        data.add(new SlotClave(usados + 1, claveTxt));
+
+        // Ordenar por clave
+        var listaOrdenada = data.stream()
+                .sorted((a, b) -> a.getClave().compareTo(b.getClave()))
+                .toList();
+
+        // Reconstruir la tabla con posiciones actualizadas
+        data.clear();
+        for (int i = 0; i < listaOrdenada.size(); i++) {
+            data.add(new SlotClave(i + 1, listaOrdenada.get(i).getClave()));
+        }
 
         tabla.refresh();
-        resultadoLabel.setText("Insertada y ordenada. Total claves: " + lista.size() + ".");
+        resultadoLabel.setText("Insertada y ordenada. Total claves: " + listaOrdenada.size() + ".");
         // limpiar solo si fue exitoso
         claveInsertField.clear();
         claveInsertField.requestFocus();

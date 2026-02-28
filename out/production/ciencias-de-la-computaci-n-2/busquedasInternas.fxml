@@ -50,11 +50,7 @@
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </ImageView>
-                        <Label text="BUSQUEDAS INTERNAS" textFill="WHITE">
-                           <font>
-                              <Font name="Myanmar Text Bold" size="24.0" />
-                           </font>
-                        </Label>
+                        <Label text="BUSQUEDAS INTERNAS" id="titleLabel" textFill="WHITE"/>
                      </children>
                   </HBox>
                </children>

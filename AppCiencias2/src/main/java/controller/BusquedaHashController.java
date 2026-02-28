@@ -68,6 +68,11 @@ public class BusquedaHashController {
         colClave.setCellValueFactory(new PropertyValueFactory<>("clave"));
 
         tabla.setItems(data);
+        tabla.getColumns().setAll(colPos, colClave);
+        tabla.getColumns().setAll(colPos, colClave);
+        // ajustar ancho proporcional
+        colPos.prefWidthProperty().bind(tabla.widthProperty().multiply(0.3));
+        colClave.prefWidthProperty().bind(tabla.widthProperty().multiply(0.7));
         
         hashChoice.setItems(FXCollections.observableArrayList(
         "MOD",
@@ -110,6 +115,25 @@ public class BusquedaHashController {
         resolverCheck.setSelected(true);
 
         colColisiones.setCellValueFactory(new PropertyValueFactory<>("colisionesTexto"));
+
+        colColisiones.setCellFactory(column -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item);
+                    if (item.contains("[ROJO]")) {
+                        setStyle("-fx-text-fill: red;"); // pinta en rojo
+                    } else {
+                        setStyle(""); // estilo normal
+                    }
+                }
+            }
+        });
+
+        tabla.getColumns().add(colColisiones);
     }
 
     @FXML
@@ -188,7 +212,7 @@ public class BusquedaHashController {
 
     if (h < 0) h = -h;
     return h % N; // 0..N-1
-}
+    }
 
     @FXML
     private void insertarClave() {
@@ -230,7 +254,9 @@ public class BusquedaHashController {
 
         if (base.isVacio()) {
             base.setClave(claveTxt);
-            tabla.refresh();
+
+            // aquí llamas al método actualizar vista
+            actualizarVista();
 
             long fin = System.nanoTime();
             resultadoLabel.setText("Insertada en posición " + base.getPosicion()
@@ -251,19 +277,17 @@ public class BusquedaHashController {
         //Hay colisión
         if (!resolver) {
             // Guardar como "no resuelta" y evitar duplicados visuales
-            String marca = "⚠ NO RESUELTA: " + claveTxt;
+            String marca = "⚠ NO RESUELTA:" + claveTxt;
 
-            // Evitar repetir la misma clave marcada
             boolean yaExiste = base.getColisiones().stream()
                     .anyMatch(s -> s.endsWith(claveTxt) || s.equals(marca) || s.equals(claveTxt));
 
             if (!yaExiste) base.getColisiones().add(marca);
-
-            tabla.refresh();
+            actualizarVista(); // refresca la tabla para que se vea
 
             long fin = System.nanoTime();
             resultadoLabel.setText("COLISIÓN en posición " + base.getPosicion()
-                    + " | (no resuelta) | Tiempo: " + (fin - inicio) + " ns");
+                    + " | (no resuelta) | Tiempo: " + (frin - inicio) + " ns");
 
             limpiarInsercion();
             return;
@@ -308,19 +332,26 @@ public class BusquedaHashController {
 
             if (slot.isVacio()) {
                 slot.setClave(claveTxt);
-                tabla.refresh();
+
+                // 👇 eliminar la marca de colisión en la posición base
+                base.getColisiones().removeIf(s -> s.contains(claveTxt));
+
+                actualizarVista();
+                tabla.getSelectionModel().select(slot);
+                tabla.scrollTo(slot);
 
                 long fin = System.nanoTime();
                 resultadoLabel.setText("Insertada en posición " + slot.getPosicion()
-                + " (índice " + idx + ")"
-                + " | Hash base: " + start
-                + " | Colisiones: " + i
-                + " | Comparaciones: " + comparaciones
-                + " | Tiempo: " + (fin - inicio) + " ns");
+                        + " (índice " + idx + ")"
+                        + " | Hash base: " + start
+                        + " | Colisiones: " + i
+                        + " | Comparaciones: " + comparaciones
+                        + " | Tiempo: " + (fin - inicio) + " ns");
 
                 claveInsertField.clear();
                 claveInsertField.requestFocus();
                 return;
+
             }
         }
 
@@ -595,6 +626,15 @@ if (base.getColisiones() != null && !base.getColisiones().isEmpty()) {
         clave = clave.trim();
         if (!clave.matches("\\d+")) return clave;
         return String.format("%0" + digitos + "d", Integer.parseInt(clave));
+    }
+
+    // la tabla solo muestra las posiciones llenas
+    private void actualizarVista() {
+        var visibles = data.stream()
+                .filter(s -> !s.isVacio()) // solo los que tienen clave
+                .toList();
+        tabla.setItems(FXCollections.observableArrayList(visibles));
+        tabla.refresh();
     }
 
     // configurando cada boton del menu desplegable

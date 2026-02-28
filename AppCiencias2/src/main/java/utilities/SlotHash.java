@@ -1,9 +1,13 @@
 package utilities;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SlotHash {
     private final int posicion;   // 1..N 
     private int hash = -1;        // hash base (0..N-1)
     private String clave = "";    // vacío si no hay clave
+    private final List<String> colisiones = new ArrayList<>(); // 👈 solo una vez
 
     public SlotHash(int posicion) {
         this.posicion = posicion;
@@ -20,11 +24,8 @@ public class SlotHash {
     public boolean isVacio() {
         return clave == null || clave.isBlank();
     }
-    private final java.util.List<String> colisiones = new java.util.ArrayList<>();
 
-    public java.util.List<String> getColisiones() {
-        return colisiones;
-    }
+    public List<String> getColisiones() { return colisiones; }
 
     public String getColisionesTexto() {
         return String.join(", ", colisiones);
