@@ -162,7 +162,7 @@
     -fx-text-fill: white;
     -fx-font-weight: bold;
 }
-//todos los label que usan mensajes
+
 #resultadoLabel {
     -fx-text-fill: #2262C6;   /* azul */
     -fx-font-weight: bold;    /* negrita */

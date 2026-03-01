@@ -148,7 +148,7 @@ public class BusquedaHashController {
         N = n;
         digitos = digitosChoice.getValue() == null ? 2 : digitosChoice.getValue();
 
-        // ✅ Solo validar/asignar MOD si la función es "MOD"
+        // Solo validar/asignar MOD si la función es "MOD"
         if ("MOD".equals(hashChoice.getValue())) {
             Integer m = leerEntero(modField.getText());
             if (m == null || m <= 0) {
@@ -231,13 +231,11 @@ public class BusquedaHashController {
             return;
         }
 
-        // No repetición (revisar en toda la tabla)
-        for (SlotHash s : data) {
-            if (claveTxt.equals(s.getClave())) {
-                resultadoLabel.setText("Esa clave ya existe en la tabla.");
-                limpiarInsercion();
-                return;
-            }
+        // No repetición: revisar slot principal + colisiones (incluye NO RESUELTA)
+        if (existeClaveEnTabla(claveTxt)) {
+            resultadoLabel.setText("Esa clave ya existe en la tabla.");
+            limpiarInsercion();
+            return;
         }
 
         int claveNum = Integer.parseInt(claveTxt);
@@ -287,7 +285,7 @@ public class BusquedaHashController {
 
             long fin = System.nanoTime();
             resultadoLabel.setText("COLISIÓN en posición " + base.getPosicion()
-                    + " | (no resuelta) | Tiempo: " + (frin - inicio) + " ns");
+                    + " | (no resuelta) | Tiempo: " + (fin - inicio) + " ns");
 
             limpiarInsercion();
             return;
@@ -333,7 +331,7 @@ public class BusquedaHashController {
             if (slot.isVacio()) {
                 slot.setClave(claveTxt);
 
-                // 👇 eliminar la marca de colisión en la posición base
+                // eliminar la marca de colisión en la posición base
                 base.getColisiones().removeIf(s -> s.contains(claveTxt));
 
                 actualizarVista();
@@ -385,16 +383,24 @@ private void buscarClave() {
     // 1) Revisar el slot base
     SlotHash base = data.get(start);
     comparaciones++;
+    
+    // 2) Si está en el slot base
+    if (claveTxt.equals(base.getClave())) {
+        long fin = System.nanoTime();
+        tabla.getSelectionModel().select(base);
+        tabla.scrollTo(base);
+        resultadoLabel.setText("Encontrada en posición " + base.getPosicion()
+                + " | Hash: " + start
+                + " | Método: " + estrategia
+                + " | Comparaciones: " + comparaciones
+                + " | Tiempo: " + (fin - inicio) + " ns");
+        limpiarBusqueda();
+        return;
+    }
 
     // Si la clave está en el slot base
-    // 2) Buscar también dentro del registro de colisiones (incluye NO RESUELTA y encadenamiento)
-if (base.getColisiones() != null && !base.getColisiones().isEmpty()) {
-
-    boolean encontradaEnBucket = base.getColisiones().stream().anyMatch(s ->
-            s.equals(claveTxt) || s.endsWith(": " + claveTxt)
-    );
-
-    if (encontradaEnBucket) {
+    // 3)Buscar en colisiones del bucket (incluye NO RESUELTA y encadenamiento)
+    if (existeEnColisiones(base, claveTxt)) {
         long fin = System.nanoTime();
         tabla.getSelectionModel().select(base);
         tabla.scrollTo(base);
@@ -403,13 +409,11 @@ if (base.getColisiones() != null && !base.getColisiones().isEmpty()) {
                 + " | Método: " + estrategia
                 + " | Comparaciones: " + comparaciones
                 + " | Tiempo: " + (fin - inicio) + " ns");
-
         limpiarBusqueda();
         return;
     }
-}
 
-    // 2) Si hay encadenamiento, buscar dentro del bucket (colisiones)
+    // 4) Si hay encadenamiento, buscar dentro del bucket (colisiones)
     if ("Arreglos anidados".equals(estrategia) || "Listas enlazadas".equals(estrategia)) {
         if (base.getColisiones().contains(claveTxt)) {
             long fin = System.nanoTime();
@@ -431,7 +435,7 @@ if (base.getColisiones() != null && !base.getColisiones().isEmpty()) {
         return;
     }
 
-    // 3) Probing: Lineal / Cuadrática / Doble hash
+    // 5) Probing: Lineal / Cuadrática / Doble hash
     for (int i = 1; i < N; i++) {
         int idx;
 
@@ -536,7 +540,7 @@ if (base.getColisiones() != null && !base.getColisiones().isEmpty()) {
                 }
             }
 
-            tabla.refresh();
+            actualizarVista();
             long fin = System.nanoTime();
 
             resultadoLabel.setText("Arreglo terminado | Pendientes revisadas: " + revisadas
@@ -558,6 +562,32 @@ if (base.getColisiones() != null && !base.getColisiones().isEmpty()) {
             if (s.startsWith(pref)) return s.substring(pref.length()).trim();
             return s;
         }
+        
+        /** Revisa si la clave ya existe en cualquier parte: slot principal o colisiones (resueltas o no). */
+        private boolean existeClaveEnTabla(String claveTxt) {
+            for (SlotHash s : data) {
+                if (claveTxt.equals(s.getClave())) return true;
+
+                if (s.getColisiones() != null && !s.getColisiones().isEmpty()) {
+                    for (String item : s.getColisiones()) {
+                        String real = extraerClaveReal(item);
+                        if (claveTxt.equals(real)) return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+    /** Revisa si la clave está en las colisiones del bucket base (incluye NO RESUELTA y encadenamiento). */
+    private boolean existeEnColisiones(SlotHash base, String claveTxt) {
+        if (base.getColisiones() == null || base.getColisiones().isEmpty()) return false;
+
+        for (String item : base.getColisiones()) {
+            String real = extraerClaveReal(item);
+            if (claveTxt.equals(real)) return true;
+        }
+        return false;
+    }
 
         /**
          * Intenta insertar la clave en una posición vacía usando el probing de la estrategia actual.
