@@ -14,6 +14,13 @@ import utilities.SlotHash;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.stage.FileChooser;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 public class BusquedaHashController {
 
     @FXML private TextField nField;
@@ -666,6 +673,211 @@ private void buscarClave() {
         tabla.setItems(FXCollections.observableArrayList(visibles));
         tabla.refresh();
     }
+    
+    @FXML
+    private void guardarTabla() {
+        if (!creada) {
+            resultadoLabel.setText("Primero debes crear la estructura.");
+            return;
+        }
+
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Guardar tabla hash");
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivo Hash (*.hash)", "*.hash"));
+        File file = fc.showSaveDialog(tabla.getScene().getWindow());
+        if (file == null) return;
+
+        try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
+            bw.write("N=" + N); bw.newLine();
+            bw.write("DIGITOS=" + digitos); bw.newLine();
+            bw.write("HASH=" + hashChoice.getValue()); bw.newLine();
+            bw.write("MOD=" + MOD); bw.newLine();
+            bw.write("COLISION=" + colisionChoice.getValue()); bw.newLine();
+            bw.write("RESOLVER=" + resolverCheck.isSelected()); bw.newLine();
+            bw.write("DATA"); bw.newLine();
+
+            // Guardar TODA la tabla (no solo visibles)
+            for (SlotHash s : data) {
+                String clave = s.getClave() == null ? "" : s.getClave();
+                String colisiones = "";
+                if (s.getColisiones() != null && !s.getColisiones().isEmpty()) {
+                    colisiones = s.getColisiones().stream()
+                            .map(String::trim)
+                            .collect(Collectors.joining(","));
+                }
+                bw.write(s.getPosicion() + "|" + clave + "|" + colisiones);
+                bw.newLine();
+            }
+
+            bw.write("END"); bw.newLine();
+            resultadoLabel.setText("Tabla guardada: " + file.getName());
+        } catch (IOException e) {
+            e.printStackTrace();
+            resultadoLabel.setText("Error guardando: " + e.getMessage());
+        }
+    }
+    
+    @FXML
+    private void cargarTabla() {
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Cargar tabla hash");
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivo Hash (*.hash)", "*.hash"));
+        File file = fc.showOpenDialog(tabla.getScene().getWindow());
+        if (file == null) return;
+
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
+            String line;
+
+            int newN = 0;
+            int newDig = 2;
+            int newMOD = 100;
+            String newHash = "MOD";
+            String newColision = "Lineal";
+            boolean newResolver = true;
+
+            // leer cabecera
+            while ((line = br.readLine()) != null) {
+                line = line.trim();
+                if (line.equals("DATA")) break;
+
+                if (line.startsWith("N=")) newN = Integer.parseInt(line.substring(2));
+                else if (line.startsWith("DIGITOS=")) newDig = Integer.parseInt(line.substring(8));
+                else if (line.startsWith("HASH=")) newHash = line.substring(5);
+                else if (line.startsWith("MOD=")) newMOD = Integer.parseInt(line.substring(4));
+                else if (line.startsWith("COLISION=")) newColision = line.substring(9);
+                else if (line.startsWith("RESOLVER=")) newResolver = Boolean.parseBoolean(line.substring(9));
+            }
+
+            if (newN <= 0) {
+                resultadoLabel.setText("Archivo inválido (N).");
+                return;
+            }
+
+            // aplicar configuración UI + variables internas
+            N = newN;
+            digitos = newDig;
+            MOD = newMOD;
+
+            nField.setText(String.valueOf(N));
+            digitosChoice.setValue(digitos);
+            hashChoice.setValue(newHash);
+            colisionChoice.setValue(newColision);
+            resolverCheck.setSelected(newResolver);
+
+            modField.setText(String.valueOf(MOD));
+            modField.setDisable(!"MOD".equals(newHash));
+
+            // reconstruir data
+            data.clear();
+            for (int i = 0; i < N; i++) data.add(new SlotHash(i + 1));
+
+            // leer filas
+            while ((line = br.readLine()) != null) {
+                line = line.trim();
+                if (line.equals("END")) break;
+                if (line.isEmpty()) continue;
+
+                String[] parts = line.split("\\|", -1);
+                if (parts.length < 3) continue;
+
+                int pos = Integer.parseInt(parts[0]);
+                String clave = parts[1].trim();
+                String cols = parts[2].trim();
+
+                SlotHash slot = data.get(pos - 1);
+
+                if (!clave.isEmpty()) slot.setClave(clave);
+
+                slot.getColisiones().clear();
+                if (!cols.isEmpty()) {
+                    Arrays.stream(cols.split(","))
+                            .map(String::trim)
+                            .filter(s -> !s.isEmpty())
+                            .forEach(c -> slot.getColisiones().add(c));
+                }
+            }
+
+            creada = true;
+            actualizarVista(); // importante para mostrar lo cargado
+            resultadoLabel.setText("Tabla cargada: " + file.getName());
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultadoLabel.setText("Error cargando: " + e.getMessage());
+        }
+    }
+    
+    @FXML
+    private void eliminarClave() {
+        if (!creada) {
+            resultadoLabel.setText("Primero debes crear la estructura.");
+            return;
+        }
+
+        String claveTxt = normalizarClave(claveBuscarField.getText(), digitos);
+        claveBuscarField.setText(claveTxt);
+
+        if (!claveValidaPorDigitos(claveTxt, digitos)) {
+            resultadoLabel.setText("La clave debe tener exactamente " + digitos + " dígitos.");
+            limpiarBusqueda();
+            return;
+        }
+
+        // 1) Eliminar de colisiones (en cualquier bucket)
+        for (SlotHash s : data) {
+            if (s.getColisiones() != null && !s.getColisiones().isEmpty()) {
+                boolean removed = s.getColisiones().removeIf(item -> claveTxt.equals(extraerClaveReal(item)));
+                if (removed) {
+                    actualizarVista();
+                    resultadoLabel.setText("Eliminada de colisiones en posición " + s.getPosicion());
+                    limpiarBusqueda();
+                    return;
+                }
+            }
+        }
+
+        // 2) Eliminar si está como clave principal
+        // Buscar en toda la tabla (incluye probing)
+        for (int idx = 0; idx < N; idx++) {
+            SlotHash slot = data.get(idx);
+            if (claveTxt.equals(slot.getClave())) {
+                slot.setClave(null);
+
+                // Rehash del cluster siguiente para no romper búsquedas en probing
+                rehashDesde(idx);
+
+                actualizarVista();
+                resultadoLabel.setText("Eliminada de posición " + slot.getPosicion());
+                limpiarBusqueda();
+                return;
+            }
+        }
+
+        resultadoLabel.setText("No se encontró la clave para eliminar.");
+        limpiarBusqueda();
+    }
+
+/** Reinsertar claves del cluster después de borrar en probing (lineal/cuadrática/doble). */
+private void rehashDesde(int idxBorrado) {
+    // Guardar las claves siguientes que podrían depender del cluster
+    List<String> aReinsertar = new ArrayList<>();
+
+    // barrer el resto de la tabla completa (una vuelta) recogiendo claves hasta llegar a un vacío "natural"
+    // Como no tenemos tombstone, tomamos un enfoque seguro: recoger todo y reinsertar lo que estaba después.
+    // (educativo, funciona bien con N pequeño)
+    for (int i = 1; i < N; i++) {
+        int idx = (idxBorrado + i) % N;
+        SlotHash slot = data.get(idx);
+        if (slot.isVacio()) break;
+
+        aReinsertar.add(slot.getClave());
+        slot.setClave(null);
+    }
+
+    // Reinsertar usando tu lógica de inserción (pero sin validación global porque son claves existentes)
+    for (String k : aReinsertar) {
+        reubicarPorProbing(k, colisionChoice.getValue());
+    }
+}
 
     // configurando cada boton del menu desplegable
     @FXML

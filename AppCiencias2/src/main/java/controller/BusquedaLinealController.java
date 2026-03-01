@@ -10,6 +10,11 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import utilities.SlotClave;
+import javafx.stage.FileChooser;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BusquedaLinealController {
 
@@ -348,5 +353,176 @@ public class BusquedaLinealController {
             if (!Character.isDigit(clave.charAt(i))) return false;
         }
         return true;
+    }
+    
+    // =====================
+    // GUARDAR / CARGAR
+    // =====================
+
+    @FXML
+    private void guardarTabla() {
+        if (!creada) {
+            resultadoLabel.setText("Primero debes crear la estructura.");
+            return;
+        }
+
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Guardar búsqueda lineal");
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Búsqueda Lineal (*.lin)", "*.lin"));
+        File file = fc.showSaveDialog(tabla.getScene().getWindow());
+        if (file == null) return;
+
+        try (BufferedWriter bw = new BufferedWriter(
+                new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
+
+            bw.write("TIPO=LINEAL"); bw.newLine();
+            bw.write("N=" + n); bw.newLine();
+            bw.write("DIGITOS=" + digitos); bw.newLine();
+            bw.write("DATA"); bw.newLine();
+
+            for (SlotClave s : data) {
+                String clave = s.getClave() == null ? "" : s.getClave().trim();
+                bw.write(s.getPosicion() + "|" + clave);
+                bw.newLine();
+            }
+
+            bw.write("END"); bw.newLine();
+
+            resultadoLabel.setText("Guardado: " + file.getName());
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultadoLabel.setText("Error guardando: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void cargarTabla() {
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Cargar búsqueda lineal");
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Búsqueda Lineal (*.lin)", "*.lin"));
+        File file = fc.showOpenDialog(tabla.getScene().getWindow());
+        if (file == null) return;
+
+        try (BufferedReader br = new BufferedReader(
+                new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
+
+            String line;
+            Integer newN = null;
+            Integer newDig = null;
+
+            // Leer cabecera
+            while ((line = br.readLine()) != null) {
+                line = line.trim();
+                if (line.equals("DATA")) break;
+                if (line.startsWith("N=")) newN = Integer.parseInt(line.substring(2).trim());
+                else if (line.startsWith("DIGITOS=")) newDig = Integer.parseInt(line.substring(8).trim());
+            }
+
+            if (newN == null || newN < 1) {
+                resultadoLabel.setText("Archivo inválido: N.");
+                return;
+            }
+            if (newDig == null || newDig < 1) newDig = 2;
+
+            // Aplicar config
+            this.n = newN;
+            this.digitos = newDig;
+            this.creada = true;
+
+            nField.setText(String.valueOf(n));
+            digitosChoice.setValue(digitos);
+
+            // Leer claves (sin importar posiciones guardadas, porque tú trabajas sin huecos)
+            List<String> claves = new ArrayList<>();
+
+            while ((line = br.readLine()) != null) {
+                line = line.trim();
+                if (line.equals("END")) break;
+                if (line.isEmpty()) continue;
+
+                String[] parts = line.split("\\|", -1);
+                if (parts.length < 2) continue;
+
+                String clave = parts[1].trim();
+                if (!clave.isEmpty()) {
+                    clave = normalizarClave(clave, digitos);
+                    if (claveValidaPorDigitos(clave, digitos)) {
+                        claves.add(clave);
+                    }
+                }
+            }
+
+            // Evitar exceder N (si el archivo trae más)
+            if (claves.size() > n) {
+                claves = claves.subList(0, n);
+            }
+
+            // Ordenar y reconstruir data
+            claves.sort(String::compareTo);
+            data.clear();
+            for (int i = 0; i < claves.size(); i++) {
+                data.add(new SlotClave(i + 1, claves.get(i)));
+            }
+
+            tabla.refresh();
+            resultadoLabel.setText("Cargado: " + file.getName());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultadoLabel.setText("Error cargando: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void eliminarClave() {
+        if (!creada) {
+            resultadoLabel.setText("Primero debes crear la estructura.");
+            return;
+        }
+
+        // 1) Si el usuario escribió una clave, SIEMPRE eliminar por esa clave
+        String input = claveBuscarField.getText() == null ? "" : claveBuscarField.getText().trim();
+        if (!input.isEmpty()) {
+            String claveTxt = normalizarClave(input, digitos);
+            claveBuscarField.setText(claveTxt);
+
+            if (!claveValidaPorDigitos(claveTxt, digitos)) {
+                resultadoLabel.setText("La clave debe tener exactamente " + digitos + " dígitos.");
+                limpiarBusqueda();
+                return;
+            }
+
+            boolean removed = data.removeIf(s -> claveTxt.equals(s.getClave()));
+            if (removed) {
+                reindexarPosiciones();
+                tabla.getSelectionModel().clearSelection();
+                tabla.refresh();
+                resultadoLabel.setText("Eliminada la clave " + claveTxt);
+            } else {
+                resultadoLabel.setText("No se encontró la clave para eliminar.");
+            }
+
+            limpiarBusqueda();
+            return;
+        }
+
+        // 2) Si el campo está vacío, eliminar lo seleccionado (si hay selección)
+        SlotClave sel = tabla.getSelectionModel().getSelectedItem();
+        if (sel != null && sel.getClave() != null && !sel.getClave().isBlank()) {
+            String clave = sel.getClave();
+            data.removeIf(s -> clave.equals(s.getClave()));
+            reindexarPosiciones();
+            tabla.getSelectionModel().clearSelection();
+            tabla.refresh();
+            resultadoLabel.setText("Eliminada la clave " + clave);
+        } else {
+            resultadoLabel.setText("Escribe una clave o selecciona una fila para eliminar.");
+        }
+    }
+
+    private void reindexarPosiciones() {
+        for (int i = 0; i < data.size(); i++) {
+            data.get(i).setPosicion(i + 1);
+        }
     }
 }

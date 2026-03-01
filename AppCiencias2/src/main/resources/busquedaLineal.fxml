@@ -96,6 +96,9 @@
                         <Label text="Buscar clave:" />
                         <TextField fx:id="claveBuscarField" prefWidth="50.0" promptText="Ej: 24" />
                         <Button onAction="#buscarClave" text="Buscar" />
+                        <Button onAction="#eliminarClave" text="Eliminar" />
+                        <Button onAction="#guardarTabla" text="Guardar" />
+                        <Button onAction="#cargarTabla" text="Cargar" />
                      </children>
                   </HBox>
                   <HBox spacing="10" style="-fx-background-color: white;" />
