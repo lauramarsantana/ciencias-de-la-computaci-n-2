@@ -14,10 +14,13 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="busquedasPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.BusquedaController">
+<AnchorPane fx:id="externasPane" prefHeight="400.0" prefWidth="600.0"
+            xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.BusquedasExternasController">
    <stylesheets>
-      <URL value="@/styles.css" />
+      <URL value="@styles.css" />
    </stylesheets>
+
    <children>
       <BorderPane prefHeight="400.0" prefWidth="600.0">
          <top>
@@ -25,9 +28,10 @@
                <children>
                   <HBox alignment="CENTER_LEFT" nodeOrientation="LEFT_TO_RIGHT" prefHeight="100.0" prefWidth="200.0">
                      <children>
-                        <ImageView fx:id="btnMenu" accessibleRole="BUTTON" fitWidth="30.0" nodeOrientation="RIGHT_TO_LEFT" onMouseClicked="#openMenu" pickOnBounds="true" preserveRatio="true">
+                        <ImageView accessibleRole="BUTTON" fitWidth="30.0" nodeOrientation="RIGHT_TO_LEFT"
+                                   onMouseClicked="#openMenu" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@/icno-hambuguerMenu.png" />
+                              <Image url="@icno-hambuguerMenu.png" />
                            </image>
                            <cursor>
                               <Cursor fx:constant="HAND" />
@@ -36,50 +40,38 @@
                               <Insets left="20.0" right="30.0" />
                            </HBox.margin>
                         </ImageView>
-                        <ImageView fx:id="btnInicio" accessibleRole="BUTTON" fitHeight="72.0" fitWidth="111.0" onMouseClicked="#openInicio" pickOnBounds="true" preserveRatio="true">
+
+                        <ImageView fx:id="btnInicio" accessibleRole="BUTTON" fitHeight="72.0" fitWidth="111.0"
+                                   onMouseClicked="#openInicio" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@/logo-CienciasII2.0.png" />
+                              <Image url="@logo-CienciasII2.0.png" />
                            </image>
                            <viewport>
                               <Rectangle2D />
                            </viewport>
                            <HBox.margin>
-                              <Insets right="40.0" />
+                              <Insets right="30.0" />
                            </HBox.margin>
                            <cursor>
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </ImageView>
-                        <Label text="BUSQUEDAS" id="titleLabel" textFill="WHITE"/>
+
+                        <Label id="titleLabel" text="BUSQUEDAS DINAMICAS" textFill="WHITE"/>
                      </children>
                   </HBox>
                </children>
             </VBox>
          </top>
+
          <center>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                <children>
                   <VBox alignment="CENTER" prefHeight="361.0" prefWidth="266.0">
                      <children>
-                        <ImageView fx:id="btnInternas" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#openInternas" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@icono-b.internas.png" />
-                           </image>
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor>
-                        </ImageView>
-                        <Label text="INTERNAS" textFill="#000204">
-                           <font>
-                              <Font name="Myanmar Text Bold" size="24.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </VBox>
-                  <VBox alignment="CENTER" prefHeight="361.0" prefWidth="278.0">
-                     <children>
-                        <ImageView fx:id="btnExternas" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0"
-                            onMouseClicked="#openExternas" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="btnExpTotales" accessibleRole="BUTTON"
+                                   fitHeight="150.0" fitWidth="200.0"
+                                   onMouseClicked="#openExpTotales" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@icono-b.externas.png" />
                            </image>
@@ -87,7 +79,27 @@
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </ImageView>
-                        <Label text="EXTERNAS">
+                        <Label text="EXP. TOTALES">
+                           <font>
+                              <Font name="Myanmar Text Bold" size="24.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </VBox>
+
+                  <VBox alignment="CENTER" prefHeight="361.0" prefWidth="278.0">
+                     <children>
+                        <ImageView fx:id="btnExpParciales" accessibleRole="BUTTON"
+                                   fitHeight="150.0" fitWidth="200.0"
+                                   onMouseClicked="#openExpParciales" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@icono-b.externas.png" />
+                           </image>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </ImageView>
+                        <Label text="EXP. PARCIALES">
                            <font>
                               <Font name="Myanmar Text Bold" size="24.0" />
                            </font>
@@ -98,13 +110,16 @@
             </HBox>
          </center>
       </BorderPane>
-      <AnchorPane fx:id="menuPane" layoutX="-2.0" prefHeight="381.0" prefWidth="223.0" style="-fx-background-color: #2262C6;">
+
+      <!-- Menú lateral (igual que internas) -->
+      <AnchorPane fx:id="menuPane" prefHeight="355.0" prefWidth="221.0" style="-fx-background-color: #2262C6;">
          <children>
             <HBox alignment="CENTER_LEFT" layoutX="-1.0" prefHeight="45.0" prefWidth="201.0">
                <children>
-                  <ImageView fx:id="btnClose" accessibleRole="BUTTON" fitHeight="30.0" fitWidth="50.0" onMouseClicked="#closeMenu" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="btnClose" accessibleRole="BUTTON" fitHeight="30.0" fitWidth="50.0"
+                             onMouseClicked="#closeMenu" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@/icono-cerrar.png" />
+                        <Image url="@icono-cerrar.png" />
                      </image>
                      <cursor>
                         <Cursor fx:constant="HAND" />
@@ -117,13 +132,11 @@
                      </HBox.margin>
                   </ImageView>
                </children>
-               <opaqueInsets>
-                  <Insets />
-               </opaqueInsets>
                <padding>
                   <Insets right="30.0" />
                </padding>
             </HBox>
+
             <VBox fx:id="menuVBox" layoutX="27.0" layoutY="58.0" prefHeight="200.0" prefWidth="146.0">
                <children>
                   <Label accessibleRole="BUTTON" onMouseClicked="#openInicio" text="Inicio" textFill="WHITE">
@@ -134,7 +147,9 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Label>
-                  <Label fx:id="btnBusquedas" accessibleRole="BUTTON" onMouseClicked="#openMenuBusquedas" text="Busquedas" textFill="WHITE">
+
+                  <Label fx:id="btnBusquedas" accessibleRole="BUTTON" onMouseClicked="#openMenuBusquedas"
+                         text="Busquedas" textFill="WHITE">
                      <font>
                         <Font name="Myanmar Text Bold" size="18.0" />
                      </font>
@@ -142,6 +157,7 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Label>
+
                   <VBox fx:id="subMenuBusquedas" prefHeight="60.0" prefWidth="146.0">
                      <children>
                         <Label accessibleRole="BUTTON" onMouseClicked="#openMenuInternas" text="Internas" textFill="#fdfdfd">
@@ -152,54 +168,35 @@
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </Label>
+
                         <VBox fx:id="subMenuInternas" prefHeight="200.0" prefWidth="100.0">
                            <children>
-                              <Label fx:id="btnLineal" accessibleRole="BUTTON" onMouseClicked="#mostrarBusquedaLineal" text="Lineal" textFill="WHITE">
-                                 <font>
-                                    <Font name="Myanmar Text" size="14.0" />
-                                 </font>
-                                 <cursor>
-                                    <Cursor fx:constant="HAND" />
-                                 </cursor>
+                              <Label fx:id="btnLineal1" accessibleRole="BUTTON" onMouseClicked="#mostrarBusquedaLineal" text="Lineal" textFill="WHITE">
+                                 <font><Font name="Myanmar Text" size="14.0" /></font>
+                                 <cursor><Cursor fx:constant="HAND" /></cursor>
                               </Label>
                               <Label accessibleRole="BUTTON" onMouseClicked="#openBinario" text="Binario" textFill="WHITE">
-                                 <font>
-                                    <Font name="Myanmar Text" size="14.0" />
-                                 </font>
-                                 <cursor>
-                                    <Cursor fx:constant="HAND" />
-                                 </cursor>
+                                 <font><Font name="Myanmar Text" size="14.0" /></font>
+                                 <cursor><Cursor fx:constant="HAND" /></cursor>
                               </Label>
                               <Label accessibleRole="BUTTON" onMouseClicked="#openFuncionHash" text="Función Hash" textFill="WHITE">
-                                 <font>
-                                    <Font name="Myanmar Text" size="14.0" />
-                                 </font>
-                                 <cursor>
-                                    <Cursor fx:constant="HAND" />
-                                 </cursor>
+                                 <font><Font name="Myanmar Text" size="14.0" /></font>
+                                 <cursor><Cursor fx:constant="HAND" /></cursor>
                               </Label>
                            </children>
-                           <padding>
-                              <Insets left="20.0" />
-                           </padding>
+                           <padding><Insets left="20.0" /></padding>
                         </VBox>
+
                         <Label text="Externas" textFill="WHITE">
-                           <font>
-                              <Font name="Myanmar Text" size="18.0" />
-                           </font>
+                           <font><Font name="Myanmar Text" size="18.0" /></font>
                         </Label>
                      </children>
-                     <padding>
-                        <Insets left="20.0" />
-                     </padding>
+                     <padding><Insets left="20.0" /></padding>
                   </VBox>
+
                   <Label accessibleRole="BUTTON" onMouseClicked="#openGrafos" text="Grafos" textFill="WHITE">
-                     <font>
-                        <Font name="Myanmar Text Bold" size="18.0" />
-                     </font>
-                     <cursor>
-                        <Cursor fx:constant="HAND" />
-                     </cursor>
+                     <font><Font size="18.0" /></font>
+                     <cursor><Cursor fx:constant="HAND" /></cursor>
                   </Label>
                </children>
             </VBox>
