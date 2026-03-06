@@ -124,21 +124,24 @@ public class BusquedaHashController {
         colColisiones.setCellValueFactory(new PropertyValueFactory<>("colisionesTexto"));
 
         colColisiones.setCellFactory(column -> new TableCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
+        @Override
+        protected void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+
+            if (empty || item == null) {
+                setText(null);
+                setStyle("");
+            } else {
+                setText(item);
+
+                if (item.trim().startsWith("⚠")) {
+                    setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
                 } else {
-                    setText(item);
-                    if (item.contains("[ROJO]")) {
-                        setStyle("-fx-text-fill: red;"); // pinta en rojo
-                    } else {
-                        setStyle(""); // estilo normal
-                    }
+                    setStyle("");
                 }
             }
-        });
+        }
+    });
 
         tabla.getColumns().add(colColisiones);
     }
@@ -281,22 +284,25 @@ public class BusquedaHashController {
 
         //Hay colisión
         if (!resolver) {
-            // Guardar como "no resuelta", queda vacio para evitar redundancia y evitar duplicados visuales
-            String marca = " " + claveTxt;
+        String marca = "⚠ " + claveTxt;
 
-            boolean yaExiste = base.getColisiones().stream()
-                    .anyMatch(s -> s.endsWith(claveTxt) || s.equals(marca) || s.equals(claveTxt));
+        boolean yaExiste = base.getColisiones().stream()
+                .anyMatch(s -> claveTxt.equals(extraerClaveReal(s)));
 
-            if (!yaExiste) base.getColisiones().add(marca);
-            actualizarVista(); // refresca la tabla para que se vea
-
-            long fin = System.nanoTime();
-            resultadoLabel.setText("COLISIÓN en posición " + base.getPosicion()
-                    + " | (no resuelta) | Tiempo: " + (fin - inicio) + " ns");
-
-            limpiarInsercion();
-            return;
+        if (!yaExiste) {
+            base.getColisiones().add(marca);
         }
+
+        actualizarVista();
+
+        long fin = System.nanoTime();
+        resultadoLabel.setText("COLISIÓN en posición " + base.getPosicion()
+                + " | pendiente por resolver"
+                + " | Tiempo: " + (fin - inicio) + " ns");
+
+        limpiarInsercion();
+        return;
+    }
 
         // Encadenamiento (Arreglos anidados / Listas enlazadas)
         if ("Arreglos anidados".equals(estrategia) || "Listas enlazadas".equals(estrategia)) {
@@ -366,113 +372,74 @@ public class BusquedaHashController {
     }
 
     @FXML
-private void buscarClave() {
-    if (!creada) {
-        resultadoLabel.setText("Primero debes crear la estructura.");
-        return;
-    }
+    private void buscarClave() {
+        if (!creada) {
+            resultadoLabel.setText("Primero debes crear la estructura.");
+            return;
+        }
 
-    String claveTxt = normalizarClave(claveBuscarField.getText(), digitos);
-    claveBuscarField.setText(claveTxt);
+        String claveTxt = normalizarClave(claveBuscarField.getText(), digitos);
+        claveBuscarField.setText(claveTxt);
 
-    if (!claveValidaPorDigitos(claveTxt, digitos)) {
-        resultadoLabel.setText("La clave debe tener exactamente " + digitos + " dígitos. ");
-        limpiarBusqueda();
-        return;
-    }
+        if (!claveValidaPorDigitos(claveTxt, digitos)) {
+            resultadoLabel.setText("La clave debe tener exactamente " + digitos + " dígitos. ");
+            limpiarBusqueda();
+            return;
+        }
 
-    int start = hashBase(claveTxt);
-    String estrategia = colisionChoice.getValue();
+        int start = hashBase(claveTxt);
+        String estrategia = colisionChoice.getValue();
 
-    int comparaciones = 0;
-    long inicio = System.nanoTime();
+        int comparaciones = 0;
+        long inicio = System.nanoTime();
 
-    // 1) Revisar el slot base
-    SlotHash base = data.get(start);
-    comparaciones++;
-    
-    // 2) Si está en el slot base
-    if (claveTxt.equals(base.getClave())) {
-        long fin = System.nanoTime();
-        tabla.getSelectionModel().select(base);
-        tabla.scrollTo(base);
-        resultadoLabel.setText("Encontrada en posición " + base.getPosicion()
-                + " | Hash: " + start
-                + " | Método: " + estrategia
-                + " | Comparaciones: " + comparaciones
-                + " | Tiempo: " + (fin - inicio) + " ns");
-        limpiarBusqueda();
-        return;
-    }
+        // 1) Revisar el slot base
+        SlotHash base = data.get(start);
+        comparaciones++;
 
-    // Si la clave está en el slot base
-    // 3)Buscar en colisiones del bucket (incluye NO RESUELTA y encadenamiento)
-    if (existeEnColisiones(base, claveTxt)) {
-        long fin = System.nanoTime();
-        tabla.getSelectionModel().select(base);
-        tabla.scrollTo(base);
-        resultadoLabel.setText("Encontrada en colisiones de la posición " + base.getPosicion()
-                + " | Hash: " + start
-                + " | Método: " + estrategia
-                + " | Comparaciones: " + comparaciones
-                + " | Tiempo: " + (fin - inicio) + " ns");
-        limpiarBusqueda();
-        return;
-    }
+        // 2) Si está en el slot base
+        if (claveTxt.equals(base.getClave())) {
+            long fin = System.nanoTime();
+            tabla.getSelectionModel().select(base);
+            tabla.scrollTo(base);
+            resultadoLabel.setText("Encontrada en posición " + base.getPosicion()
+                    + " | Hash: " + start
+                    + " | Método: " + estrategia
+                    + " | Comparaciones: " + comparaciones
+                    + " | Tiempo: " + (fin - inicio) + " ns");
+            limpiarBusqueda();
+            return;
+        }
 
-    // 4) Si hay encadenamiento, buscar dentro del bucket (colisiones)
-    if ("Arreglos anidados".equals(estrategia) || "Listas enlazadas".equals(estrategia)) {
-        if (base.getColisiones().contains(claveTxt)) {
+        // Si la clave está en el slot base
+        // 3)Buscar en colisiones del bucket (incluye NO RESUELTA y encadenamiento)
+        if (existeEnColisiones(base, claveTxt)) {
             long fin = System.nanoTime();
             tabla.getSelectionModel().select(base);
             tabla.scrollTo(base);
             resultadoLabel.setText("Encontrada en colisiones de la posición " + base.getPosicion()
                     + " | Hash: " + start
+                    + " | Método: " + estrategia
                     + " | Comparaciones: " + comparaciones
                     + " | Tiempo: " + (fin - inicio) + " ns");
             limpiarBusqueda();
             return;
         }
 
-        long fin = System.nanoTime();
-        resultadoLabel.setText("No encontrada | Hash: " + start
-                + " | Comparaciones: " + comparaciones
-                + " | Tiempo: " + (fin - inicio) + " ns");
-        limpiarBusqueda();
-        return;
-    }
+        // 4) Si hay encadenamiento, buscar dentro del bucket (colisiones)
+        if ("Arreglos anidados".equals(estrategia) || "Listas enlazadas".equals(estrategia)) {
+            if (base.getColisiones().contains(claveTxt)) {
+                long fin = System.nanoTime();
+                tabla.getSelectionModel().select(base);
+                tabla.scrollTo(base);
+                resultadoLabel.setText("Encontrada en colisiones de la posición " + base.getPosicion()
+                        + " | Hash: " + start
+                        + " | Comparaciones: " + comparaciones
+                        + " | Tiempo: " + (fin - inicio) + " ns");
+                limpiarBusqueda();
+                return;
+            }
 
-    // 5) Probing: Lineal / Cuadrática / Doble hash
-    for (int i = 1; i < N; i++) {
-        int idx;
-
-        if ("Cuadrática".equals(estrategia)) {
-            idx = (start + i * i) % N;
-        } else if ("Doble Hash".equals(estrategia)) {
-            int k = Integer.parseInt(claveTxt);
-            int h2 = 1 + (k % Math.max(1, (N - 1)));
-            idx = (start + i * h2) % N;
-        } else { // Lineal
-            idx = (start + i) % N;
-        }
-
-        SlotHash slot = data.get(idx);
-        comparaciones++;
-
-        if (claveTxt.equals(slot.getClave())) {
-            long fin = System.nanoTime();
-            tabla.getSelectionModel().select(slot);
-            tabla.scrollTo(slot);
-
-            resultadoLabel.setText("Encontrada en posición " + slot.getPosicion()
-                    + " | Hash: " + start
-                    + " | Comparaciones: " + comparaciones
-                    + " | Tiempo: " + (fin - inicio) + " ns");
-            limpiarBusqueda();
-            return;
-        }
-
-        if (slot.isVacio()) {
             long fin = System.nanoTime();
             resultadoLabel.setText("No encontrada | Hash: " + start
                     + " | Comparaciones: " + comparaciones
@@ -480,14 +447,53 @@ private void buscarClave() {
             limpiarBusqueda();
             return;
         }
-    }
 
-    long fin = System.nanoTime();
-    resultadoLabel.setText("No encontrada | Hash: " + start
-            + " | Comparaciones: " + comparaciones
-            + " | Tiempo: " + (fin - inicio) + " ns");
-    limpiarBusqueda();
-    }
+        // 5) Probing: Lineal / Cuadrática / Doble hash
+        for (int i = 1; i < N; i++) {
+            int idx;
+
+            if ("Cuadrática".equals(estrategia)) {
+                idx = (start + i * i) % N;
+            } else if ("Doble Hash".equals(estrategia)) {
+                int k = Integer.parseInt(claveTxt);
+                int h2 = 1 + (k % Math.max(1, (N - 1)));
+                idx = (start + i * h2) % N;
+            } else { // Lineal
+                idx = (start + i) % N;
+            }
+
+            SlotHash slot = data.get(idx);
+            comparaciones++;
+
+            if (claveTxt.equals(slot.getClave())) {
+                long fin = System.nanoTime();
+                tabla.getSelectionModel().select(slot);
+                tabla.scrollTo(slot);
+
+                resultadoLabel.setText("Encontrada en posición " + slot.getPosicion()
+                        + " | Hash: " + start
+                        + " | Comparaciones: " + comparaciones
+                        + " | Tiempo: " + (fin - inicio) + " ns");
+                limpiarBusqueda();
+                return;
+            }
+
+            if (slot.isVacio()) {
+                long fin = System.nanoTime();
+                resultadoLabel.setText("No encontrada | Hash: " + start
+                        + " | Comparaciones: " + comparaciones
+                        + " | Tiempo: " + (fin - inicio) + " ns");
+                limpiarBusqueda();
+                return;
+            }
+        }
+
+        long fin = System.nanoTime();
+        resultadoLabel.setText("No encontrada | Hash: " + start
+                + " | Comparaciones: " + comparaciones
+                + " | Tiempo: " + (fin - inicio) + " ns");
+        limpiarBusqueda();
+        }
 
     @FXML
         private void arreglarColisiones() {
@@ -520,7 +526,7 @@ private void buscarClave() {
                 for (String item : pendientes) {
                     String claveReal = extraerClaveReal(item);
 
-                    // Solo arreglamos las que estaban marcadas como NO RESUELTA (o sea: pendientes)
+                    // Solo arreglamos las que están marcadas con ⚠ (pendientes)
                     if (!esNoResuelta(item)) continue;
 
                     revisadas++;
@@ -539,7 +545,7 @@ private void buscarClave() {
                     boolean ok = reubicarPorProbing(claveReal, estrategia);
 
                     if (ok) {
-                        base.getColisiones().remove(item); // quitar el "NO RESUELTA"
+                        base.getColisiones().remove(item);// quitar la marca de advertencia
                         movidas++;
                     } else {
                         noSePudo++;
@@ -558,15 +564,18 @@ private void buscarClave() {
 
         /** Devuelve true si el texto guardado corresponde a una colisión marcada como no resuelta. */
         private boolean esNoResuelta(String s) {
-            return s != null && s.startsWith("⚠ NO RESUELTA:");
+            return s != null && s.trim().startsWith("⚠");
         }
 
-        /** Si viene "⚠ NO RESUELTA: 4234" devuelve "4234". Si viene "4234" devuelve "4234". */
+        /** Si viene "⚠ 4234" devuelve "4234". Si viene "4234" devuelve "4234". */
         private String extraerClaveReal(String s) {
             if (s == null) return "";
             s = s.trim();
-            String pref = "⚠ NO RESUELTA:";
-            if (s.startsWith(pref)) return s.substring(pref.length()).trim();
+
+            if (s.startsWith("⚠")) {
+                return s.substring(1).trim(); // quita solo el símbolo ⚠
+            }
+
             return s;
         }
         
