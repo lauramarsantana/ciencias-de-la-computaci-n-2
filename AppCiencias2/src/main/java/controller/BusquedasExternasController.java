@@ -6,18 +6,13 @@ import javafx.scene.Parent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
-public class BusquedaController {
+public class BusquedasExternasController {
 
-    @FXML
-    private AnchorPane busquedasPane;
-    @FXML
-    private AnchorPane menuPane;
-    @FXML
-    private VBox subMenuBusquedas;
-    @FXML
-    private VBox subMenuInternas;
+    @FXML private AnchorPane externasPane;
+    @FXML private AnchorPane menuPane;
+    @FXML private VBox subMenuBusquedas;
+    @FXML private VBox subMenuInternas;
 
-    // configurando cada boton del menu desplegable
     @FXML
     public void initialize() {
         menuPane.setVisible(false);
@@ -27,82 +22,80 @@ public class BusquedaController {
         subMenuInternas.setVisible(false);
         subMenuInternas.setManaged(false);
     }
+
+    // ===== Menú =====
     @FXML
     private void openMenu(javafx.scene.input.MouseEvent event){
-        System.out.println("abriendo menu...");
-        menuPane.setVisible(true); // para que el panel del menu se vea
-        menuPane.setManaged(true);// posiciona de primeras al panel
+        menuPane.setVisible(true);
+        menuPane.setManaged(true);
     }
+
     @FXML
     private void closeMenu(javafx.scene.input.MouseEvent event){
-        System.out.println("cerrando menu...");
-        menuPane.setVisible(false);// para que el panel del menu se oculte
-        menuPane.setManaged(false);// lo quita de la primera capa, para liberar el espacio
+        menuPane.setVisible(false);
+        menuPane.setManaged(false);
     }
 
     @FXML
     private void openMenuBusquedas(javafx.scene.input.MouseEvent event){
-        System.out.println("abriendo submenu de busquedas...");
         boolean isVisible = subMenuBusquedas.isVisible();
         subMenuBusquedas.setVisible(!isVisible);
         subMenuBusquedas.setManaged(!isVisible);
     }
+
     @FXML
     private void openMenuInternas(javafx.scene.input.MouseEvent event){
-        System.out.println("abriendo submenu de busquedas internas...");
         boolean isVisible = subMenuInternas.isVisible();
         subMenuInternas.setVisible(!isVisible);
         subMenuInternas.setManaged(!isVisible);
     }
+
+    // ===== Navegación menú =====
     @FXML
     private void mostrarBusquedaLineal(javafx.scene.input.MouseEvent event) {
-        System.out.println("Abriendo busquedaLineal.fxml");
         loadPanel("busquedaLineal.fxml");
     }
+
     @FXML
     private void openBinario(javafx.scene.input.MouseEvent event){
-        System.out.println("abriendo busquedaBinaria.fxml");
         loadPanel("busquedaBinaria.fxml");
     }
+
     @FXML
     private void openFuncionHash(javafx.scene.input.MouseEvent event){
-        System.out.println("abriendo busquedaHash.fxml");
         loadPanel("busquedaHash.fxml");
     }
+
     @FXML
     private void openGrafos(javafx.scene.input.MouseEvent event){
-        System.out.println("Abriendo grafos.fxml...");
         loadPanel("grafos.fxml");
     }
 
     @FXML
     private void openInicio(javafx.scene.input.MouseEvent event){
-        System.out.println("Abriendo inicio.fxml...");
         loadPanel("inicio.fxml");
     }
+
+    // ===== Botones principales de esta pantalla =====
     @FXML
-    private void openInternas(javafx.scene.input.MouseEvent event){
-        System.out.println("abriendo busquedasInternas.fxml...");
-        loadPanel("busquedasInternas.fxml");
+    private void openExpTotales(javafx.scene.input.MouseEvent event){
+        // AJUSTA este nombre si tu archivo se llama distinto
+        loadPanel("busquedaExpTotales.fxml");
     }
 
     @FXML
-    private void openExternas(javafx.scene.input.MouseEvent event){
-        System.out.println("abriendo busquedasExternas.fxml...");
-        loadPanel("busquedasExternas.fxml");
+    private void openExpParciales(javafx.scene.input.MouseEvent event){
+        loadPanel("busquedaExpParciales.fxml"); // lo crearás después
     }
 
     private void loadPanel(String fxml) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/" + fxml));
             Parent panel = loader.load();
-
-            busquedasPane.getChildren().clear();
-            busquedasPane.getChildren().add(panel);
-
+            externasPane.getChildren().clear();
+            externasPane.getChildren().add(panel);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
 }
