@@ -79,13 +79,12 @@ public class BusquedasExternasController {
     // ===== Botones principales de esta pantalla =====
     @FXML
     private void openExpTotales(javafx.scene.input.MouseEvent event){
-        // AJUSTA este nombre si tu archivo se llama distinto
         loadPanel("busquedaExpTotales.fxml");
     }
 
     @FXML
     private void openExpParciales(javafx.scene.input.MouseEvent event){
-        loadPanel("busquedaExpParciales.fxml"); // lo crearás después
+        loadPanel("busquedaExpParciales.fxml");
     }
 
     private void loadPanel(String fxml) {
