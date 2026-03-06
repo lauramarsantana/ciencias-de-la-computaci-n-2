@@ -14,12 +14,12 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="internasPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.BusquedasInternasController">
+<AnchorPane fx:id="internasPane" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.BusquedasInternasController">
    <stylesheets>
       <URL value="@styles.css" />
    </stylesheets>
    <children>
-      <BorderPane prefHeight="400.0" prefWidth="600.0">
+      <BorderPane prefHeight="500.0" prefWidth="700.0">
          <top>
             <VBox alignment="CENTER" prefHeight="34.0" prefWidth="600.0" style="-fx-background-color: #2262C6;">
                <children>
@@ -50,7 +50,7 @@
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </ImageView>
-                        <Label text="BUSQUEDAS INTERNAS" id="titleLabel" textFill="WHITE"/>
+                        <Label id="titleLabel" text="BUSQUEDAS INTERNAS" textFill="WHITE" />
                      </children>
                   </HBox>
                </children>
@@ -114,7 +114,7 @@
             </HBox>
          </center>
       </BorderPane>
-      <AnchorPane fx:id="menuPane" prefHeight="355.0" prefWidth="221.0" style="-fx-background-color: #2262C6;">
+      <AnchorPane fx:id="menuPane" prefHeight="500.0" prefWidth="221.0" style="-fx-background-color: #2262C6;">
          <children>
             <HBox alignment="CENTER_LEFT" layoutX="-1.0" prefHeight="45.0" prefWidth="201.0">
                <children>

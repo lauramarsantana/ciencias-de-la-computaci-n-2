@@ -20,6 +20,12 @@ public class App extends Application {
         Scene scene = new Scene(load); // escena donde entra todos
         stage.setScene(scene);
 
+        stage.setWidth(700);
+        stage.setHeight(550);
+
+        // opcional: permitir que se maximice
+        stage.setResizable(true);
+
         stage.show();
     }
 }
