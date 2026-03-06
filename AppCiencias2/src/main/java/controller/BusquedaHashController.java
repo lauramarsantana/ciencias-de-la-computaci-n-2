@@ -281,8 +281,8 @@ public class BusquedaHashController {
 
         //Hay colisión
         if (!resolver) {
-            // Guardar como "no resuelta" y evitar duplicados visuales
-            String marca = "⚠ NO RESUELTA:" + claveTxt;
+            // Guardar como "no resuelta", queda vacio para evitar redundancia y evitar duplicados visuales
+            String marca = " " + claveTxt;
 
             boolean yaExiste = base.getColisiones().stream()
                     .anyMatch(s -> s.endsWith(claveTxt) || s.equals(marca) || s.equals(claveTxt));
