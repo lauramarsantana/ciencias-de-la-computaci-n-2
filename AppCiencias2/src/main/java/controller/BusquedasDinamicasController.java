@@ -6,9 +6,9 @@ import javafx.scene.Parent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
-public class BusquedasExternasController {
+public class BusquedasDinamicasController {
 
-    @FXML private AnchorPane externasPane;
+    @FXML private AnchorPane dinamicasPane;
     @FXML private AnchorPane menuPane;
     @FXML private VBox subMenuBusquedas;
     @FXML private VBox subMenuInternas;
@@ -50,7 +50,7 @@ public class BusquedasExternasController {
         subMenuInternas.setManaged(!isVisible);
     }
 
-    // ===== Navegación menú =====
+    // ===== Navegación menú lateral =====
     @FXML
     private void mostrarBusquedaLineal(javafx.scene.input.MouseEvent event) {
         loadPanel("busquedaLineal.fxml");
@@ -76,23 +76,31 @@ public class BusquedasExternasController {
         loadPanel("inicio.fxml");
     }
 
-    // ===== Opciones principales de externas =====
+    // ===== Opciones principales de búsquedas dinámicas =====
     @FXML
-    private void openBusquedasDinamicas(javafx.scene.input.MouseEvent event){
-        loadPanel("busquedasDinamicas.fxml");
+    private void openExpTotales(javafx.scene.input.MouseEvent event){
+        loadPanel("busquedaExpTotales.fxml");
     }
 
     @FXML
-    private void openFuncionHashExterna(javafx.scene.input.MouseEvent event) {
-        loadPanel("busquedaHashExterna.fxml");
+    private void openExpParciales(javafx.scene.input.MouseEvent event){
+        loadPanel("busquedaExpParciales.fxml");
+    }
+
+    // opcional: volver a la pantalla anterior de externas
+    @FXML
+    private void openExternas(javafx.scene.input.MouseEvent event){
+        loadPanel("busquedasExternas.fxml");
     }
 
     private void loadPanel(String fxml) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/" + fxml));
             Parent panel = loader.load();
-            externasPane.getChildren().clear();
-            externasPane.getChildren().add(panel);
+
+            dinamicasPane.getChildren().clear();
+            dinamicasPane.getChildren().add(panel);
+
         } catch (Exception e) {
             e.printStackTrace();
         }

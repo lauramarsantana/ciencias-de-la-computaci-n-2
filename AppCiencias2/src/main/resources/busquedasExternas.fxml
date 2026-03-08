@@ -57,7 +57,7 @@
                            </cursor>
                         </ImageView>
 
-                        <Label id="titleLabel" text="BUSQUEDAS DINAMICAS" textFill="WHITE"/>
+                        <Label id="titleLabel" text="BUSQUEDAS EXTERNAS" textFill="WHITE"/>
                      </children>
                   </HBox>
                </children>
@@ -69,9 +69,9 @@
                <children>
                   <VBox alignment="CENTER" prefHeight="361.0" prefWidth="266.0">
                      <children>
-                        <ImageView fx:id="btnExpTotales" accessibleRole="BUTTON"
-                                   fitHeight="150.0" fitWidth="200.0"
-                                   onMouseClicked="#openExpTotales" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="btnBusquedasDinamicas" accessibleRole="BUTTON"
+                            fitHeight="150.0" fitWidth="200.0"
+                            onMouseClicked="#openBusquedasDinamicas" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@icono-b.externas.png" />
                            </image>
@@ -79,7 +79,7 @@
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </ImageView>
-                        <Label text="EXP. TOTALES">
+                        <Label text="BÚSQUEDAS DINÁMICAS">
                            <font>
                               <Font name="Myanmar Text Bold" size="24.0" />
                            </font>
@@ -89,9 +89,9 @@
 
                   <VBox alignment="CENTER" prefHeight="361.0" prefWidth="278.0">
                      <children>
-                        <ImageView fx:id="btnExpParciales" accessibleRole="BUTTON"
-                                   fitHeight="150.0" fitWidth="200.0"
-                                   onMouseClicked="#openExpParciales" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="btnHashExterna" accessibleRole="BUTTON"
+                            fitHeight="150.0" fitWidth="200.0"
+                            onMouseClicked="#openFuncionHashExterna" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@icono-b.externas.png" />
                            </image>
@@ -99,7 +99,7 @@
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </ImageView>
-                        <Label text="EXP. PARCIALES">
+                        <Label text="HASH EXTERNA">
                            <font>
                               <Font name="Myanmar Text Bold" size="24.0" />
                            </font>
@@ -190,6 +190,17 @@
                         <Label text="Externas" textFill="WHITE">
                            <font><Font name="Myanmar Text" size="18.0" /></font>
                         </Label>
+                        <Label accessibleRole="BUTTON"
+                            onMouseClicked="#openFuncionHashExterna"
+                            text="Hash Externa"
+                            textFill="WHITE">
+                         <font>
+                             <Font name="Myanmar Text" size="14.0" />
+                         </font>
+                         <cursor>
+                             <Cursor fx:constant="HAND" />
+                         </cursor>
+                     </Label>
                      </children>
                      <padding><Insets left="20.0" /></padding>
                   </VBox>
