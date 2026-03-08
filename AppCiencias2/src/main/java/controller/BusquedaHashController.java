@@ -651,6 +651,28 @@ public class BusquedaHashController {
         claveInsertField.clear();
         claveInsertField.requestFocus();
     }
+    
+    @FXML
+    private void limpiarEstructura() {
+        if (!creada) {
+            resultadoLabel.setText("Primero debes crear la estructura.");
+            return;
+        }
+
+        for (SlotHash slot : data) {
+            slot.setClave(null);
+            slot.getColisiones().clear();
+        }
+
+        tabla.getSelectionModel().clearSelection();
+        actualizarVista();
+
+        claveInsertField.clear();
+        claveBuscarField.clear();
+        claveInsertField.requestFocus();
+
+        resultadoLabel.setText("La tabla hash fue limpiada.");
+    }
 
     // ===== Helpers de validación / normalización =====
 

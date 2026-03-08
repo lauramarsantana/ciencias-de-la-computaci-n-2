@@ -126,6 +126,7 @@
                                 <TextField fx:id="claveBuscarField" prefWidth="60.0" promptText="Ej: 24" />
                                 <Button onAction="#buscarClave" text="Buscar" />
                                 <Button onAction="#eliminarClave" text="Eliminar" />
+                                <Button text="Limpiar" onAction="#limpiarEstructura" />
 
                                 <Button onAction="#guardarTabla" text="Guardar" />
                                 <Button onAction="#cargarTabla" text="Cargar" />

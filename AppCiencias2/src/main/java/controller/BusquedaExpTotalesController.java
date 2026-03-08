@@ -51,6 +51,7 @@ public class BusquedaExpTotalesController {
     private final ObservableList<SlotCubeta> data = FXCollections.observableArrayList();
     private int digitos = 2;
     private boolean creada = false;
+    private int nInicial = 0;
 
     private HashExpTotales estructura; // nuestro “modelo”
 
@@ -232,6 +233,7 @@ public class BusquedaExpTotalesController {
         }
 
         digitos = digitosChoice.getValue() != null ? digitosChoice.getValue() : 2;
+        nInicial = n;
 
         estructura = new HashExpTotales(n);
         creada = true;
@@ -362,6 +364,25 @@ public class BusquedaExpTotalesController {
     private void refrescarTabla() {
     refrescarTablaInvertida();
     }
+    
+    @FXML
+    private void limpiarEstructura() {
+        if (!creada || estructura == null) {
+            resultadoLabel.setText("Primero debes crear la estructura.");
+            return;
+        }
+
+        estructura = new HashExpTotales(nInicial);
+
+        construirTablaInvertida(estructura.getN());
+        refrescarTabla();
+
+        claveInsertField.clear();
+        claveBuscarField.clear();
+        claveInsertField.requestFocus();
+
+        resultadoLabel.setText("La estructura fue limpiada y reiniciada.");
+    }
 
     // =========================
     // Guardar / Cargar
@@ -444,6 +465,7 @@ public class BusquedaExpTotalesController {
             digitos = newDig;
             digitosChoice.setValue(digitos);
             nField.setText(String.valueOf(newN));
+            nInicial = newN;
 
             estructura = new HashExpTotales(newN);
             creada = true;

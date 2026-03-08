@@ -355,6 +355,22 @@ public class BusquedaLinealController {
         return true;
     }
     
+    @FXML
+    private void limpiarEstructura() {
+        if (!creada) {
+            resultadoLabel.setText("Primero debes crear la estructura.");
+            return;
+        }
+
+        data.clear();
+        tabla.getSelectionModel().clearSelection();
+        claveInsertField.clear();
+        claveBuscarField.clear();
+        claveInsertField.requestFocus();
+
+        resultadoLabel.setText("La tabla fue limpiada.");
+    }
+    
     // =====================
     // GUARDAR / CARGAR
     // =====================
@@ -526,3 +542,4 @@ public class BusquedaLinealController {
         }
     }
 }
+

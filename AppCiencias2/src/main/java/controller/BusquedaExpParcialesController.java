@@ -43,6 +43,7 @@ public class BusquedaExpParcialesController {
 
     private int digitos = 2;
     private boolean creada = false;
+    private int nInicial = 0;
 
     private HashExpParciales estructura;
 
@@ -222,6 +223,7 @@ public class BusquedaExpParcialesController {
         }
 
         digitos = digitosChoice.getValue() != null ? digitosChoice.getValue() : 2;
+        nInicial = n;
 
         estructura = new HashExpParciales(n);
         creada = true;
@@ -350,6 +352,25 @@ public class BusquedaExpParcialesController {
     private void refrescarTabla() {
         refrescarTablaInvertida();
     }
+    
+    @FXML
+    private void limpiarEstructura() {
+        if (!creada || estructura == null) {
+            resultadoLabel.setText("Primero debes crear la estructura.");
+            return;
+        }
+
+        estructura = new HashExpParciales(nInicial);
+
+        construirTablaInvertida(estructura.getN());
+        refrescarTabla();
+
+        claveInsertField.clear();
+        claveBuscarField.clear();
+        claveInsertField.requestFocus();
+
+        resultadoLabel.setText("La estructura fue limpiada y reiniciada.");
+    }
 
     // =========================
     // Guardar / Cargar
@@ -431,6 +452,7 @@ public class BusquedaExpParcialesController {
             nField.setText(String.valueOf(newN));
 
             estructura = new HashExpParciales(newN);
+            nInicial = newN;
             creada = true;
             construirTablaInvertida(estructura.getN());
 

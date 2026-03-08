@@ -226,46 +226,63 @@ public class BusquedaBinariaController {
         limpiarBusqueda();
     }
     
-    // =====================
-// GUARDAR / CARGAR / ELIMINAR (BINARIA)
-// =====================
-
-@FXML
-private void guardarTabla() {
-    if (!creada) {
-        resultadoLabel.setText("Primero debes crear la estructura.");
-        return;
-    }
-
-    FileChooser fc = new FileChooser();
-    fc.setTitle("Guardar búsqueda binaria");
-    fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Búsqueda Binaria (*.bin)", "*.bin"));
-    File file = fc.showSaveDialog(tabla.getScene().getWindow());
-    if (file == null) return;
-
-    try (BufferedWriter bw = new BufferedWriter(
-            new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
-
-        bw.write("TIPO=BINARIA"); bw.newLine();
-        bw.write("N=" + n); bw.newLine();
-        bw.write("DIGITOS=" + digitos); bw.newLine();
-        bw.write("DATA"); bw.newLine();
-
-        // Guardar en el orden actual (ya está ordenado)
-        for (SlotClave s : data) {
-            String clave = (s.getClave() == null) ? "" : s.getClave().trim();
-            bw.write(s.getPosicion() + "|" + clave);
-            bw.newLine();
+    @FXML
+    private void limpiarEstructura() {
+        if (!creada) {
+            resultadoLabel.setText("Primero debes crear la estructura.");
+            return;
         }
 
-        bw.write("END"); bw.newLine();
-        resultadoLabel.setText("Guardado: " + file.getName());
+        data.clear();
+        tabla.getSelectionModel().clearSelection();
 
-    } catch (Exception e) {
-        e.printStackTrace();
-        resultadoLabel.setText("Error guardando: " + e.getMessage());
+        claveInsertField.clear();
+        claveBuscarField.clear();
+        claveInsertField.requestFocus();
+
+        resultadoLabel.setText("La tabla fue limpiada.");
     }
-}
+
+        // =====================
+    // GUARDAR / CARGAR / ELIMINAR (BINARIA)
+    // =====================
+
+    @FXML
+    private void guardarTabla() {
+        if (!creada) {
+            resultadoLabel.setText("Primero debes crear la estructura.");
+            return;
+        }
+
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Guardar búsqueda binaria");
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Búsqueda Binaria (*.bin)", "*.bin"));
+        File file = fc.showSaveDialog(tabla.getScene().getWindow());
+        if (file == null) return;
+
+        try (BufferedWriter bw = new BufferedWriter(
+                new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
+
+            bw.write("TIPO=BINARIA"); bw.newLine();
+            bw.write("N=" + n); bw.newLine();
+            bw.write("DIGITOS=" + digitos); bw.newLine();
+            bw.write("DATA"); bw.newLine();
+
+            // Guardar en el orden actual (ya está ordenado)
+            for (SlotClave s : data) {
+                String clave = (s.getClave() == null) ? "" : s.getClave().trim();
+                bw.write(s.getPosicion() + "|" + clave);
+                bw.newLine();
+            }
+
+            bw.write("END"); bw.newLine();
+            resultadoLabel.setText("Guardado: " + file.getName());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultadoLabel.setText("Error guardando: " + e.getMessage());
+        }
+    }
 
     @FXML
     private void cargarTabla() {

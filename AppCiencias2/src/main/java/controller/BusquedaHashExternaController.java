@@ -535,6 +535,31 @@ private int calcularOffsetDentroBloque(String claveTxt) {
         resultadoLabel.setText("No se encontró la clave para eliminar.");
         limpiarBusqueda();
     }
+    
+    @FXML
+    private void limpiarEstructura() {
+        if (!creada) {
+            resultadoLabel.setText("Primero debes crear la estructura.");
+            return;
+        }
+
+        for (BloqueHash bloque : bloques) {
+            for (SlotHashExterno slot : bloque.getSlots()) {
+                slot.setClave("");
+                slot.setHash(-1);
+                slot.getColisiones().clear();
+            }
+        }
+
+        tabla.getSelectionModel().clearSelection();
+        actualizarVista();
+
+        claveInsertField.clear();
+        claveBuscarField.clear();
+        claveInsertField.requestFocus();
+
+        resultadoLabel.setText("La estructura hash externa fue limpiada.");
+    }
 
     @FXML
     private void arreglarColisiones() {

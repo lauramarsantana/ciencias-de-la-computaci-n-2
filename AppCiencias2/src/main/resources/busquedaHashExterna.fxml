@@ -166,6 +166,7 @@
                             <TextField fx:id="claveBuscarField" prefHeight="25.0" prefWidth="80.0" promptText="Ej: 45" />
                             <Button onAction="#buscarClave" text="Buscar" />
                             <Button onAction="#eliminarClave" text="Eliminar" />
+                            <Button text="Limpiar" onAction="#limpiarEstructura" />
                         </children>
                     </HBox>
 
