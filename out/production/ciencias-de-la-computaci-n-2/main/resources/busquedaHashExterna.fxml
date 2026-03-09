@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.geometry.Point3D?>
+<?import javafx.geometry.Rectangle2D?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="hashExternoPane"
+            prefHeight="500.0"
+            prefWidth="700.0"
+            xmlns="http://javafx.com/javafx/25"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.BusquedaHashExternaController">
+
+    <stylesheets>
+        <URL value="@/styles.css" />
+    </stylesheets>
+
+    <children>
+        <BorderPane prefHeight="500.0" prefWidth="700.0" style="-fx-background-color: white;">
+
+            <top>
+                <VBox alignment="CENTER" prefHeight="34.0" prefWidth="600.0" style="-fx-background-color: #2262C6;">
+                    <children>
+                        <HBox alignment="CENTER_LEFT" nodeOrientation="LEFT_TO_RIGHT" prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                            <children>
+                                <ImageView fx:id="btnMenu"
+                                           accessibleRole="BUTTON"
+                                           fitWidth="30.0"
+                                           nodeOrientation="RIGHT_TO_LEFT"
+                                           onMouseClicked="#openMenu"
+                                           pickOnBounds="true"
+                                           preserveRatio="true">
+                                    <image>
+                                        <Image url="@/icno-hambuguerMenu.png" />
+                                    </image>
+                                    <cursor>
+                                        <Cursor fx:constant="HAND" />
+                                    </cursor>
+                                    <HBox.margin>
+                                        <Insets left="20.0" right="30.0" />
+                                    </HBox.margin>
+                                </ImageView>
+
+                                <ImageView fx:id="btnInicio"
+                                           accessibleRole="BUTTON"
+                                           fitHeight="72.0"
+                                           fitWidth="111.0"
+                                           onMouseClicked="#openInicio"
+                                           pickOnBounds="true"
+                                           preserveRatio="true">
+                                    <image>
+                                        <Image url="@/logo-CienciasII2.0.png" />
+                                    </image>
+                                    <viewport>
+                                        <Rectangle2D />
+                                    </viewport>
+                                    <HBox.margin>
+                                        <Insets right="10.0" />
+                                    </HBox.margin>
+                                    <cursor>
+                                        <Cursor fx:constant="HAND" />
+                                    </cursor>
+                                </ImageView>
+
+                                <Label id="titleLabel" text="FUNCIÓN HASH EXTERNA" textFill="WHITE" />
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+            </top>
+
+            <center>
+                <VBox prefHeight="399.0" prefWidth="600.0" spacing="12">
+                    <padding>
+                        <Insets bottom="16" left="16" right="16" top="16" />
+                    </padding>
+
+                    <!-- Parámetros -->
+                    <VBox alignment="CENTER" prefWidth="100.0" spacing="8.0">
+                        <children>
+
+                            <HBox alignment="CENTER" prefWidth="568.0" spacing="12.0">
+                                <children>
+                                    <Label text="Tamaño total (N):" />
+                                    <TextField fx:id="nField" prefWidth="55.0" promptText="Ej: 100" />
+
+                                    <Label text="Tamaño bloque:" />
+                                    <TextField fx:id="tamBloqueField" prefWidth="60.0" promptText="Ej: 10" />
+
+                                    <Label text="Dígitos:" />
+                                    <ChoiceBox fx:id="digitosChoice" prefWidth="70.0" />
+
+                                    <Label text="MOD:" />
+                                    <TextField fx:id="modField" prefWidth="55.0" promptText="Ej: 10" />
+                                </children>
+                            </HBox>
+
+                            <HBox alignment="CENTER" prefWidth="200.0" spacing="10.0">
+                                <children>
+                                    <Label text="Función:" />
+                                    <ChoiceBox fx:id="hashChoice" prefHeight="30.0" prefWidth="140.0">
+                                        <HBox.margin>
+                                            <Insets right="15.0" />
+                                        </HBox.margin>
+                                    </ChoiceBox>
+
+                                    <Label text="Colisión:" />
+                                    <ChoiceBox fx:id="colisionChoice" prefHeight="30.0" prefWidth="140.0">
+                                        <HBox.margin>
+                                            <Insets right="15.0" />
+                                        </HBox.margin>
+                                    </ChoiceBox>
+
+                                    <CheckBox fx:id="resolverCheck" selected="true" text="Resolver inmediatamente" />
+                                </children>
+                            </HBox>
+
+                            <HBox alignment="CENTER" prefWidth="200.0" spacing="25.0">
+                                <children>
+                                    <Button onAction="#crearEstructura" text="Crear estructura" />
+                                    <Button onAction="#arreglarColisiones" text="Arreglar colisiones" />
+                                </children>
+                            </HBox>
+
+                        </children>
+                    </VBox>
+
+                    <!-- Tabla -->
+                    <TableView fx:id="tabla" prefHeight="300.0" prefWidth="600.0">
+                        <columns>
+                            <TableColumn fx:id="colBloque" prefWidth="90.0" text="Bloque" />
+                            <TableColumn fx:id="colPos" prefWidth="90.0" text="Posición" />
+                            <TableColumn fx:id="colHash" prefWidth="90.0" text="Hash" />
+                            <TableColumn fx:id="colClave" prefWidth="120.0" text="Clave" />
+                            <TableColumn fx:id="colColisiones" prefWidth="200.0" text="Colisiones" />
+                        </columns>
+                        <columnResizePolicy>
+                            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                        </columnResizePolicy>
+                    </TableView>
+
+                    <!-- Operaciones -->
+                    <HBox alignment="CENTER" spacing="12.0">
+                        <children>
+                            <Label text="Insertar clave:" />
+                            <TextField fx:id="claveInsertField" prefHeight="25.0" prefWidth="80.0" promptText="Ej: 45" />
+                            <Button onAction="#insertarClave" text="Insertar" />
+
+                            <Label text="Clave:" />
+                            <TextField fx:id="claveBuscarField" prefHeight="25.0" prefWidth="80.0" promptText="Ej: 45" />
+                            <Button onAction="#buscarClave" text="Buscar" />
+                            <Button onAction="#eliminarClave" text="Eliminar" />
+                            <Button text="Limpiar" onAction="#limpiarEstructura" />
+                        </children>
+                    </HBox>
+
+                    <!-- Guardar / cargar -->
+                    <HBox alignment="CENTER" spacing="110.0" style="-fx-background-color: white;">
+                        <children>
+                            <Button onAction="#guardarEstructura" text="Guardar estructura" />
+                            <Button onAction="#cargarEstructura" text="Recuperar estructura" />
+                        </children>
+                    </HBox>
+
+                </VBox>
+            </center>
+
+            <bottom>
+                <Label fx:id="resultadoLabel"
+                       style="-fx-font-size: 14px;"
+                       text="Listo."
+                       textAlignment="CENTER"
+                       textFill="#0e2ebe"
+                       BorderPane.alignment="CENTER">
+                    <padding>
+                        <Insets bottom="5.0" top="5.0" />
+                    </padding>
+                    <font>
+                        <Font name="Myanmar Text Bold" size="20.0" />
+                    </font>
+                </Label>
+            </bottom>
+        </BorderPane>
+
+        <!-- Menú lateral -->
+        <AnchorPane fx:id="menuPane"
+                    layoutX="-2.0"
+                    prefHeight="500.0"
+                    prefWidth="223.0"
+                    style="-fx-background-color: #2262C6;"
+                    visible="false">
+            <children>
+                <HBox alignment="CENTER_LEFT" layoutX="-1.0" prefHeight="45.0" prefWidth="201.0">
+                    <children>
+                        <ImageView fx:id="btnClose"
+                                   accessibleRole="BUTTON"
+                                   fitHeight="30.0"
+                                   fitWidth="50.0"
+                                   onMouseClicked="#closeMenu"
+                                   pickOnBounds="true"
+                                   preserveRatio="true">
+                            <image>
+                                <Image url="@/icono-cerrar.png" />
+                            </image>
+                            <cursor>
+                                <Cursor fx:constant="HAND" />
+                            </cursor>
+                            <rotationAxis>
+                                <Point3D />
+                            </rotationAxis>
+                            <HBox.margin>
+                                <Insets left="20.0" />
+                            </HBox.margin>
+                        </ImageView>
+                    </children>
+                    <padding>
+                        <Insets right="30.0" />
+                    </padding>
+                </HBox>
+
+                <VBox fx:id="menuVBox" layoutX="27.0" layoutY="58.0" prefHeight="200.0" prefWidth="146.0">
+                    <children>
+                        <Label accessibleRole="BUTTON" onMouseClicked="#openInicio" text="Inicio" textFill="WHITE">
+                            <font>
+                                <Font name="Myanmar Text Bold" size="18.0" />
+                            </font>
+                            <cursor>
+                                <Cursor fx:constant="HAND" />
+                            </cursor>
+                        </Label>
+
+                        <Label fx:id="btnBusquedas" accessibleRole="BUTTON" onMouseClicked="#openMenuBusquedas" text="Búsquedas" textFill="WHITE">
+                            <font>
+                                <Font name="Myanmar Text Bold" size="18.0" />
+                            </font>
+                            <cursor>
+                                <Cursor fx:constant="HAND" />
+                            </cursor>
+                        </Label>
+
+                        <VBox fx:id="subMenuBusquedas" prefHeight="60.0" prefWidth="146.0">
+                            <children>
+                                <Label accessibleRole="BUTTON" onMouseClicked="#openMenuInternas" text="Internas" textFill="#fdfdfd">
+                                    <font>
+                                        <Font size="18.0" />
+                                    </font>
+                                    <cursor>
+                                        <Cursor fx:constant="HAND" />
+                                    </cursor>
+                                </Label>
+
+                                <VBox fx:id="subMenuInternas" prefHeight="200.0" prefWidth="100.0">
+                                    <children>
+                                        <Label fx:id="btnLineal" accessibleRole="BUTTON" onMouseClicked="#mostrarBusquedaLineal" text="Lineal" textFill="WHITE">
+                                            <font>
+                                                <Font name="Myanmar Text" size="14.0" />
+                                            </font>
+                                            <cursor>
+                                                <Cursor fx:constant="HAND" />
+                                            </cursor>
+                                        </Label>
+
+                                        <Label accessibleRole="BUTTON" onMouseClicked="#openBinario" text="Binario" textFill="WHITE">
+                                            <font>
+                                                <Font name="Myanmar Text" size="14.0" />
+                                            </font>
+                                            <cursor>
+                                                <Cursor fx:constant="HAND" />
+                                            </cursor>
+                                        </Label>
+
+                                        <Label accessibleRole="BUTTON" onMouseClicked="#openFuncionHash" text="Función Hash" textFill="WHITE">
+                                            <font>
+                                                <Font name="Myanmar Text" size="14.0" />
+                                            </font>
+                                            <cursor>
+                                                <Cursor fx:constant="HAND" />
+                                            </cursor>
+                                        </Label>
+                                    </children>
+                                    <padding>
+                                        <Insets left="20.0" />
+                                    </padding>
+                                </VBox>
+
+                                <Label accessibleRole="BUTTON" onMouseClicked="#openFuncionHashExterna" text="Externas" textFill="WHITE">
+                                    <font>
+                                        <Font name="Myanmar Text" size="18.0" />
+                                    </font>
+                                    <cursor>
+                                        <Cursor fx:constant="HAND" />
+                                    </cursor>
+                                </Label>
+                            </children>
+                            <padding>
+                                <Insets left="20.0" />
+                            </padding>
+                        </VBox>
+
+                        <Label accessibleRole="BUTTON" onMouseClicked="#openGrafos" text="Grafos" textFill="WHITE">
+                            <font>
+                                <Font name="Myanmar Text Bold" size="18.0" />
+                            </font>
+                            <cursor>
+                                <Cursor fx:constant="HAND" />
+                            </cursor>
+                        </Label>
+                    </children>
+                </VBox>
+            </children>
+        </AnchorPane>
+    </children>
+</AnchorPane>

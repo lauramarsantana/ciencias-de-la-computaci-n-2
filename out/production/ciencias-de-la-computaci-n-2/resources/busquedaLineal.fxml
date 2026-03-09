@@ -97,6 +97,7 @@
                         <TextField fx:id="claveBuscarField" prefWidth="50.0" promptText="Ej: 24" />
                         <Button onAction="#buscarClave" prefWidth="90.0" text="Buscar" />
                         <Button onAction="#eliminarClave" prefHeight="25.0" prefWidth="92.0" text="Eliminar" />
+                        <Button text="Limpiar" onAction="#limpiarEstructura" />
                      </children>
                   </HBox>
                   <HBox alignment="CENTER" spacing="40.0" style="-fx-background-color: white;">

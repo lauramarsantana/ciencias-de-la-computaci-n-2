@@ -135,7 +135,8 @@
                         <Label text="Clave:" />
                         <TextField fx:id="claveBuscarField" prefHeight="25.0" prefWidth="70.0" promptText="Ej: 43 o 043" />
                         <Button onAction="#buscarClave" text="Buscar" />
-                  <Button onAction="#eliminarClave" text="Eliminar" />
+                        <Button onAction="#eliminarClave" text="Eliminar" />
+                        <Button text="Limpiar" onAction="#limpiarEstructura" />
                     </HBox>
                <HBox alignment="CENTER" spacing="114.0" style="-fx-background-color: white;">
                   <children>

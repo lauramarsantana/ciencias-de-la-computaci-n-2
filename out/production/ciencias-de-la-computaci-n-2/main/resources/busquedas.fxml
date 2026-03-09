@@ -78,7 +78,8 @@
                   </VBox>
                   <VBox alignment="CENTER" prefHeight="361.0" prefWidth="278.0">
                      <children>
-                        <ImageView accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="btnExternas" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0"
+                            onMouseClicked="#openExternas" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@icono-b.externas.png" />
                            </image>

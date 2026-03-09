@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="controller.ArbolDigitalController"
+            prefWidth="800" prefHeight="600" style="-fx-background-color: #f5f9ff;">
+
+    <VBox spacing="20" alignment="TOP_CENTER" AnchorPane.topAnchor="20" AnchorPane.leftAnchor="20" AnchorPane.rightAnchor="20">
+
+        <!-- Título -->
+        <Label text="Árboles Digitales"
+               style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #003366;" />
+
+        <!-- Panel de visualización -->
+        <Pane fx:id="canvasPane"
+              prefHeight="400" prefWidth="700"
+              style="-fx-background-color: white; -fx-border-color: #003366; -fx-border-width: 2; -fx-border-radius: 5;" />
+
+        <!-- Controles -->
+        <HBox spacing="15" alignment="CENTER">
+            <TextField fx:id="inputClave" promptText="Ingrese clave"
+                       style="-fx-pref-width: 200; -fx-background-color: #eef3fa; -fx-border-color: #003366;" />
+
+            <Button text="Insertar" onAction="#insertarClave"
+                    style="-fx-background-color: #003366; -fx-text-fill: white; -fx-font-weight: bold;" />
+
+            <Button text="Buscar" onAction="#buscarClave"
+                    style="-fx-background-color: #2e8b57; -fx-text-fill: white; -fx-font-weight: bold;" />
+
+            <Button text="Eliminar" onAction="#eliminarClave"
+                    style="-fx-background-color: #b22222; -fx-text-fill: white; -fx-font-weight: bold;" />
+        </HBox>
+    </VBox>
+</AnchorPane>

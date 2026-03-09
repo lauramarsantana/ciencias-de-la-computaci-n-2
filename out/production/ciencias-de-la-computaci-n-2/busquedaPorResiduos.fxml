@@ -5,12 +5,7 @@
 <?import javafx.geometry.Point3D?>
 <?import javafx.geometry.Rectangle2D?>
 <?import javafx.scene.Cursor?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -19,12 +14,12 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="linealPane" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.BusquedaLinealController">
+<AnchorPane fx:id="busquedasPane" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.BusquedaController">
    <stylesheets>
       <URL value="@/styles.css" />
    </stylesheets>
    <children>
-      <BorderPane prefHeight="500.0" prefWidth="700.0" style="-fx-background-color: fff;">
+      <BorderPane prefHeight="500.0" prefWidth="700.0">
          <top>
             <VBox alignment="CENTER" prefHeight="34.0" prefWidth="600.0" style="-fx-background-color: #2262C6;" BorderPane.alignment="CENTER">
                <children>
@@ -49,77 +44,60 @@
                               <Rectangle2D />
                            </viewport>
                            <HBox.margin>
-                              <Insets right="10.0" />
+                              <Insets right="40.0" />
                            </HBox.margin>
                            <cursor>
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </ImageView>
-                        <Label id="titleLabel" text="BUSQUEDA LINEAL" textFill="WHITE">
-                           <font>
-                              <Font name="Myanmar Text Bold" size="24.0" />
-                           </font></Label>
+                        <Label id="titleLabel" text="BUSQUEDA  POR RESIDUOS" textFill="WHITE" />
                      </children>
                   </HBox>
                </children>
             </VBox>
          </top>
          <center>
-            <VBox spacing="12" style="-fx-background-color: fff;" BorderPane.alignment="CENTER">
-               <padding>
-                  <Insets bottom="16" left="16" right="16" top="16" />
-               </padding>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                <children>
-                  <HBox alignment="CENTER" spacing="10">
+                  <VBox alignment="CENTER" prefHeight="361.0" prefWidth="266.0">
                      <children>
-                        <Label text="Tamaño estructura (N):" />
-                        <TextField fx:id="nField" prefHeight="25.0" prefWidth="50.0" promptText="Ej: 10">
+                        <ImageView fx:id="btnInternas" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#openInternas" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@icono-b.internas.png" />
+                           </image>
                            <cursor>
-                              <Cursor fx:constant="TEXT" />
-                           </cursor></TextField>
-                        <Label text="Dígitos clave:" />
-                        <ChoiceBox fx:id="digitosChoice" maxHeight="20.0" prefWidth="30.0" />
-                        <Button onAction="#crearEstructura" text="Crear" />
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </ImageView>
+                        <Label text="INTERNAS" textFill="#000204">
+                           <font>
+                              <Font name="Myanmar Text Bold" size="24.0" />
+                           </font>
+                        </Label>
                      </children>
-                  </HBox>
-                  <TableView fx:id="tabla" prefHeight="260">
-                     <columns>
-                        <TableColumn fx:id="colPos" prefWidth="80" text="Posición" />
-                        <TableColumn fx:id="colClave" prefWidth="120" text="Clave" />
-                     </columns>
-                  </TableView>
-                  <HBox alignment="CENTER" spacing="10">
+                  </VBox>
+                  <VBox alignment="CENTER" prefHeight="361.0" prefWidth="278.0">
                      <children>
-                        <Label text="Insertar clave:" />
-                        <TextField fx:id="claveInsertField" prefWidth="50.0" promptText="Ej: 24" />
-                        <Button onAction="#insertarClave" prefWidth="90.0" text="Insertar" />
-                        <Label text="Clave:" />
-                        <TextField fx:id="claveBuscarField" prefWidth="50.0" promptText="Ej: 24" />
-                        <Button onAction="#buscarClave" prefWidth="90.0" text="Buscar" />
-                        <Button onAction="#eliminarClave" prefHeight="25.0" prefWidth="92.0" text="Eliminar" />
-                        <Button text="Limpiar" onAction="#limpiarEstructura" />
+                        <ImageView fx:id="btnExternas" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#openExternas" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@icono-b.externas.png" />
+                           </image>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </ImageView>
+                        <Label text="EXTERNAS">
+                           <font>
+                              <Font name="Myanmar Text Bold" size="24.0" />
+                           </font>
+                        </Label>
                      </children>
-                  </HBox>
-                  <HBox alignment="CENTER" spacing="40.0" style="-fx-background-color: white;">
-                     <children>
-                        <Button onAction="#guardarTabla" prefHeight="25.0" prefWidth="170.0" text="Guardar Estructura" />
-                        <Button onAction="#cargarTabla" prefHeight="25.0" prefWidth="170.0" text="Recuperar Estructura" />
-                     </children></HBox>
+                  </VBox>
                </children>
-            </VBox>
+            </HBox>
          </center>
-         <bottom>
-            <Label fx:id="resultadoLabel" style="-fx-font-size: 14px;" text="Listo." textFill="#0e2ebe" BorderPane.alignment="CENTER">
-               <font>
-                  <Font name="Myanmar Text Bold" size="24.0" />
-               </font>
-               <padding>
-                  <Insets bottom="10.0" />
-               </padding>
-            </Label>
-         </bottom>
       </BorderPane>
-      <AnchorPane fx:id="menuPane" layoutY="1.0" prefHeight="500.0" prefWidth="211.0" style="-fx-background-color: #2262C6;" visible="false">
+      <AnchorPane fx:id="menuPane" layoutX="-2.0" prefHeight="500.0" prefWidth="223.0" style="-fx-background-color: #2262C6;" visible="false">
          <children>
             <HBox alignment="CENTER_LEFT" layoutX="-1.0" prefHeight="45.0" prefWidth="201.0">
                <children>
