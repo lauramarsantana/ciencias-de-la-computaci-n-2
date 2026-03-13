@@ -106,8 +106,11 @@
                                     <Label text="Dígitos:" />
                                     <ChoiceBox fx:id="digitosChoice" prefWidth="70.0" />
 
-                                    <Label text="MOD:" />
+                                    <Label text="Divisor Hash:" />
                                     <TextField fx:id="modField" prefWidth="55.0" promptText="Ej: 10" />
+                                    
+                                    <Label text="Base:" />
+                                    <TextField fx:id="baseField" prefWidth="60" disable="true"/>
                                 </children>
                             </HBox>
 

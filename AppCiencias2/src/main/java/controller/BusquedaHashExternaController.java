@@ -28,6 +28,7 @@ public class BusquedaHashExternaController {
     @FXML private TextField tamBloqueField;
     @FXML private ChoiceBox<Integer> digitosChoice;
     @FXML private TextField modField;
+    @FXML private TextField baseField;
 
     @FXML private ChoiceBox<String> hashChoice;
     @FXML private ChoiceBox<String> colisionChoice;
@@ -57,6 +58,7 @@ public class BusquedaHashExternaController {
     private int tamBloque = 1;
     private int MOD = 100;
     private int cantidadBloques = 0;
+    private int baseConversion = 2;
 
     @FXML
     public void initialize() {
@@ -78,7 +80,8 @@ public class BusquedaHashExternaController {
                 "MOD",
                 "Cuadrada (Mid-Square)",
                 "Truncamiento",
-                "Plegamiento"
+                "Plegamiento",
+                "Conversión de base"
         ));
         hashChoice.setValue("MOD");
 
@@ -91,13 +94,21 @@ public class BusquedaHashExternaController {
         colisionChoice.setValue("Lineal entre bloques");
 
         hashChoice.getSelectionModel().selectedItemProperty().addListener((obs, oldV, newV) -> {
-            if ("MOD".equals(newV)) {
-                modField.setDisable(false);
-            } else {
-                modField.setDisable(true);
-                modField.setText("");
+        boolean esMod = "MOD".equals(newV);
+        boolean esConversionBase = "Conversión de base".equals(newV);
+
+        modField.setDisable(!esMod);
+        if (!esMod) {
+            modField.setText("");
+        }
+
+        if (baseField != null) {
+            baseField.setDisable(!esConversionBase);
+            if (!esConversionBase) {
+                baseField.setText("");
             }
-        });
+        }
+    });
 
         colisionChoice.getSelectionModel().selectedItemProperty().addListener((obs, oldV, newV) -> {
             boolean encadenamiento = "Encadenamiento de bloques".equals(newV);
@@ -173,6 +184,15 @@ public class BusquedaHashExternaController {
             MOD = m;
         }
 
+        if ("Conversión de base".equals(hashChoice.getValue())) {
+            Integer base = leerEntero(baseField.getText());
+            if (base == null || base < 2 || base > 10) {
+                resultadoLabel.setText("La base debe estar entre 2 y 10.");
+                return;
+            }
+            baseConversion = base;
+        }
+
         bloques.clear();
         dataTabla.clear();
 
@@ -219,13 +239,15 @@ public class BusquedaHashExternaController {
             }
             h = sum;
         }
+        case "Conversión de base" -> {
+            h = convertirClaveDesdeBase(claveTxt, baseConversion);
+        }
         default -> h = claveNum % MOD;
     }
 
     if (h < 0) h = -h;
 
-    // el hash mostrado debe apuntar a una posición global de la estructura
-    return h % N;   // 0..N-1
+    return h % N;
     }
 
     private int calcularIndiceBase(String claveTxt) {
@@ -253,6 +275,12 @@ private int calcularOffsetDentroBloque(String claveTxt) {
 
         if (!claveValidaPorDigitos(claveTxt, digitos)) {
             resultadoLabel.setText("La clave debe tener exactamente " + digitos + " dígitos.");
+            limpiarInsercion();
+            return;
+        }
+        
+        if ("Conversión de base".equals(hashChoice.getValue()) && !claveValidaParaBase(claveTxt, baseConversion)) {
+            resultadoLabel.setText("Clave inválida para base " + baseConversion + ".");
             limpiarInsercion();
             return;
         }
@@ -399,6 +427,12 @@ private int calcularOffsetDentroBloque(String claveTxt) {
             limpiarBusqueda();
             return;
         }
+        
+        if ("Conversión de base".equals(hashChoice.getValue()) && !claveValidaParaBase(claveTxt, baseConversion)) {
+            resultadoLabel.setText("Clave inválida para base " + baseConversion + ".");
+            limpiarBusqueda();
+            return;
+        }
 
         int hash = calcularHash(claveTxt);
         int indiceBase = calcularIndiceBase(claveTxt);
@@ -500,6 +534,12 @@ private int calcularOffsetDentroBloque(String claveTxt) {
 
         if (!claveValidaPorDigitos(claveTxt, digitos)) {
             resultadoLabel.setText("La clave debe tener exactamente " + digitos + " dígitos.");
+            limpiarBusqueda();
+            return;
+        }
+        
+        if ("Conversión de base".equals(hashChoice.getValue()) && !claveValidaParaBase(claveTxt, baseConversion)) {
+            resultadoLabel.setText("Clave inválida para base " + baseConversion + ".");
             limpiarBusqueda();
             return;
         }
@@ -609,46 +649,51 @@ private int calcularOffsetDentroBloque(String claveTxt) {
     }
 
     private boolean insertarReubicando(String claveTxt, String estrategia) {
-        int hash = calcularHash(claveTxt);
+    int hash;
+    int indiceBase;
 
-        int indiceBase = calcularIndiceBase(claveTxt);
+    try {
+        hash = calcularHash(claveTxt);
+        indiceBase = calcularIndiceBase(claveTxt);
+    } catch (IllegalArgumentException e) {
+        return false;
+    }
 
-        int bloqueBaseIdx = indiceBase / tamBloque;
+    int bloqueBaseIdx = indiceBase / tamBloque;
+    int offsetBase = indiceBase % tamBloque;
 
-        int offsetBase = indiceBase % tamBloque;
+    BloqueHash bloqueBase = bloques.get(bloqueBaseIdx);
+    SlotHashExterno libreBase = bloqueBase.buscarEspacioLibre();
 
-        BloqueHash bloqueBase = bloques.get(bloqueBaseIdx);
-        SlotHashExterno libreBase = bloqueBase.buscarEspacioLibre();
-        
-        if (libreBase != null) {
-            libreBase.setClave(claveTxt);
-            libreBase.setHash(bloqueBaseIdx);
+    if (libreBase != null) {
+        libreBase.setClave(claveTxt);
+        libreBase.setHash(hash);
+        return true;
+    }
+
+    for (int i = 1; i < cantidadBloques; i++) {
+        int idx;
+
+        if ("Cuadrática entre bloques".equals(estrategia)) {
+            idx = (bloqueBaseIdx + i * i) % cantidadBloques;
+        } else if ("Doble Hash entre bloques".equals(estrategia)) {
+            int k = Integer.parseInt(claveTxt);
+            int h2 = 1 + (k % Math.max(1, cantidadBloques - 1));
+            idx = (bloqueBaseIdx + i * h2) % cantidadBloques;
+        } else {
+            idx = (bloqueBaseIdx + i) % cantidadBloques;
+        }
+
+        BloqueHash bloque = bloques.get(idx);
+        SlotHashExterno libre = bloque.buscarEspacioLibre();
+        if (libre != null) {
+            libre.setClave(claveTxt);
+            libre.setHash(hash);
             return true;
         }
+    }
 
-        for (int i = 1; i < cantidadBloques; i++) {
-            int idx;
-
-            if ("Cuadrática entre bloques".equals(estrategia)) {
-                idx = (bloqueBaseIdx + i * i) % cantidadBloques;
-            } else if ("Doble Hash entre bloques".equals(estrategia)) {
-                int k = Integer.parseInt(claveTxt);
-                int h2 = 1 + (k % Math.max(1, cantidadBloques - 1));
-                idx = (bloqueBaseIdx + i * h2) % cantidadBloques;
-            } else {
-                idx = (bloqueBaseIdx + i) % cantidadBloques;
-            }
-
-            BloqueHash bloque = bloques.get(idx);
-            SlotHashExterno libre = bloque.buscarEspacioLibre();
-            if (libre != null) {
-                libre.setClave(claveTxt);
-                libre.setHash(bloqueBaseIdx);
-                return true;
-            }
-        }
-
-        return false;
+    return false;
     }
 
     @FXML
@@ -672,6 +717,7 @@ private int calcularOffsetDentroBloque(String claveTxt) {
             bw.write("DIGITOS=" + digitos); bw.newLine();
             bw.write("HASH=" + hashChoice.getValue()); bw.newLine();
             bw.write("MOD=" + MOD); bw.newLine();
+            bw.write("BASE=" + baseConversion); bw.newLine();
             bw.write("COLISION=" + colisionChoice.getValue()); bw.newLine();
             bw.write("RESOLVER=" + resolverCheck.isSelected()); bw.newLine();
             bw.write("DATABLOQUES"); bw.newLine();
@@ -720,6 +766,7 @@ private int calcularOffsetDentroBloque(String claveTxt) {
             int newN = 0;
             int newTamBloque = 1;
             int newDigitos = 2;
+            int newBase = 2;
             int newMOD = 100;
             String newHash = "MOD";
             String newColision = "Lineal entre bloques";
@@ -736,6 +783,7 @@ private int calcularOffsetDentroBloque(String claveTxt) {
                 else if (line.startsWith("MOD=")) newMOD = Integer.parseInt(line.substring(4));
                 else if (line.startsWith("COLISION=")) newColision = line.substring(9);
                 else if (line.startsWith("RESOLVER=")) newResolver = Boolean.parseBoolean(line.substring(9));
+                else if (line.startsWith("BASE=")) newBase = Integer.parseInt(line.substring(5));
             }
 
             if (newN <= 0 || newTamBloque <= 0 || newN % newTamBloque != 0) {
@@ -747,6 +795,7 @@ private int calcularOffsetDentroBloque(String claveTxt) {
             tamBloque = newTamBloque;
             digitos = newDigitos;
             MOD = newMOD;
+            baseConversion = newBase;
             cantidadBloques = N / tamBloque;
 
             nField.setText(String.valueOf(N));
@@ -839,6 +888,32 @@ private int calcularOffsetDentroBloque(String claveTxt) {
             }
         }
         return false;
+    }
+    
+    private int convertirClaveDesdeBase(String claveTxt, int base) {
+    int resultado = 0;
+    int potencia = 0;
+
+    for (int i = claveTxt.length() - 1; i >= 0; i--) {
+        int digito = Character.getNumericValue(claveTxt.charAt(i));
+        resultado += (int) (digito * Math.pow(base, potencia));
+        potencia++;
+    }
+
+    return resultado;
+    }
+    
+    private boolean claveValidaParaBase(String claveTxt, int base) {
+    if (claveTxt == null || claveTxt.isBlank()) return false;
+
+    for (int i = 0; i < claveTxt.length(); i++) {
+        int digito = Character.getNumericValue(claveTxt.charAt(i));
+
+        if (digito < 0 || digito >= base) {
+            return false;
+        }
+    }
+    return true;
     }
     
     private boolean existeEnColisiones(SlotHashExterno base, String claveTxt) {
