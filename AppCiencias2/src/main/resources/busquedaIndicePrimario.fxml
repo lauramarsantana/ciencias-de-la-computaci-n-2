@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.geometry.Point3D?>
+<?import javafx.geometry.Rectangle2D?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="indicePane" prefHeight="650.0" prefWidth="950.0"
+            xmlns="http://javafx.com/javafx/25"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.BusquedaIndicePrimarioController">
+
+   <stylesheets>
+      <URL value="@/styles.css" />
+   </stylesheets>
+
+   <children>
+      <BorderPane prefHeight="650.0" prefWidth="950.0" style="-fx-background-color: white;">
+
+         <top>
+            <VBox alignment="CENTER" prefHeight="34.0" prefWidth="950.0"
+                  style="-fx-background-color: #2262C6;" BorderPane.alignment="CENTER">
+               <children>
+                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <ImageView fx:id="btnMenu" accessibleRole="BUTTON" fitWidth="30.0"
+                                   nodeOrientation="RIGHT_TO_LEFT" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@/icno-hambuguerMenu.png" />
+                           </image>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                           <HBox.margin>
+                              <Insets left="20.0" right="30.0" />
+                           </HBox.margin>
+                        </ImageView>
+
+                        <ImageView fx:id="btnInicio" accessibleRole="BUTTON" fitHeight="72.0" fitWidth="111.0"
+                                   pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@/logo-CienciasII2.0.png" />
+                           </image>
+                           <viewport>
+                              <Rectangle2D />
+                           </viewport>
+                           <HBox.margin>
+                              <Insets right="10.0" />
+                           </HBox.margin>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </ImageView>
+
+                        <Label id="titleLabel" text="ÍNDICE PRIMARIO" textFill="WHITE">
+                           <font>
+                              <Font name="Myanmar Text Bold" size="24.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </top>
+
+         <center>
+            <VBox spacing="12.0" style="-fx-background-color: white;" BorderPane.alignment="CENTER">
+               <padding>
+                  <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+               </padding>
+
+               <children>
+
+                  <!-- Parámetros -->
+                  <HBox alignment="CENTER" spacing="10.0">
+                     <children>
+                        <Label text="Tamaño estructura (N):" />
+                        <TextField fx:id="nField" prefHeight="25.0" prefWidth="60.0" promptText="Ej: 10" />
+
+                        <Label text="Registros por bloque:" />
+                        <TextField fx:id="bloqueField" prefHeight="25.0" prefWidth="60.0" promptText="Ej: 3" />
+
+                        <Label text="Dígitos clave:" />
+                        <ChoiceBox fx:id="digitosChoice" prefWidth="60.0" />
+
+                        <Button onAction="#crearEstructura" text="Crear" />
+                     </children>
+                  </HBox>
+
+                  <!-- Botones principales -->
+                  <HBox alignment="CENTER" spacing="10.0">
+                        <children>
+                           <Label text="Insertar clave:" />
+                           <TextField fx:id="claveInsertField" prefWidth="70.0" promptText="Ej: 24" />
+                           <Button onAction="#insertarClave" prefWidth="90.0" text="Insertar" />
+
+                           <Label text="Clave:" />
+                           <TextField fx:id="claveBuscarField" prefWidth="70.0" promptText="Ej: 24" />
+                           <Button onAction="#buscarClave" prefWidth="90.0" text="Buscar" />
+                           <Button onAction="#eliminarClave" prefWidth="90.0" text="Eliminar" />
+                           <Button onAction="#limpiarEstructura" text="Limpiar" />
+                        </children>
+                     </HBox>
+
+                     <HBox alignment="CENTER" spacing="40.0" style="-fx-background-color: white;">
+                        <children>
+                           <Button onAction="#guardarEstructura" prefHeight="25.0" prefWidth="170.0" text="Guardar Estructura" />
+                           <Button onAction="#cargarEstructura" prefHeight="25.0" prefWidth="170.0" text="Recuperar Estructura" />
+                        </children>
+                     </HBox>
+
+                  <!-- Tablas -->
+                  <HBox spacing="15.0">
+                     <children>
+
+                        <!-- Tabla de datos -->
+                        <VBox spacing="6.0" prefWidth="470.0">
+                           <children>
+                              <Label text="Archivo de datos" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+                              <TableView fx:id="tablaDatos" prefHeight="250.0" prefWidth="470.0">
+                                 <columns>
+                                    <TableColumn fx:id="colPosDato" prefWidth="90.0" text="Posición" />
+                                    <TableColumn fx:id="colClaveDato" prefWidth="150.0" text="Clave" />
+                                    <TableColumn fx:id="colBloqueDato" prefWidth="120.0" text="Bloque" />
+                                 </columns>
+                              </TableView>
+                           </children>
+                        </VBox>
+
+                        <!-- Tabla de índice -->
+                        <VBox spacing="6.0" prefWidth="430.0">
+                           <children>
+                              <Label text="Índice primario (no denso)" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+                              <TableView fx:id="tablaIndice" prefHeight="250.0" prefWidth="430.0">
+                                 <columns>
+                                    <TableColumn fx:id="colClaveIndice" prefWidth="180.0" text="Clave guía" />
+                                    <TableColumn fx:id="colBloqueIndice" prefWidth="180.0" text="Bloque destino" />
+                                 </columns>
+                              </TableView>
+                           </children>
+                        </VBox>
+
+                     </children>
+                  </HBox>
+
+                  <!-- Recorrido -->
+                  <VBox spacing="6.0">
+                     <children>
+                        <Label text="Recorrido de la búsqueda" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+                        <TextArea fx:id="recorridoArea" prefHeight="180.0" wrapText="true" editable="false" />
+                     </children>
+                  </VBox>
+
+               </children>
+            </VBox>
+         </center>
+
+         <bottom>
+            <Label fx:id="resultadoLabel" style="-fx-font-size: 14px;" text="Listo." textFill="#0e2ebe"
+                   BorderPane.alignment="CENTER">
+               <font>
+                  <Font name="Myanmar Text Bold" size="18.0" />
+               </font>
+               <padding>
+                  <Insets bottom="10.0" top="10.0" />
+               </padding>
+            </Label>
+         </bottom>
+
+      </BorderPane>
+   </children>
+</AnchorPane>

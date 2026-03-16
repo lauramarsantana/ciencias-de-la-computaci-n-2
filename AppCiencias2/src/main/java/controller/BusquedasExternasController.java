@@ -87,6 +87,11 @@ public class BusquedasExternasController {
         loadPanel("busquedaHashExterna.fxml");
     }
 
+    @FXML
+    private void openIndices(javafx.scene.input.MouseEvent event) {
+        loadPanel("indicesExternos.fxml");
+    }
+
     private void loadPanel(String fxml) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/" + fxml));
