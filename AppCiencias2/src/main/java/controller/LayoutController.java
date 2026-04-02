@@ -45,6 +45,9 @@ public class LayoutController {
             menuPane.setVisible(false);
             menuPane.setManaged(false);
 
+            menuSpace.setVisible(false);
+            menuSpace.setMouseTransparent(true);
+
             // lo agregamos encima del BorderPane
             menuSpace.getChildren().add(menuPane);
 
@@ -55,12 +58,21 @@ public class LayoutController {
 
     @FXML
     private void openMenu(javafx.scene.input.MouseEvent event) {
-        boolean visible = menuPane.isVisible();
-        menuPane.setVisible(!visible);
-        menuPane.setManaged(!visible);
-        menuPane.toFront();
-        System.out.println("Abriendo menu...");
-        menuSpace.setVisible(!visible);
+        System.out.println("abriendo menu...");
+        boolean visible = !menuPane.isVisible(); // Invertimos el estado
+
+        menuPane.setVisible(visible);
+        menuPane.setManaged(visible);
+        menuSpace.setVisible(visible);
+
+        // ESTA ES LA CLAVE:
+        // Si no es visible, el panel deja pasar los clics hacia el fondo.
+        menuSpace.setMouseTransparent(!visible);
+
+        if (visible) {
+            menuSpace.toFront();
+        }
+        System.out.println("Menú " + (visible ? "Abierto" : "Cerrado"));
     }
 
     @FXML
@@ -118,6 +130,10 @@ public class LayoutController {
                 goBack.setVisible(true);
                 goBack.setManaged(true);
                 goBack.toFront();
+            }
+            if (panelCount == 0){
+                goBack.setVisible(false);
+                goBack.setManaged(false);
             }
 
             setContent(panel);
