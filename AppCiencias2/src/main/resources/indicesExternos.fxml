@@ -1,256 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.net.URL?>
-<?import javafx.geometry.Insets?>
-<?import javafx.geometry.Point3D?>
-<?import javafx.geometry.Rectangle2D?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="indicesPane" prefHeight="450.0" prefWidth="800.0"
-            xmlns="http://javafx.com/javafx/25"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="controller.IndicesExternosController">
+<AnchorPane fx:id="indicesPane" prefHeight="450.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.IndicesExternosController">
 
    <stylesheets>
       <URL value="@/styles.css" />
    </stylesheets>
 
    <children>
-      <BorderPane prefHeight="450.0" prefWidth="800.0">
-
-         <top>
-            <VBox alignment="CENTER" prefHeight="34.0" prefWidth="800.0" style="-fx-background-color: #2262C6;">
-               <children>
-                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
-                     <children>
-                        <ImageView accessibleRole="BUTTON" fitWidth="30.0" nodeOrientation="RIGHT_TO_LEFT"
-                                   onMouseClicked="#openMenu" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@/icno-hambuguerMenu.png" />
-                           </image>
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor>
-                           <HBox.margin>
-                              <Insets left="20.0" right="30.0" />
-                           </HBox.margin>
-                        </ImageView>
-
-                        <ImageView fx:id="btnInicio" accessibleRole="BUTTON" fitHeight="72.0" fitWidth="111.0"
-                                   onMouseClicked="#openInicio" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@/logo-CienciasII2.0.png" />
-                           </image>
-                           <viewport>
-                              <Rectangle2D />
-                           </viewport>
-                           <HBox.margin>
-                              <Insets right="20.0" />
-                           </HBox.margin>
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor>
-                        </ImageView>
-
-                        <Label id="titleLabel" text="ÍNDICES EXTERNOS" textFill="WHITE">
-                           <font>
-                              <Font name="Myanmar Text Bold" size="24.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </HBox>
-               </children>
-            </VBox>
-         </top>
-
-         <center>
-            <FlowPane alignment="CENTER" hgap="30.0" vgap="20.0" prefWrapLength="700.0" BorderPane.alignment="CENTER">
-               <children>
-
-                  <VBox alignment="CENTER" prefHeight="180.0" prefWidth="160.0">
-                     <children>
-                        <ImageView fx:id="btnIndicePrimario" accessibleRole="BUTTON"
-                                   fitHeight="120.0" fitWidth="140.0"
-                                   onMouseClicked="#openIndicePrimario"
-                                   pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@/icono-b.externas.png" />
-                           </image>
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor>
-                        </ImageView>
-                        <Label text="PRIMARIO">
-                           <font>
-                              <Font name="Myanmar Text Bold" size="18.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </VBox>
-
-                  <VBox alignment="CENTER" prefHeight="180.0" prefWidth="160.0">
-                     <children>
-                        <ImageView fx:id="btnIndiceSecundario" accessibleRole="BUTTON"
-                                   fitHeight="120.0" fitWidth="140.0"
-                                   onMouseClicked="#openIndiceSecundario"
-                                   pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@/icono-b.externas.png" />
-                           </image>
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor>
-                        </ImageView>
-                        <Label text="SECUNDARIO">
-                           <font>
-                              <Font name="Myanmar Text Bold" size="18.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </VBox>
-
-                  <VBox alignment="CENTER" prefHeight="180.0" prefWidth="160.0">
-                     <children>
-                        <ImageView fx:id="btnIndiceAgrupamiento" accessibleRole="BUTTON"
-                                   fitHeight="120.0" fitWidth="140.0"
-                                   onMouseClicked="#openIndiceAgrupamiento"
-                                   pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@/icono-b.externas.png" />
-                           </image>
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor>
-                        </ImageView>
-                        <Label text="AGRUPAMIENTO">
-                           <font>
-                              <Font name="Myanmar Text Bold" size="16.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </VBox>
-
-                  <VBox alignment="CENTER" prefHeight="180.0" prefWidth="160.0">
-                     <children>
-                        <ImageView fx:id="btnIndiceMultinivel" accessibleRole="BUTTON"
-                                   fitHeight="120.0" fitWidth="140.0"
-                                   onMouseClicked="#openIndiceMultinivel"
-                                   pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@/icono-b.externas.png" />
-                           </image>
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor>
-                        </ImageView>
-                        <Label text="MULTINIVEL">
-                           <font>
-                              <Font name="Myanmar Text Bold" size="18.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </VBox>
-
-               </children>
-            </FlowPane>
-         </center>
-      </BorderPane>
-
-      <!-- Menú lateral -->
-      <AnchorPane fx:id="menuPane" prefHeight="355.0" prefWidth="221.0"
-                  style="-fx-background-color: #2262C6;"
-                  visible="false" managed="false">
+      <HBox prefHeight="600.0" prefWidth="1280.0">
          <children>
-            <HBox alignment="CENTER_LEFT" layoutX="-1.0" prefHeight="45.0" prefWidth="201.0">
+
+            <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
                <children>
-                  <ImageView fx:id="btnClose" accessibleRole="BUTTON" fitHeight="30.0" fitWidth="50.0"
-                             onMouseClicked="#closeMenu" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="btnIndicePrimario" accessibleRole="BUTTON" fitHeight="120.0" fitWidth="140.0" onMouseClicked="#openIndicePrimario" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@/icono-cerrar.png" />
+                        <Image url="@/icono-b.externas.png" />
                      </image>
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
-                     <rotationAxis>
-                        <Point3D />
-                     </rotationAxis>
-                     <HBox.margin>
-                        <Insets left="20.0" />
-                     </HBox.margin>
                   </ImageView>
-               </children>
-               <padding>
-                  <Insets right="30.0" />
-               </padding>
-            </HBox>
-
-            <VBox fx:id="menuVBox" layoutX="27.0" layoutY="58.0" prefHeight="250.0" prefWidth="146.0">
-               <children>
-                  <Label accessibleRole="BUTTON" onMouseClicked="#openInicio" text="Inicio" textFill="WHITE">
+                  <Label text="PRIMARIO">
                      <font>
                         <Font name="Myanmar Text Bold" size="18.0" />
                      </font>
+                  </Label>
+               </children>
+            </VBox>
+
+            <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
+               <children>
+                  <ImageView fx:id="btnIndiceSecundario" accessibleRole="BUTTON" fitHeight="120.0" fitWidth="140.0" onMouseClicked="#openIndiceSecundario" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@/icono-b.externas.png" />
+                     </image>
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
+                  </ImageView>
+                  <Label text="SECUNDARIO">
+                     <font>
+                        <Font name="Myanmar Text Bold" size="18.0" />
+                     </font>
                   </Label>
+               </children>
+            </VBox>
 
-                  <Label accessibleRole="BUTTON" onMouseClicked="#openBusquedasExternas" text="Volver a Externas" textFill="WHITE">
+            <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
+               <children>
+                  <ImageView fx:id="btnIndiceAgrupamiento" accessibleRole="BUTTON" fitHeight="120.0" fitWidth="140.0" onMouseClicked="#openIndiceAgrupamiento" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@/icono-b.externas.png" />
+                     </image>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </ImageView>
+                  <Label text="AGRUPAMIENTO">
                      <font>
                         <Font name="Myanmar Text Bold" size="16.0" />
                      </font>
-                     <cursor>
-                        <Cursor fx:constant="HAND" />
-                     </cursor>
                   </Label>
+               </children>
+            </VBox>
 
-                  <Label accessibleRole="BUTTON" onMouseClicked="#openIndicePrimario" text="Índice Primario" textFill="WHITE">
-                     <font>
-                        <Font name="Myanmar Text" size="14.0" />
-                     </font>
+            <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
+               <children>
+                  <ImageView fx:id="btnIndiceMultinivel" accessibleRole="BUTTON" fitHeight="120.0" fitWidth="140.0" onMouseClicked="#openIndiceMultinivel" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@/icono-b.externas.png" />
+                     </image>
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
-                  </Label>
-
-                  <Label accessibleRole="BUTTON" onMouseClicked="#openIndiceSecundario" text="Índice Secundario" textFill="WHITE">
+                  </ImageView>
+                  <Label text="MULTINIVEL">
                      <font>
-                        <Font name="Myanmar Text" size="14.0" />
+                        <Font name="Myanmar Text Bold" size="18.0" />
                      </font>
-                     <cursor>
-                        <Cursor fx:constant="HAND" />
-                     </cursor>
-                  </Label>
-
-                  <Label accessibleRole="BUTTON" onMouseClicked="#openIndiceAgrupamiento" text="Agrupamiento" textFill="WHITE">
-                     <font>
-                        <Font name="Myanmar Text" size="14.0" />
-                     </font>
-                     <cursor>
-                        <Cursor fx:constant="HAND" />
-                     </cursor>
-                  </Label>
-
-                  <Label accessibleRole="BUTTON" onMouseClicked="#openIndiceMultinivel" text="Multinivel" textFill="WHITE">
-                     <font>
-                        <Font name="Myanmar Text" size="14.0" />
-                     </font>
-                     <cursor>
-                        <Cursor fx:constant="HAND" />
-                     </cursor>
                   </Label>
                </children>
             </VBox>
          </children>
-      </AnchorPane>
+      </HBox>
    </children>
 </AnchorPane>

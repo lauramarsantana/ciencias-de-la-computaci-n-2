@@ -11,10 +11,6 @@
     -fx-padding: 10 10;
 }
 
-#menuVBox:hover {
-    -fx-background-color: #1b4e99; /* azul más oscuro al pasar el mouse */
-}
-
 .menu-item {
     -fx-background-color: #2262C6;
 }
@@ -142,13 +138,6 @@
     -fx-text-fill: white;            /* texto blanco */
     -fx-background-color: #2262C6;   /* fondo azul */
 }
-
-/* Hover sobre opción */
-.choice-box .menu-item:focused .label {
-    -fx-background-color: #4A90E2;   /* azul más claro */
-    -fx-text-fill: white;
-}
-
 
 .label {
     -fx-font-family: "Segoe UI Semibold";

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="layoutPane" prefHeight="500.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.LayoutController">
+
+    <children>
+
+        <!-- Contenido principal -->
+        <BorderPane prefHeight="600.0" prefWidth="1280.0">
+            <top>
+                <VBox alignment="CENTER" style="-fx-background-color: #2262C6;" BorderPane.alignment="CENTER">
+                    <children>
+                        <HBox alignment="CENTER_LEFT" spacing="70.0" VBox.vgrow="ALWAYS">
+                            <children>
+                                <!-- Botón menú -->
+                                <ImageView fx:id="btnMenu" accessibleRole="BUTTON" fitWidth="30.0" onMouseClicked="#openMenu" preserveRatio="true" HBox.hgrow="ALWAYS">
+                                    <image>
+                                        <Image url="@icno-hambuguerMenu.png" />
+                                    </image>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                                </ImageView>
+                                <!-- Logo -->
+                                <ImageView fitHeight="39.0" fitWidth="434.0" preserveRatio="true" HBox.hgrow="ALWAYS">
+                                    <image>
+                                        <Image url="@logo-CienciasII.png" />
+                                    </image>
+                                </ImageView>
+                            </children>
+                     <padding>
+                        <Insets left="10.0" />
+                     </padding>
+                        </HBox>
+                    </children>
+                </VBox>
+            </top>
+
+            <center>
+                <AnchorPane fx:id="contentPane" prefHeight="550.0" />
+            </center>
+
+            <!-- Aquí va el botón atrás dentro del BorderPane -->
+            <bottom>
+                <HBox fx:id="goBack" alignment="CENTER_LEFT" onMouseClicked="#goBack" BorderPane.alignment="CENTER">
+                    <children>
+                        <ImageView fitHeight="36.0" fitWidth="40.0" preserveRatio="true">
+                            <image>
+                                <Image url="@goBack.png" />
+                            </image>
+                        </ImageView>
+                        <Label text="Ir atrás" textFill="#2262c6">
+                            <font>
+                                <Font name="Myanmar Text Bold" size="14.0" />
+                            </font>
+                        </Label>
+                    </children>
+               <padding>
+                  <Insets left="40.0" top="5.0" />
+               </padding>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <BorderPane.margin>
+                  <Insets />
+               </BorderPane.margin>
+                </HBox>
+            </bottom>
+        </BorderPane>
+        <!-- Menú lateral en su propia capa -->
+        <AnchorPane fx:id="menuSpace" prefHeight="720.0" prefWidth="218.0" visible="false" />
+    </children>
+</AnchorPane>

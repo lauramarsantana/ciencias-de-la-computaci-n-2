@@ -2,224 +2,103 @@
 
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>
-<?import javafx.geometry.Point3D?>
-<?import javafx.geometry.Rectangle2D?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="internasPane" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.BusquedasInternasController">
+<AnchorPane fx:id="internasPane" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.BusquedasInternasController">
    <stylesheets>
       <URL value="@styles.css" />
    </stylesheets>
    <children>
-      <BorderPane prefHeight="500.0" prefWidth="700.0">
-         <top>
-            <VBox alignment="CENTER" prefHeight="34.0" prefWidth="600.0" style="-fx-background-color: #2262C6;">
-               <children>
-                  <HBox alignment="CENTER_LEFT" nodeOrientation="LEFT_TO_RIGHT" prefHeight="100.0" prefWidth="200.0">
-                     <children>
-                        <ImageView accessibleRole="BUTTON" fitWidth="30.0" nodeOrientation="RIGHT_TO_LEFT" onMouseClicked="#openMenu" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@icno-hambuguerMenu.png" />
-                           </image>
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor>
-                           <HBox.margin>
-                              <Insets left="20.0" right="30.0" />
-                           </HBox.margin>
-                        </ImageView>
-                        <ImageView fx:id="btnInicio" accessibleRole="BUTTON" fitHeight="72.0" fitWidth="111.0" onMouseClicked="#openInicio" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@logo-CienciasII2.0.png" />
-                           </image>
-                           <viewport>
-                              <Rectangle2D />
-                           </viewport>
-                           <HBox.margin>
-                              <Insets right="30.0" />
-                           </HBox.margin>
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor>
-                        </ImageView>
-                        <Label id="titleLabel" text="BUSQUEDAS INTERNAS" textFill="WHITE" />
-                     </children>
-                  </HBox>
-               </children>
-            </VBox>
-         </top>
-         <center>
-            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-               <children>
-                  <VBox alignment="CENTER" prefHeight="361.0" prefWidth="266.0">
-                     <children>
-                        <ImageView fx:id="btnLineal" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#openLineal" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@icono-b.i.lineal.png" />
-                           </image>
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor>
-                        </ImageView>
-                        <Label text="LINEAL">
-                           <font>
-                              <Font name="Myanmar Text Bold" size="24.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </VBox>
-                  <VBox alignment="CENTER" prefHeight="361.0" prefWidth="278.0">
-                     <children>
-                        <ImageView fx:id="btnBinario" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#openBinario" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@icono-b.i.binario.png" />
-                           </image>
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor>
-                        </ImageView>
-                        <Label text="BINARIO">
-                           <font>
-                              <Font name="Myanmar Text Bold" size="24.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </VBox>
-                  <VBox alignment="CENTER" prefHeight="361.0" prefWidth="266.0">
-                     <children>
-                        <ImageView fx:id="btnHash" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#openFuncionHash" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@icono-b.i.funcionHash.png" />
-                           </image>
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor>
-                        </ImageView>
-                        <Label text="FUNCIÓN HASH">
-                           <font>
-                              <Font name="Myanmar Text Bold" size="24.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </VBox>
-               </children>
-            </HBox>
-         </center>
-      </BorderPane>
-      <AnchorPane fx:id="menuPane" prefHeight="500.0" prefWidth="221.0" style="-fx-background-color: #2262C6;">
+      <HBox alignment="CENTER" prefHeight="600.0" prefWidth="1280.0">
          <children>
-            <HBox alignment="CENTER_LEFT" layoutX="-1.0" prefHeight="45.0" prefWidth="201.0">
+            <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
                <children>
-                  <ImageView fx:id="btnClose" accessibleRole="BUTTON" fitHeight="30.0" fitWidth="50.0" onMouseClicked="#closeMenu" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="btnGrafos11" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#openLineal" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@icono-cerrar.png" />
+                        <Image url="@icono-b.i.lineal.png" />
                      </image>
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
-                     <rotationAxis>
-                        <Point3D />
-                     </rotationAxis>
-                     <HBox.margin>
-                        <Insets left="20.0" />
-                     </HBox.margin>
                   </ImageView>
+                  <Label text="LINEAL">
+                     <font>
+                        <Font name="Myanmar Text Bold" size="24.0" />
+                     </font>
+                  </Label>
                </children>
-               <opaqueInsets>
-                  <Insets />
-               </opaqueInsets>
-               <padding>
-                  <Insets right="30.0" />
-               </padding>
-            </HBox>
-            <VBox fx:id="menuVBox" layoutX="27.0" layoutY="58.0" prefHeight="200.0" prefWidth="146.0">
+               <cursor>
+                  <Cursor fx:constant="DEFAULT" />
+               </cursor>
+            </VBox>
+            <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
                <children>
-                  <Label accessibleRole="BUTTON" onMouseClicked="#openInicio" text="Inicio" textFill="WHITE">
-                     <font>
-                        <Font name="Myanmar Text Bold" size="18.0" />
-                     </font>
+                  <ImageView fx:id="btnBusquedas1" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#openBinario" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icono-b.i.binario.png" />
+                     </image>
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
+                  </ImageView>
+                  <Label text="BINARIO" textFill="#000204">
+                     <font>
+                        <Font name="Myanmar Text Bold" size="24.0" />
+                     </font>
                   </Label>
-                  <Label fx:id="btnBusquedas" accessibleRole="BUTTON" onMouseClicked="#openMenuBusquedas" text="Busquedas" textFill="WHITE">
-                     <font>
-                        <Font name="Myanmar Text Bold" size="18.0" />
-                     </font>
+               </children>
+               <cursor>
+                  <Cursor fx:constant="DEFAULT" />
+               </cursor>
+            </VBox>
+            <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
+               <children>
+                  <ImageView fx:id="btnGrafos111" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#openFuncionHash" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icono-b.i.funcionHash.png" />
+                     </image>
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
-                  </Label>
-                  <VBox fx:id="subMenuBusquedas" prefHeight="60.0" prefWidth="146.0">
-                     <children>
-                        <Label accessibleRole="BUTTON" onMouseClicked="#openMenuInternas" text="Internas" textFill="#fdfdfd">
-                           <font>
-                              <Font size="18.0" />
-                           </font>
-                           <cursor>
-                              <Cursor fx:constant="HAND" />
-                           </cursor>
-                        </Label>
-                        <VBox fx:id="subMenuInternas" prefHeight="200.0" prefWidth="100.0">
-                           <children>
-                              <Label fx:id="btnLineal1" accessibleRole="BUTTON" onMouseClicked="#mostrarBusquedaLineal" text="Lineal" textFill="WHITE">
-                                 <font>
-                                    <Font name="Myanmar Text" size="14.0" />
-                                 </font>
-                                 <cursor>
-                                    <Cursor fx:constant="HAND" />
-                                 </cursor>
-                              </Label>
-                              <Label accessibleRole="BUTTON" onMouseClicked="#openBinario" text="Binario" textFill="WHITE">
-                                 <font>
-                                    <Font name="Myanmar Text" size="14.0" />
-                                 </font>
-                                 <cursor>
-                                    <Cursor fx:constant="HAND" />
-                                 </cursor>
-                              </Label>
-                              <Label accessibleRole="BUTTON" onMouseClicked="#openFuncionHash" text="Función Hash" textFill="WHITE">
-                                 <font>
-                                    <Font name="Myanmar Text" size="14.0" />
-                                 </font>
-                                 <cursor>
-                                    <Cursor fx:constant="HAND" />
-                                 </cursor>
-                              </Label>
-                           </children>
-                           <padding>
-                              <Insets left="20.0" />
-                           </padding>
-                        </VBox>
-                        <Label text="Externas" textFill="WHITE">
-                           <font>
-                              <Font name="Myanmar Text" size="18.0" />
-                           </font>
-                        </Label>
-                     </children>
-                     <padding>
-                        <Insets left="20.0" />
-                     </padding>
-                  </VBox>
-                  <Label accessibleRole="BUTTON" onMouseClicked="#openGrafos" text="Grafos" textFill="WHITE">
+                  </ImageView>
+                  <Label text="FUNCIÓN HASH">
                      <font>
-                        <Font size="18.0" />
+                        <Font name="Myanmar Text Bold" size="24.0" />
                      </font>
-                     <cursor>
-                        <Cursor fx:constant="HAND" />
-                     </cursor>
                   </Label>
                </children>
             </VBox>
+            <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
+               <children>
+                  <ImageView fx:id="btnGrafos1" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#openBResiduos" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icono-B.porResiduos.png" />
+                     </image>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </ImageView>
+                  <Label text="BUSQUEDA POR RESIDUOS">
+                     <font>
+                        <Font name="Myanmar Text Bold" size="24.0" />
+                     </font>
+                  </Label>
+               </children>
+               <cursor>
+                  <Cursor fx:constant="DEFAULT" />
+               </cursor>
+            </VBox>
          </children>
-      </AnchorPane>
+         <opaqueInsets>
+            <Insets left="40.0" />
+         </opaqueInsets>
+      </HBox>
    </children>
 </AnchorPane>

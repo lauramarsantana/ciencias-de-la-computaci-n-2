@@ -3,12 +3,8 @@ package controller;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import utilities.BloqueHash;
 import utilities.SlotHashExterno;
@@ -21,8 +17,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class BusquedaHashExternaController {
-
-    @FXML private AnchorPane hashExternoPane;
 
     @FXML private TextField nField;
     @FXML private TextField tamBloqueField;
@@ -45,10 +39,6 @@ public class BusquedaHashExternaController {
     @FXML private TextField claveBuscarField;
     @FXML private Label resultadoLabel;
 
-    @FXML private AnchorPane menuPane;
-    @FXML private VBox subMenuBusquedas;
-    @FXML private VBox subMenuInternas;
-
     private final ObservableList<SlotHashExterno> dataTabla = FXCollections.observableArrayList();
     private final List<BloqueHash> bloques = new ArrayList<>();
 
@@ -62,12 +52,6 @@ public class BusquedaHashExternaController {
 
     @FXML
     public void initialize() {
-        menuPane.setVisible(false);
-        menuPane.setManaged(false);
-        subMenuBusquedas.setVisible(false);
-        subMenuBusquedas.setManaged(false);
-        subMenuInternas.setVisible(false);
-        subMenuInternas.setManaged(false);
 
         digitosChoice.setItems(FXCollections.observableArrayList(1, 2, 3, 4, 5, 6));
         digitosChoice.setValue(2);
@@ -976,75 +960,5 @@ private int calcularOffsetDentroBloque(String claveTxt) {
         clave = clave.trim();
         if (!clave.matches("\\d+")) return clave;
         return String.format("%0" + digitos + "d", Integer.parseInt(clave));
-    }
-
-    // ===== menú =====
-
-    @FXML
-    private void openMenu(javafx.scene.input.MouseEvent event) {
-        menuPane.setVisible(true);
-        menuPane.setManaged(true);
-    }
-
-    @FXML
-    private void closeMenu(javafx.scene.input.MouseEvent event) {
-        menuPane.setVisible(false);
-        menuPane.setManaged(false);
-    }
-
-    @FXML
-    private void openMenuBusquedas(javafx.scene.input.MouseEvent event) {
-        boolean isVisible = subMenuBusquedas.isVisible();
-        subMenuBusquedas.setVisible(!isVisible);
-        subMenuBusquedas.setManaged(!isVisible);
-    }
-
-    @FXML
-    private void openMenuInternas(javafx.scene.input.MouseEvent event) {
-        boolean isVisible = subMenuInternas.isVisible();
-        subMenuInternas.setVisible(!isVisible);
-        subMenuInternas.setManaged(!isVisible);
-    }
-
-    @FXML
-    private void mostrarBusquedaLineal(javafx.scene.input.MouseEvent event) {
-        loadPanel("busquedaLineal.fxml");
-    }
-
-    @FXML
-    private void openBinario(javafx.scene.input.MouseEvent event) {
-        loadPanel("busquedaBinaria.fxml");
-    }
-
-    @FXML
-    private void openFuncionHash(javafx.scene.input.MouseEvent event) {
-        loadPanel("busquedaHash.fxml");
-    }
-
-    @FXML
-    private void openFuncionHashExterna(javafx.scene.input.MouseEvent event) {
-        loadPanel("busquedaHashExterna.fxml");
-    }
-
-    @FXML
-    private void openGrafos(javafx.scene.input.MouseEvent event) {
-        loadPanel("grafos.fxml");
-    }
-
-    @FXML
-    private void openInicio(javafx.scene.input.MouseEvent event) {
-        loadPanel("inicio.fxml");
-    }
-
-    private void loadPanel(String fxml) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/" + fxml));
-            Parent panel = loader.load();
-
-            hashExternoPane.getChildren().clear();
-            hashExternoPane.getChildren().add(panel);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }

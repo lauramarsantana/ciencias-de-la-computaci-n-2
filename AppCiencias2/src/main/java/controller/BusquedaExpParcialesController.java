@@ -21,11 +21,6 @@ import java.util.List;
 
 public class BusquedaExpParcialesController {
 
-    @FXML private AnchorPane expPane;
-    @FXML private AnchorPane menuPane;
-    @FXML private VBox subMenuBusquedas;
-    @FXML private VBox subMenuInternas;
-
     @FXML private TextField nField;
     @FXML private ChoiceBox<Integer> digitosChoice;
 
@@ -49,87 +44,10 @@ public class BusquedaExpParcialesController {
 
     @FXML
     public void initialize() {
-        menuPane.setVisible(false);
-        menuPane.setManaged(false);
-        subMenuBusquedas.setVisible(false);
-        subMenuBusquedas.setManaged(false);
-        subMenuInternas.setVisible(false);
-        subMenuInternas.setManaged(false);
-
         digitosChoice.getItems().addAll(1, 2, 3, 4);
         digitosChoice.setValue(2);
 
         tabla.setItems(dataUI);
-    }
-
-    // =========================
-    // Menú
-    // =========================
-    @FXML
-    private void openMenu(javafx.scene.input.MouseEvent event){
-        menuPane.setVisible(true);
-        menuPane.setManaged(true);
-    }
-
-    @FXML
-    private void closeMenu(javafx.scene.input.MouseEvent event){
-        menuPane.setVisible(false);
-        menuPane.setManaged(false);
-    }
-
-    @FXML
-    private void openMenuBusquedas(javafx.scene.input.MouseEvent event){
-        boolean isVisible = subMenuBusquedas.isVisible();
-        subMenuBusquedas.setVisible(!isVisible);
-        subMenuBusquedas.setManaged(!isVisible);
-    }
-
-    @FXML
-    private void openMenuInternas(javafx.scene.input.MouseEvent event){
-        boolean isVisible = subMenuInternas.isVisible();
-        subMenuInternas.setVisible(!isVisible);
-        subMenuInternas.setManaged(!isVisible);
-    }
-
-    @FXML
-    private void mostrarBusquedaLineal(javafx.scene.input.MouseEvent event) {
-        loadPanel("busquedaLineal.fxml");
-    }
-
-    @FXML
-    private void openBinario(javafx.scene.input.MouseEvent event){
-        loadPanel("busquedaBinaria.fxml");
-    }
-
-    @FXML
-    private void openFuncionHash(javafx.scene.input.MouseEvent event){
-        loadPanel("busquedaHash.fxml");
-    }
-
-    @FXML
-    private void openGrafos(javafx.scene.input.MouseEvent event){
-        loadPanel("grafos.fxml");
-    }
-
-    @FXML
-    private void openInicio(javafx.scene.input.MouseEvent event){
-        loadPanel("inicio.fxml");
-    }
-
-    @FXML
-    private void openInternas(javafx.scene.input.MouseEvent event){
-        loadPanel("busquedasInternas.fxml");
-    }
-
-    private void loadPanel(String fxml) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/" + fxml));
-            Parent panel = loader.load();
-            expPane.getChildren().clear();
-            expPane.getChildren().add(panel);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     // =========================
