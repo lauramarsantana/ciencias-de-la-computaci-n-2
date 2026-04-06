@@ -6,57 +6,33 @@ import java.util.List;
 
 public class HashExpParciales {
 
-    public static final int FILAS = 2;
-    private final double EXPAND = 0.75;  // >= 75% expande
-    private final double SHRINK = 0.25;  // <= 25% reduce
+    private final double EXPAND = 0.75;
+    private final double SHRINK = 0.25;
 
-    // Secuencia de tamaños permitidos para expansiones/reducciones parciales
-    private static final int[] TAMANOS = {2, 3, 4, 5, 6, 8, 12, 16};
+    private int n;
+    private int filas;
+    private int nBase;
+    private int fase; // 0 = base, 1 = parcial intermedia, 2 = total del ciclo
 
-    private int n; // número de cubetas
     private final List<Cubeta> cubetas = new ArrayList<>();
     private final List<String> pendientes = new ArrayList<>();
 
-    public HashExpParciales(int nInicial) {
+    public HashExpParciales(int nInicial, int filas) {
         if (nInicial < 2) nInicial = 2;
-        this.n = ajustarTamanoPermitido(nInicial);
+        if (filas < 2) filas = 2;
+
+        this.n = nInicial;
+        this.nBase = nInicial;
+        this.filas = filas;
+        this.fase = 0;
+
         crearCubetas();
-    }
-
-    private int ajustarTamanoPermitido(int x) {
-        for (int t : TAMANOS) {
-            if (t >= x) return t;
-        }
-        return TAMANOS[TAMANOS.length - 1];
-    }
-
-    private int indiceTamanoActual() {
-        for (int i = 0; i < TAMANOS.length; i++) {
-            if (TAMANOS[i] == n) return i;
-        }
-        return 0;
-    }
-
-    private int siguienteExpansion() {
-        int idx = indiceTamanoActual();
-        if (idx < TAMANOS.length - 1) {
-            return TAMANOS[idx + 1];
-        }
-        return n; // ya está en el máximo
-    }
-
-    private int siguienteReduccion() {
-        int idx = indiceTamanoActual();
-        if (idx > 0) {
-            return TAMANOS[idx - 1];
-        }
-        return n; // ya está en el mínimo
     }
 
     private void crearCubetas() {
         cubetas.clear();
         for (int i = 0; i < n; i++) {
-            cubetas.add(new Cubeta());
+            cubetas.add(new Cubeta(filas));
         }
     }
 
@@ -75,6 +51,10 @@ public class HashExpParciales {
         return n;
     }
 
+    public int getFilas() {
+        return filas;
+    }
+
     public List<String> getPendientes() {
         return Collections.unmodifiableList(pendientes);
     }
@@ -86,7 +66,7 @@ public class HashExpParciales {
     }
 
     public double densidadOcupacional() {
-        int espacios = n * FILAS;
+        int espacios = n * filas;
         return espacios == 0 ? 0 : (double) totalOcupados() / espacios;
     }
 
@@ -102,7 +82,6 @@ public class HashExpParciales {
         return cubetas.get(idx).filaDe(clave) != -1;
     }
 
-    /** Inserta: si cubeta llena -> pendiente y expande hasta reubicar. */
     public void insertar(String clave) {
         if (clave == null || clave.isBlank()) return;
         clave = clave.trim();
@@ -147,9 +126,8 @@ public class HashExpParciales {
         if (clave == null || clave.isBlank()) return false;
         clave = clave.trim();
 
-        // si estaba pendiente, eliminarla de pendientes
         if (pendientes.remove(clave)) {
-            if (densidadOcupacional() <= SHRINK && n > TAMANOS[0]) {
+            if (densidadOcupacional() <= SHRINK && n > 2) {
                 reducirUnaVez();
                 reubicarPendientesSiSePuede();
             }
@@ -162,11 +140,9 @@ public class HashExpParciales {
         boolean ok = cubetas.get(idx).eliminar(clave);
         if (!ok) return false;
 
-        // intentar reubicar pendientes tras liberar espacio
         reubicarPendientesSiSePuede();
 
-        // reducción parcial si DO baja del umbral
-        if (densidadOcupacional() <= SHRINK && n > TAMANOS[0]) {
+        if (densidadOcupacional() <= SHRINK && n > 2) {
             reducirUnaVez();
             reubicarPendientesSiSePuede();
         }
@@ -176,13 +152,18 @@ public class HashExpParciales {
 
     public List<SlotCubeta> snapshotTabla() {
         List<SlotCubeta> out = new ArrayList<>();
+
         for (int i = 0; i < n; i++) {
             Cubeta b = cubetas.get(i);
-            out.add(new SlotCubeta(i,
-                    b.fila1 == null ? "" : b.fila1,
-                    b.fila2 == null ? "" : b.fila2
-            ));
+            SlotCubeta slot = new SlotCubeta(i, filas);
+
+            for (int f = 0; f < filas; f++) {
+                slot.setFila(f, b.getFila(f));
+            }
+
+            out.add(slot);
         }
+
         return out;
     }
 
@@ -193,22 +174,46 @@ public class HashExpParciales {
             expandirUnaVez();
             reubicarPendientesSiSePuede();
 
-            // si ya no pudo crecer más, romper para evitar bucle
             if (n == nAntes) break;
         }
     }
 
     private void expandirUnaVez() {
-        int nuevo = siguienteExpansion();
-        if (nuevo != n) {
+        if (fase == 0) {
+            int nuevo = nBase + (nBase / 2);
+            if (nuevo == nBase) nuevo = nBase + 1;
             rehashConNuevoN(nuevo);
+            fase = 1;
+        } else if (fase == 1) {
+            int nuevo = nBase * 2;
+            rehashConNuevoN(nuevo);
+            fase = 2;
+        } else {
+            nBase = nBase * 2;
+            int nuevo = nBase + (nBase / 2);
+            rehashConNuevoN(nuevo);
+            fase = 1;
         }
     }
 
     private void reducirUnaVez() {
-        int nuevo = siguienteReduccion();
-        if (nuevo != n) {
+        if (fase == 2) {
+            int nuevo = nBase + (nBase / 2);
+            if (nuevo == nBase) nuevo = nBase + 1;
             rehashConNuevoN(nuevo);
+            fase = 1;
+        } else if (fase == 1) {
+            rehashConNuevoN(nBase);
+            fase = 0;
+        } else {
+            if (nBase <= 2) return;
+
+            int nuevoBase = Math.max(2, nBase / 2);
+            int nuevo = nuevoBase * 2;
+
+            nBase = nuevoBase;
+            rehashConNuevoN(nuevo);
+            fase = 2;
         }
     }
 
@@ -216,12 +221,7 @@ public class HashExpParciales {
         List<String> todas = new ArrayList<>();
 
         for (Cubeta b : cubetas) {
-            if (b.fila1 != null && !b.fila1.isBlank()) {
-                todas.add(b.fila1.trim());
-            }
-            if (b.fila2 != null && !b.fila2.isBlank()) {
-                todas.add(b.fila2.trim());
-            }
+            todas.addAll(b.obtenerClaves());
         }
 
         for (String p : pendientes) {
@@ -232,7 +232,7 @@ public class HashExpParciales {
 
         pendientes.clear();
 
-        n = nuevoN;
+        n = Math.max(2, nuevoN);
         crearCubetas();
 
         for (String c : todas) {
@@ -266,48 +266,67 @@ public class HashExpParciales {
         pendientes.addAll(still);
     }
 
-    // =========================
-    // Cubeta interna
-    // =========================
     private static class Cubeta {
-        private String fila1;
-        private String fila2;
+        private final List<String> filas;
+
+        public Cubeta(int cantidadFilas) {
+            filas = new ArrayList<>();
+            for (int i = 0; i < cantidadFilas; i++) {
+                filas.add("");
+            }
+        }
 
         int ocupados() {
             int c = 0;
-            if (fila1 != null && !fila1.isBlank()) c++;
-            if (fila2 != null && !fila2.isBlank()) c++;
+            for (String fila : filas) {
+                if (fila != null && !fila.isBlank()) c++;
+            }
             return c;
         }
 
         boolean insertar(String clave) {
-            if (fila1 == null || fila1.isBlank()) {
-                fila1 = clave;
-                return true;
-            }
-            if (fila2 == null || fila2.isBlank()) {
-                fila2 = clave;
-                return true;
+            for (int i = 0; i < filas.size(); i++) {
+                String valor = filas.get(i);
+                if (valor == null || valor.isBlank()) {
+                    filas.set(i, clave);
+                    return true;
+                }
             }
             return false;
         }
 
         int filaDe(String clave) {
-            if (fila1 != null && fila1.equals(clave)) return 1;
-            if (fila2 != null && fila2.equals(clave)) return 2;
+            for (int i = 0; i < filas.size(); i++) {
+                String valor = filas.get(i);
+                if (valor != null && valor.equals(clave)) return i + 1;
+            }
             return -1;
         }
 
         boolean eliminar(String clave) {
-            if (fila1 != null && fila1.equals(clave)) {
-                fila1 = "";
-                return true;
-            }
-            if (fila2 != null && fila2.equals(clave)) {
-                fila2 = "";
-                return true;
+            for (int i = 0; i < filas.size(); i++) {
+                String valor = filas.get(i);
+                if (valor != null && valor.equals(clave)) {
+                    filas.set(i, "");
+                    return true;
+                }
             }
             return false;
+        }
+
+        String getFila(int indice) {
+            if (indice < 0 || indice >= filas.size()) return "";
+            return filas.get(indice);
+        }
+
+        List<String> obtenerClaves() {
+            List<String> claves = new ArrayList<>();
+            for (String valor : filas) {
+                if (valor != null && !valor.isBlank()) {
+                    claves.add(valor.trim());
+                }
+            }
+            return claves;
         }
     }
 }

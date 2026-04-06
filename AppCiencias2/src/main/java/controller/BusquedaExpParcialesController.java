@@ -28,6 +28,7 @@ public class BusquedaExpParcialesController {
 
     @FXML private TextField nField;
     @FXML private ChoiceBox<Integer> digitosChoice;
+    @FXML private ChoiceBox<Integer> filasChoice;
 
     @FXML private TableView<ObservableList<String>> tabla;
     @FXML private TableColumn<ObservableList<String>, String> colRow;
@@ -42,6 +43,7 @@ public class BusquedaExpParcialesController {
     @FXML private Label pendientesLabel;
 
     private int digitos = 2;
+    private int filas = 2;
     private boolean creada = false;
     private int nInicial = 0;
 
@@ -58,6 +60,9 @@ public class BusquedaExpParcialesController {
 
         digitosChoice.getItems().addAll(1, 2, 3, 4);
         digitosChoice.setValue(2);
+
+        filasChoice.getItems().addAll(2, 3, 4, 5, 6);
+        filasChoice.setValue(2);
 
         tabla.setItems(dataUI);
     }
@@ -136,14 +141,14 @@ public class BusquedaExpParcialesController {
     // Tabla invertida
     // =========================
     private void construirTablaInvertida(int nCubetas) {
-        tabla.getColumns().clear();
+    tabla.getColumns().clear();
 
-        TableColumn<ObservableList<String>, String> c0 = new TableColumn<>("");
-        c0.setPrefWidth(60);
-        c0.setCellValueFactory(p ->
-                new javafx.beans.property.SimpleStringProperty(p.getValue().get(0))
-        );
-        tabla.getColumns().add(c0);
+    TableColumn<ObservableList<String>, String> c0 = new TableColumn<>("");
+    c0.setPrefWidth(60);
+    c0.setCellValueFactory(p ->
+            new javafx.beans.property.SimpleStringProperty(p.getValue().get(0))
+    );
+    tabla.getColumns().add(c0);
 
         for (int i = 0; i < nCubetas; i++) {
             final int colIndex = i + 1;
@@ -156,19 +161,17 @@ public class BusquedaExpParcialesController {
         }
 
         dataUI.clear();
-        ObservableList<String> fila1 = FXCollections.observableArrayList();
-        ObservableList<String> fila2 = FXCollections.observableArrayList();
 
-        fila1.add("1");
-        fila2.add("2");
+        for (int f = 0; f < filas; f++) {
+            ObservableList<String> fila = FXCollections.observableArrayList();
+            fila.add(String.valueOf(f + 1));
 
-        for (int i = 0; i < nCubetas; i++) {
-            fila1.add("");
-            fila2.add("");
+            for (int c = 0; c < nCubetas; c++) {
+                fila.add("");
+            }
+
+            dataUI.add(fila);
         }
-
-        dataUI.add(fila1);
-        dataUI.add(fila2);
 
         tabla.setItems(dataUI);
     }
@@ -182,19 +185,15 @@ public class BusquedaExpParcialesController {
             construirTablaInvertida(n);
         }
 
-        ObservableList<String> fila1 = dataUI.get(0);
-        ObservableList<String> fila2 = dataUI.get(1);
-
         List<SlotCubeta> snapshot = estructura.snapshotTabla();
 
         for (int c = 0; c < n; c++) {
             SlotCubeta sc = snapshot.get(c);
 
-            String v1 = sc.getFila1() == null ? "" : sc.getFila1();
-            String v2 = sc.getFila2() == null ? "" : sc.getFila2();
-
-            fila1.set(c + 1, v1);
-            fila2.set(c + 1, v2);
+            for (int f = 0; f < filas; f++) {
+                String valor = sc.getFila(f);
+                dataUI.get(f).set(c + 1, valor == null ? "" : valor);
+            }
         }
 
         tabla.refresh();
@@ -204,8 +203,9 @@ public class BusquedaExpParcialesController {
             doLabel.setText(String.format("DO: %.2f%% (%d/%d) | 75/25",
                     doVal * 100.0,
                     estructura.totalOcupados(),
-                    estructura.getN() * HashExpParciales.FILAS));
+                    estructura.getN() * estructura.getFilas()));
         }
+
         if (pendientesLabel != null) {
             pendientesLabel.setText("Pendientes: " + estructura.getPendientes());
         }
@@ -223,15 +223,16 @@ public class BusquedaExpParcialesController {
         }
 
         digitos = digitosChoice.getValue() != null ? digitosChoice.getValue() : 2;
+        filas = filasChoice.getValue() != null ? filasChoice.getValue() : 2;
         nInicial = n;
 
-        estructura = new HashExpParciales(n);
+        estructura = new HashExpParciales(n, filas);
         creada = true;
 
         construirTablaInvertida(estructura.getN());
         refrescarTabla();
 
-        resultadoLabel.setText("Estructura creada 2x" + estructura.getN()
+        resultadoLabel.setText("Estructura creada " + filas + "x" + estructura.getN()
                 + " | Expansiones parciales | Dígitos=" + digitos);
 
         limpiarInsercion();
@@ -272,7 +273,7 @@ public class BusquedaExpParcialesController {
         refrescarTabla();
 
         String msg = "Insertada " + claveTxt + " | h(k)=" + ((Integer.parseInt(claveTxt) % nDespues + nDespues) % nDespues);
-        if (nDespues != nAntes) msg += " | EXPANDIÓ: 2x" + nAntes + " → 2x" + nDespues;
+        if (nDespues != nAntes) msg += " | EXPANDIÓ: " + filas + "x" + nAntes + " → " + filas + "x" + nDespues;
         if (pendientesDespues > pendientesAntes) msg += " | Colisión: quedó pendiente";
         resultadoLabel.setText(msg);
 
@@ -343,7 +344,7 @@ public class BusquedaExpParcialesController {
 
         refrescarTabla();
         String msg = "Eliminada " + claveTxt;
-        if (nDespues != nAntes) msg += " | REDUJO: 2x" + nAntes + " → 2x" + nDespues;
+        if (nDespues != nAntes) msg += " | REDUJO: " + filas + "x" + nAntes + " → " + filas + "x" + nDespues;
         resultadoLabel.setText(msg);
 
         limpiarBusqueda();
@@ -360,7 +361,7 @@ public class BusquedaExpParcialesController {
             return;
         }
 
-        estructura = new HashExpParciales(nInicial);
+        estructura = new HashExpParciales(nInicial, filas);
 
         construirTablaInvertida(estructura.getN());
         refrescarTabla();
@@ -395,14 +396,21 @@ public class BusquedaExpParcialesController {
             bw.write("N=" + estructura.getN()); bw.newLine();
             bw.write("DIGITOS=" + digitos); bw.newLine();
             bw.write("DATA"); bw.newLine();
+            bw.write("FILAS=" + filas); bw.newLine();
 
             List<SlotCubeta> snapshot = estructura.snapshotTabla();
             for (SlotCubeta s : snapshot) {
-                bw.write(s.getCubeta() + "|" +
-                        (s.getFila1() == null ? "" : s.getFila1()) + "|" +
-                        (s.getFila2() == null ? "" : s.getFila2()));
-                bw.newLine();
+            StringBuilder sb = new StringBuilder();
+            sb.append(s.getCubeta());
+
+            for (int f = 0; f < filas; f++) {
+                String valor = s.getFila(f);
+                sb.append("|").append(valor == null ? "" : valor);
             }
+
+            bw.write(sb.toString());
+            bw.newLine();
+        }
 
             bw.write("PENDIENTES"); bw.newLine();
             for (String p : estructura.getPendientes()) {
@@ -433,11 +441,13 @@ public class BusquedaExpParcialesController {
             String line;
             Integer newN = null;
             Integer newDig = null;
+            Integer newFilas = null;
 
             while ((line = br.readLine()) != null) {
                 line = line.trim();
                 if (line.equals("DATA")) break;
-                if (line.startsWith("N=")) newN = Integer.parseInt(line.substring(2).trim());
+                else if (line.startsWith("FILAS=")) newFilas = Integer.parseInt(line.substring(6).trim());
+                else if (line.startsWith("N=")) newN = Integer.parseInt(line.substring(2).trim());
                 else if (line.startsWith("DIGITOS=")) newDig = Integer.parseInt(line.substring(8).trim());
             }
 
@@ -445,14 +455,20 @@ public class BusquedaExpParcialesController {
                 resultadoLabel.setText("Archivo inválido: N.");
                 return;
             }
+
             if (newDig == null || newDig < 1) newDig = 2;
+            if (newFilas == null || newFilas < 2) newFilas = 2;
 
             digitos = newDig;
             digitosChoice.setValue(digitos);
-            nField.setText(String.valueOf(newN));
 
-            estructura = new HashExpParciales(newN);
+            filas = newFilas;
+            filasChoice.setValue(filas);
+
+            nField.setText(String.valueOf(newN));
             nInicial = newN;
+
+            estructura = new HashExpParciales(newN, filas);
             creada = true;
             construirTablaInvertida(estructura.getN());
 
@@ -462,6 +478,7 @@ public class BusquedaExpParcialesController {
 
             while ((line = br.readLine()) != null) {
                 line = line.trim();
+
                 if (line.equals("PENDIENTES")) {
                     leyendoPend = true;
                     continue;
@@ -471,12 +488,14 @@ public class BusquedaExpParcialesController {
 
                 if (!leyendoPend) {
                     String[] parts = line.split("\\|", -1);
-                    if (parts.length >= 3) {
-                        String f1 = parts[1].trim();
-                        String f2 = parts[2].trim();
 
-                        if (!f1.isEmpty()) claves.add(normalizarClave(f1, digitos));
-                        if (!f2.isEmpty()) claves.add(normalizarClave(f2, digitos));
+                    if (parts.length > 1) {
+                        for (int i = 1; i < parts.length; i++) {
+                            String valor = parts[i].trim();
+                            if (!valor.isEmpty()) {
+                                claves.add(normalizarClave(valor, digitos));
+                            }
+                        }
                     }
                 } else {
                     pend.add(normalizarClave(line, digitos));
