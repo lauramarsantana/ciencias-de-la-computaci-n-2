@@ -2,12 +2,7 @@ package controller;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import utilities.HashExpTotales;
 import utilities.SlotCubeta;
@@ -18,15 +13,20 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.fxml.FXML;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 
 public class BusquedaExpTotalesController {
+
 
     @FXML private AnchorPane expPane;
     @FXML private AnchorPane menuPane;
     @FXML private VBox subMenuBusquedas;
     @FXML private VBox subMenuInternas;
 
-    @FXML private TextField nField;                 
+    @FXML private TextField nField;                 // n inicial (2,4,8...) o cualquier número (se ajusta)
+
     @FXML private ChoiceBox<Integer> digitosChoice; // 1..4
     @FXML private ChoiceBox<Integer> filasChoice;
 
@@ -56,12 +56,6 @@ public class BusquedaExpTotalesController {
 
     @FXML
     public void initialize() {
-        menuPane.setVisible(false);
-        menuPane.setManaged(false);
-        subMenuBusquedas.setVisible(false);
-        subMenuBusquedas.setManaged(false);
-        subMenuInternas.setVisible(false);
-        subMenuInternas.setManaged(false);
 
         digitosChoice.getItems().addAll(1, 2, 3, 4);
         digitosChoice.setValue(2);
@@ -72,76 +66,6 @@ public class BusquedaExpTotalesController {
         tabla.setItems(dataUI);
     }
 
-    // =========================
-    // Menú (copiado de tu estilo)
-    // =========================
-    @FXML
-    private void openMenu(javafx.scene.input.MouseEvent event){
-        menuPane.setVisible(true);
-        menuPane.setManaged(true);
-    }
-
-    @FXML
-    private void closeMenu(javafx.scene.input.MouseEvent event){
-        menuPane.setVisible(false);
-        menuPane.setManaged(false);
-    }
-
-    @FXML
-    private void openMenuBusquedas(javafx.scene.input.MouseEvent event){
-        boolean isVisible = subMenuBusquedas.isVisible();
-        subMenuBusquedas.setVisible(!isVisible);
-        subMenuBusquedas.setManaged(!isVisible);
-    }
-
-    @FXML
-    private void openMenuInternas(javafx.scene.input.MouseEvent event){
-        boolean isVisible = subMenuInternas.isVisible();
-        subMenuInternas.setVisible(!isVisible);
-        subMenuInternas.setManaged(!isVisible);
-    }
-
-    @FXML
-    private void mostrarBusquedaLineal(javafx.scene.input.MouseEvent event) {
-        loadPanel("busquedaLineal.fxml");
-    }
-
-    @FXML
-    private void openBinario(javafx.scene.input.MouseEvent event){
-        loadPanel("busquedaBinaria.fxml");
-    }
-
-    @FXML
-    private void openFuncionHash(javafx.scene.input.MouseEvent event){
-        loadPanel("busquedaHash.fxml");
-    }
-
-    @FXML
-    private void openGrafos(javafx.scene.input.MouseEvent event){
-        loadPanel("grafos.fxml");
-    }
-
-    @FXML
-    private void openInicio(javafx.scene.input.MouseEvent event){
-        loadPanel("inicio.fxml");
-    }
-
-    @FXML
-    private void openInternas(javafx.scene.input.MouseEvent event){
-        loadPanel("busquedasInternas.fxml");
-    }
-
-    private void loadPanel(String fxml) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/" + fxml));
-            Parent panel = loader.load();
-            expPane.getChildren().clear();
-            expPane.getChildren().add(panel);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    
     private void construirTablaInvertida(int nCubetas) {
     tabla.getColumns().clear();
 
@@ -183,6 +107,8 @@ public class BusquedaExpTotalesController {
 
     int n = estructura.getN();
 
+
+        // 1. Verificar si el número de columnas coincide con N cubetas + 1 (etiqueta)
         if (tabla.getColumns().size() != n + 1) {
             construirTablaInvertida(n);
         }
@@ -196,13 +122,18 @@ public class BusquedaExpTotalesController {
                 String valor = sc.getFila(f);
                 dataUI.get(f).set(c + 1, valor == null ? "" : valor);
             }
-        }
+
+
+        // Actualizar la lista que observa la tabla
+        dataUI.clear();
+
 
         tabla.refresh();
 
+        // Actualizar Labels de estado
         if (doLabel != null) {
             double doVal = estructura.densidadOcupacional();
-            doLabel.setText(String.format("DO: %.2f%% (%d/%d) | 75/25",
+            doLabel.setText(String.format("DO: %.2f%% (%d/%d) | Exp: 75%% Red: 25%%",
                     doVal * 100.0,
                     estructura.totalOcupados(),
                     estructura.getN() * estructura.getFilas()));
@@ -210,6 +141,7 @@ public class BusquedaExpTotalesController {
 
         if (pendientesLabel != null) {
             pendientesLabel.setText("Pendientes: " + estructura.getPendientes());
+        }
         }
     }
 
@@ -243,45 +175,43 @@ public class BusquedaExpTotalesController {
     }
 
     @FXML
-    private void insertarClave() {
-        if (!creada) {
-            resultadoLabel.setText("Primero debes crear la estructura.");
-            limpiarInsercion();
-            return;
-        }
-
-        String claveTxt = normalizarClave(claveInsertField.getText(), digitos);
-        claveInsertField.setText(claveTxt);
-
-        if (!claveValidaPorDigitos(claveTxt, digitos)) {
-            resultadoLabel.setText("La clave debe tener exactamente " + digitos + " dígitos.");
-            limpiarInsercion();
-            return;
-        }
-
-        if (estructura.contiene(claveTxt)) {
-            resultadoLabel.setText("Esa clave ya existe (en tabla o pendiente).");
-            limpiarInsercion();
-            return;
-        }
-
-        int nAntes = estructura.getN();
-        int pendientesAntes = estructura.getPendientes().size();
-
-        estructura.insertar(claveTxt);
-
-        int nDespues = estructura.getN();
-        int pendientesDespues = estructura.getPendientes().size();
-
-        refrescarTabla();
-
-        String msg = "Insertada " + claveTxt + " | h(k)=" + (Integer.parseInt(claveTxt) % nDespues + nDespues) % nDespues;
-        if (nDespues != nAntes) msg += " | EXPANDIÓ: " + filas + "x" + nAntes + " → " + filas + "x" + nDespues;
-        if (pendientesDespues > pendientesAntes) msg += " | Colisión: quedó pendiente";
-        resultadoLabel.setText(msg);
-
-        limpiarInsercion();
+private void insertarClave() {
+    if (!creada) {
+        resultadoLabel.setText("Primero debes crear la estructura.");
+        return;
     }
+
+    String claveTxt = normalizarClave(claveInsertField.getText(), digitos);
+    // ... Validaciones de digitos y existencia ...
+
+    int nAntes = estructura.getN();
+    int pendientesAntes = estructura.getPendientes().size();
+
+
+    // Realizar la inserción en la lógica
+    estructura.insertar(claveTxt);
+
+    int nDespues = estructura.getN();
+  
+    int pendientesDespues = estructura.getPendientes().size();
+
+    // IMPORTANTE: Refrescar la UI DESPUÉS de insertar
+    refrescarTabla();
+
+    String msg = "Insertada " + claveTxt + " | h(k)="
+            + ((Integer.parseInt(claveTxt) % nDespues + nDespues) % nDespues);
+
+    if (nDespues != nAntes) {
+        msg += " | EXPANDIÓ: " + filas + "x" + nAntes + " → " + filas + "x" + nDespues;
+    }
+
+    if (pendientesDespues > pendientesAntes) {
+        msg += " | Colisión: quedó pendiente";
+    }
+
+    resultadoLabel.setText(msg);
+    limpiarInsercion();
+}
 
     @FXML
     private void buscarClave() {

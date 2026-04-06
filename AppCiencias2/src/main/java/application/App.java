@@ -1,31 +1,35 @@
 package application;
 
+import controller.InicioController;
+import controller.LayoutController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import utilities.Paths;
 
 public class App extends Application {
 
-    public static void main(String[] args) {
-        launch();
-    }
-
     @Override
     public void start(Stage stage) throws Exception {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout.fxml"));
+        AnchorPane root = loader.load();
 
-        AnchorPane load = FXMLLoader.load(getClass().getResource("/inicio.fxml")); // aqui adentro esta la vista cargada
-        Scene scene = new Scene(load); // escena donde entra todos
+        LayoutController controller = loader.getController();
+
+        FXMLLoader contentLoader = new FXMLLoader(getClass().getResource("/inicio.fxml"));
+        AnchorPane content = contentLoader.load();
+
+        // obtener el controlador de inicio y pasarle la referencia
+        InicioController inicioController = contentLoader.getController();
+        inicioController.setLayoutController(controller);
+
+        controller.setContent(content);
+
+        Scene scene = new Scene(root);
         stage.setScene(scene);
-
-        stage.setWidth(700);
-        stage.setHeight(550);
-
-        // opcional: permitir que se maximice
-        stage.setResizable(true);
-
+        stage.setWidth(1280);
+        stage.setHeight(800);
         stage.show();
     }
 }

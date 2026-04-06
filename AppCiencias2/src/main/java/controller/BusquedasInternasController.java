@@ -2,106 +2,37 @@ package controller;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.input.MouseEvent;
 
 public class BusquedasInternasController {
 
-    @FXML
-    private AnchorPane internasPane;
-    @FXML
-    private AnchorPane menuPane;
-    @FXML
-    private VBox subMenuBusquedas;
-    @FXML
-    private VBox subMenuInternas;
-
-    // configurando cada boton del menu desplegable
-    @FXML
-    public void initialize() {
-        menuPane.setVisible(false);
-        menuPane.setManaged(false);
-        subMenuBusquedas.setVisible(false);
-        subMenuBusquedas.setManaged(false);
-        subMenuInternas.setVisible(false);
-        subMenuInternas.setManaged(false);
-    }
-    @FXML
-    private void openMenu(javafx.scene.input.MouseEvent event){
-        System.out.println("abriendo menu...");
-        menuPane.setVisible(true); // para que el panel del menu se vea
-        menuPane.setManaged(true);// posiciona de primeras al panel
-    }
-    @FXML
-    private void closeMenu(javafx.scene.input.MouseEvent event){
-        System.out.println("cerrando menu...");
-        menuPane.setVisible(false);// para que el panel del menu se oculte
-        menuPane.setManaged(false);// lo quita de la primera capa, para liberar el espacio
+    @FXML private LayoutController layoutController;
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("busquedasInternas.fxml"));
+    public void setLayoutController(LayoutController layoutController) {
+        this.layoutController = layoutController;
     }
 
     @FXML
-    private void openMenuBusquedas(javafx.scene.input.MouseEvent event){
-        System.out.println("abriendo submenu de busquedas...");
-        boolean isVisible = subMenuBusquedas.isVisible();
-        subMenuBusquedas.setVisible(!isVisible);
-        subMenuBusquedas.setManaged(!isVisible);
-    }
-    @FXML
-    private void openMenuInternas(javafx.scene.input.MouseEvent event){
-        System.out.println("abriendo submenu de busquedas internas...");
-        boolean isVisible = subMenuInternas.isVisible();
-        subMenuInternas.setVisible(!isVisible);
-        subMenuInternas.setManaged(!isVisible);
-    }
-    @FXML
-    private void mostrarBusquedaLineal(javafx.scene.input.MouseEvent event) {
-        System.out.println("Abriendo busquedaLineal.fxml");
-        loadPanel("busquedaLineal.fxml");
-    }
-    @FXML
-    private void openBinario(javafx.scene.input.MouseEvent event){
-        System.out.println("abriendo busquedaBinaria.fxml");
-        loadPanel("busquedaBinaria.fxml");
-    }
-    @FXML
-    private void openFuncionHash(javafx.scene.input.MouseEvent event){
-        System.out.println("abriendo busquedaHash.fxml");
-        loadPanel("busquedaHash.fxml");
-    }
-    @FXML
-    private void openGrafos(javafx.scene.input.MouseEvent event){
-        System.out.println("Abriendo grafos.fxml...");
-        loadPanel("grafos.fxml");
-    }
-
-    @FXML
-    private void openInicio(javafx.scene.input.MouseEvent event){
-        System.out.println("Abriendo inicio.fxml...");
-        loadPanel("inicio.fxml");
-    }
-    @FXML
-    private void openInternas(javafx.scene.input.MouseEvent event){
-        System.out.println("abriendo busquedasInternas.fxml...");
-        loadPanel("busquedasInternas.fxml");
-    }
-
-    @FXML
-    private void openLineal(javafx.scene.input.MouseEvent event) {
+    private void openLineal(MouseEvent event) {
         System.out.println("abriendo busquedaILineal.fxml...");
-        loadPanel("busquedaLineal.fxml");
+        layoutController.loadPanel("/busquedaLineal.fxml");
     }
 
-    private void loadPanel(String fxml) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/" + fxml));
-            Parent panel = loader.load();
+    @FXML
+    private void openBinario(MouseEvent event){
+        System.out.println("abriendo binario...");
+        layoutController.loadPanel("/busquedaBinaria.fxml");
+    }
 
-            internasPane.getChildren().clear();
-            internasPane.getChildren().add(panel);
+    @FXML
+    private void openFuncionHash(MouseEvent event){
+        System.out.println("abriendo funcionHash interno");
+        layoutController.loadPanel("/busquedaHash.fxml");
+    }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    @FXML
+    private void openBResiduos(MouseEvent event){
+        System.out.println("abriendo busquedaPorResiduos.fxml...");
+        layoutController.loadPanel("/busquedaPorResiduos.fxml");
     }
 }

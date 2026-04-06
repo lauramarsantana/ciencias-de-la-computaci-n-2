@@ -3,12 +3,9 @@ package controller;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
 import utilities.SlotClave;
 import javafx.stage.FileChooser;
 import java.io.*;
@@ -21,12 +18,6 @@ public class BusquedaLinealController {
     private Integer n; // tamaño máximo de la estructura
 
     @FXML private AnchorPane linealPane;
-    @FXML
-    private AnchorPane menuPane;
-    @FXML
-    private VBox subMenuBusquedas;
-    @FXML
-    private VBox subMenuInternas;
 
     @FXML private TextField nField;
     @FXML private ChoiceBox<Integer> digitosChoice;
@@ -46,13 +37,6 @@ public class BusquedaLinealController {
 
     @FXML
     public void initialize() {
-        // Inicializar menú
-        menuPane.setVisible(false);
-        menuPane.setManaged(false);
-        subMenuBusquedas.setVisible(false);
-        subMenuBusquedas.setManaged(false);
-        subMenuInternas.setVisible(false);
-        subMenuInternas.setManaged(false);
 
         // Inicializar lógica propia de este controlador
         digitosChoice.getItems().addAll(1, 2, 3, 4);
@@ -69,61 +53,6 @@ public class BusquedaLinealController {
         colPos.prefWidthProperty().bind(tabla.widthProperty().multiply(0.3));
         colClave.prefWidthProperty().bind(tabla.widthProperty().multiply(0.7));
 
-    }
-
-    // configurando cada boton del menu desplegable
-    @FXML
-    private void openMenu(javafx.scene.input.MouseEvent event){
-        System.out.println("abriendo menu...");
-        menuPane.setVisible(true); // para que el panel del menu se vea
-        menuPane.setManaged(true);// posiciona de primeras al panel
-    }
-    @FXML
-    private void closeMenu(javafx.scene.input.MouseEvent event){
-        System.out.println("cerrando menu...");
-        menuPane.setVisible(false);// para que el panel del menu se oculte
-        menuPane.setManaged(false);// lo quita de la primera capa, para liberar el espacio
-    }
-
-    @FXML
-    private void openMenuBusquedas(javafx.scene.input.MouseEvent event){
-        System.out.println("abriendo submenu de busquedas...");
-        boolean isVisible = subMenuBusquedas.isVisible();
-        subMenuBusquedas.setVisible(!isVisible);
-        subMenuBusquedas.setManaged(!isVisible);
-    }
-    @FXML
-    private void openMenuInternas(javafx.scene.input.MouseEvent event){
-        System.out.println("abriendo submenu de busquedas internas...");
-        boolean isVisible = subMenuInternas.isVisible();
-        subMenuInternas.setVisible(!isVisible);
-        subMenuInternas.setManaged(!isVisible);
-    }
-    @FXML
-    private void mostrarBusquedaLineal(javafx.scene.input.MouseEvent event) {
-        System.out.println("Abriendo busquedaLineal.fxml");
-        loadPanel("busquedaLineal.fxml");
-    }
-    @FXML
-    private void openBinario(javafx.scene.input.MouseEvent event){
-        System.out.println("abriendo busquedaBinaria.fxml");
-        loadPanel("busquedaBinaria.fxml");
-    }
-    @FXML
-    private void openFuncionHash(javafx.scene.input.MouseEvent event){
-        System.out.println("abriendo busquedaHash.fxml");
-        loadPanel("busquedaHash.fxml");
-    }
-    @FXML
-    private void openGrafos(javafx.scene.input.MouseEvent event){
-        System.out.println("Abriendo grafos.fxml...");
-        loadPanel("grafos.fxml");
-    }
-
-    @FXML
-    private void openInicio(javafx.scene.input.MouseEvent event){
-        System.out.println("Abriendo inicio.fxml...");
-        loadPanel("inicio.fxml");
     }
 
     @FXML
@@ -325,25 +254,6 @@ public class BusquedaLinealController {
     private void limpiarInsercion() {
         claveInsertField.clear();
         claveInsertField.requestFocus();
-    }
-
-    @FXML
-    private void openInternas(javafx.scene.input.MouseEvent event){
-        System.out.println("Abriendo busquedasInternas.fxml...");
-        loadPanel("busquedasInternas.fxml");
-    }
-
-    private void loadPanel(String fxml) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/" + fxml));
-            Parent panel = loader.load();
-
-            linealPane.getChildren().clear();
-            linealPane.getChildren().add(panel);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private boolean claveValidaPorDigitos(String clave, int digitos) {

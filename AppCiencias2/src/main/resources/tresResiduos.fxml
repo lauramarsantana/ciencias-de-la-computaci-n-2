@@ -11,10 +11,10 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="digitalPanel" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ArbolDigitalController">
+<AnchorPane fx:id="triePane" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.TriesResiduosController">
 
     <children>
-        <VBox alignment="CENTER" spacing="12">
+        <VBox alignment="CENTER" prefHeight="600.0" prefWidth="1280.0" spacing="12">
             <padding>
                 <Insets bottom="20" left="20" right="20" top="20" />
             </padding>
@@ -24,7 +24,7 @@
                 <Label text="Mensaje:" />
                 <TextField fx:id="mensajeField" promptText="Ej: MURCIELAGO" />
                 <Button onAction="#procesarMensaje" text="Procesar" />
-                <Button onAction="#initialize" text="Reiniciar" />
+                <Button onAction="#initializeTree" text="Reiniciar" />
             </HBox>
 
                   <!-- Buscar letra -->
@@ -47,8 +47,8 @@
                   <!-- Resultado -->
             <Label fx:id="resultadoLabel" style="-fx-font-size: 14px; -fx-text-fill: #2262C6;" text="Listo." />
 
-                  <!-- Visualización del árbol -->
-            <Pane fx:id="arbolPane" prefHeight="250.0" prefWidth="1280.0" style="-fx-background-color: #f4f4f4;" />
+                  <!-- Visualización del trie -->
+            <Pane fx:id="arbolPane" prefHeight="500" prefWidth="1000" style="-fx-background-color: #f4f4f4;" />
         </VBox>
     </children>
 </AnchorPane>
