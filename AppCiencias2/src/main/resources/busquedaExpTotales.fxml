@@ -26,24 +26,8 @@
               </padding>
 
               <children>
-                  <!-- Config -->
-                  <HBox alignment="CENTER" spacing="10" VBox.vgrow="ALWAYS">
-                      <children>
-                          <Label text="Cubetas iniciales (N):" />
-                          <TextField fx:id="nField" prefHeight="25.0" prefWidth="60.0" promptText="Ej: 2">
-                              <cursor>
-                                  <Cursor fx:constant="TEXT" />
-                              </cursor>
-                          </TextField>
 
-                          <Label text="Dígitos clave:" />
-                          <ChoiceBox fx:id="digitosChoice" maxHeight="20.0" prefWidth="30.0" />
-
-                          <Button onAction="#crearEstructura" text="Crear" />
-                      </children>
-                  </HBox>
-
-                        <children>
+                     
                             <!-- Config -->
                             <HBox alignment="CENTER" spacing="10">
                                 <children>

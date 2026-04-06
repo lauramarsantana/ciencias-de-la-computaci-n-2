@@ -71,80 +71,77 @@ public class BusquedaExpTotalesController {
 
     TableColumn<ObservableList<String>, String> c0 = new TableColumn<>("");
     c0.setPrefWidth(60);
-    c0.setCellValueFactory(p ->
-            new javafx.beans.property.SimpleStringProperty(p.getValue().get(0))
-    );
+    c0.setCellValueFactory(p -> {
+        ObservableList<String> fila = p.getValue();
+        String valor = (fila != null && fila.size() > 0) ? fila.get(0) : "";
+        return new javafx.beans.property.SimpleStringProperty(valor);
+    });
     tabla.getColumns().add(c0);
 
-        for (int i = 0; i < nCubetas; i++) {
-            final int colIndex = i + 1;
-            TableColumn<ObservableList<String>, String> col = new TableColumn<>(String.valueOf(i));
-            col.setPrefWidth(80);
-            col.setCellValueFactory(p ->
-                    new javafx.beans.property.SimpleStringProperty(p.getValue().get(colIndex))
-            );
-            tabla.getColumns().add(col);
-        }
-
-        dataUI.clear();
-
-        for (int f = 0; f < filas; f++) {
-            ObservableList<String> fila = FXCollections.observableArrayList();
-            fila.add(String.valueOf(f + 1));
-
-            for (int c = 0; c < nCubetas; c++) {
-                fila.add("");
-            }
-
-            dataUI.add(fila);
-        }
-
-        tabla.setItems(dataUI);
+    for (int i = 0; i < nCubetas; i++) {
+        final int colIndex = i + 1;
+        TableColumn<ObservableList<String>, String> col = new TableColumn<>(String.valueOf(i));
+        col.setPrefWidth(80);
+        col.setCellValueFactory(p -> {
+            ObservableList<String> fila = p.getValue();
+            String valor = (fila != null && fila.size() > colIndex) ? fila.get(colIndex) : "";
+            return new javafx.beans.property.SimpleStringProperty(valor);
+        });
+        tabla.getColumns().add(col);
     }
+
+    dataUI.clear();
+
+    for (int f = 0; f < filas; f++) {
+        ObservableList<String> fila = FXCollections.observableArrayList();
+        fila.add(String.valueOf(f + 1));
+
+        for (int c = 0; c < nCubetas; c++) {
+            fila.add("");
+        }
+
+        dataUI.add(fila);
+    }
+
+    tabla.setItems(dataUI);
+}
 
     private void refrescarTablaInvertida() {
     if (!creada || estructura == null) return;
 
     int n = estructura.getN();
 
+    if (tabla.getColumns().size() != n + 1) {
+        construirTablaInvertida(n);
+    }
 
-        // 1. Verificar si el número de columnas coincide con N cubetas + 1 (etiqueta)
-        if (tabla.getColumns().size() != n + 1) {
-            construirTablaInvertida(n);
-        }
+    List<SlotCubeta> snapshot = estructura.snapshotTabla();
 
-        List<SlotCubeta> snapshot = estructura.snapshotTabla();
+    for (int c = 0; c < n; c++) {
+        SlotCubeta sc = snapshot.get(c);
 
-        for (int c = 0; c < n; c++) {
-            SlotCubeta sc = snapshot.get(c);
-
-            for (int f = 0; f < filas; f++) {
-                String valor = sc.getFila(f);
-                dataUI.get(f).set(c + 1, valor == null ? "" : valor);
-            }
-
-
-        // Actualizar la lista que observa la tabla
-        dataUI.clear();
-
-
-        tabla.refresh();
-
-        // Actualizar Labels de estado
-        if (doLabel != null) {
-            double doVal = estructura.densidadOcupacional();
-            doLabel.setText(String.format("DO: %.2f%% (%d/%d) | Exp: 75%% Red: 25%%",
-                    doVal * 100.0,
-                    estructura.totalOcupados(),
-                    estructura.getN() * estructura.getFilas()));
-        }
-
-        if (pendientesLabel != null) {
-            pendientesLabel.setText("Pendientes: " + estructura.getPendientes());
-        }
+        for (int f = 0; f < filas; f++) {
+            String valor = sc.getFila(f);
+            dataUI.get(f).set(c + 1, valor == null ? "" : valor);
         }
     }
 
+    tabla.refresh();
+
+    if (doLabel != null) {
+        double doVal = estructura.densidadOcupacional();
+        doLabel.setText(String.format(
+                "DO: %.2f%% (%d/%d) | Exp: 75%% Red: 25%%",
+                doVal * 100.0,
+                estructura.totalOcupados(),
+                estructura.getN() * estructura.getFilas()
+        ));
+    }
+
+    if (pendientesLabel != null) {
+        pendientesLabel.setText("Pendientes: " + estructura.getPendientes());
+    }
+}
     // =========================
     // Lógica principal
     // =========================
