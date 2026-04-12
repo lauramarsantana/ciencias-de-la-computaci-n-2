@@ -13,21 +13,16 @@ public class IndicesExternosController {
 
     @FXML
     private void openIndicePrimario(MouseEvent event) {
-        layoutController.loadPanel("/busquedaIndicePrimario.fxml");
+        layoutController.loadPanel("/IndicePrimario.fxml");
     }
 
     @FXML
     private void openIndiceSecundario(MouseEvent event) {
-        layoutController.loadPanel("/busquedaIndiceSecundario.fxml");
-    }
-
-    @FXML
-    private void openIndiceAgrupamiento(MouseEvent event) {
-        System.out.println("abriendo indice...");
+        layoutController.loadPanel("/IndiceSecundario.fxml");
     }
 
     @FXML
     private void openIndiceMultinivel(MouseEvent event) {
-        System.out.println("abriendo multinivel");
+        layoutController.loadPanel("/IndiceMultinivel.fxml");
     }
 }
