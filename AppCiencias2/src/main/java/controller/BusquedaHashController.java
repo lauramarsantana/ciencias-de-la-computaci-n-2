@@ -28,8 +28,7 @@ public class BusquedaHashController {
     @FXML private TableColumn<SlotHash, Integer> colHash;
     @FXML private TableColumn<SlotHash, String> colClave;
 
-    @FXML private TextField claveInsertField;
-    @FXML private TextField claveBuscarField;
+    @FXML private TextField claveField;
     @FXML private Label resultadoLabel;
     
     @FXML private ChoiceBox<String> hashChoice;
@@ -208,65 +207,64 @@ public class BusquedaHashController {
     }
 
     @FXML
-    private void insertarClave() {
-        if (!creada) {
-            resultadoLabel.setText("Primero debes crear la estructura.");
-            limpiarInsercion();
-            return;
-        }
+private void insertarClave() {
+    if (!creada) {
+        resultadoLabel.setText("Primero debes crear la estructura.");
+        limpiarClave();
+        return;
+    }
 
-        String claveTxt = normalizarClave(claveInsertField.getText(), digitos);
-        claveInsertField.setText(claveTxt);
+    String input = claveField.getText() == null ? "" : claveField.getText().trim();
+    if (input.isEmpty()) {
+        resultadoLabel.setText("Escribe una clave para insertar.");
+        limpiarClave();
+        return;
+    }
 
-        if (!claveValidaPorDigitos(claveTxt, digitos)) {
-            resultadoLabel.setText("La clave debe tener exactamente " + digitos + " dígitos.");
-            limpiarInsercion();
-            return;
-        }
+    String claveTxt = normalizarClave(input, digitos);
+    claveField.setText(claveTxt);
 
-        // No repetición: revisar slot principal + colisiones (incluye NO RESUELTA)
-        if (existeClaveEnTabla(claveTxt)) {
-            resultadoLabel.setText("Esa clave ya existe en la tabla.");
-            limpiarInsercion();
-            return;
-        }
+    if (!claveValidaPorDigitos(claveTxt, digitos)) {
+        resultadoLabel.setText("La clave debe tener exactamente " + digitos + " dígitos.");
+        limpiarClave();
+        return;
+    }
 
-        int claveNum = Integer.parseInt(claveTxt);
-        int start = hashBase(claveTxt);
+    if (existeClaveEnTabla(claveTxt)) {
+        resultadoLabel.setText("Esa clave ya existe en la tabla.");
+        limpiarClave();
+        return;
+    }
 
-        boolean resolver = resolverCheck.isSelected();
-        String estrategia = colisionChoice.getValue();
+    int start = hashBase(claveTxt);
+    boolean resolver = resolverCheck.isSelected();
+    String estrategia = colisionChoice.getValue();
 
-        int comparaciones = 0;
-        long inicio = System.nanoTime();
+    int comparaciones = 0;
+    long inicio = System.nanoTime();
 
-        SlotHash base = data.get(start);
-        comparaciones++;
+    SlotHash base = data.get(start);
+    comparaciones++;
 
-        if (base.isVacio()) {
-            base.setClave(claveTxt);
+    if (base.isVacio()) {
+        base.setClave(claveTxt);
+        actualizarVista();
 
-            // aquí llamas al método actualizar vista
-            actualizarVista();
+        long fin = System.nanoTime();
+        resultadoLabel.setText("Insertada en posición " + base.getPosicion()
+                + " | Hash(base): " + start
+                + " | Tiempo: " + (fin - inicio) + " ns");
 
-            long fin = System.nanoTime();
-            resultadoLabel.setText("Insertada en posición " + base.getPosicion()
-                    + " | Hash(base): " + start
-                    + " | Tiempo: " + (fin - inicio) + " ns");
+        limpiarClave();
+        return;
+    }
 
-            claveInsertField.clear();
-            claveInsertField.requestFocus();
-            return;
-        }
+    if ("Arreglos anidados".equals(estrategia) || "Listas enlazadas".equals(estrategia)) {
+        resolver = true;
+        resolverCheck.setSelected(true);
+    }
 
-        // Si es encadenamiento, SIEMPRE se resuelve
-        if ("Arreglos anidados".equals(estrategia) || "Listas enlazadas".equals(estrategia)) {
-            resolver = true;
-            resolverCheck.setSelected(true); // opcional: para que se vea reflejado
-        }
-
-        //Hay colisión
-        if (!resolver) {
+    if (!resolver) {
         String marca = "⚠ " + claveTxt;
 
         boolean yaExiste = base.getColisiones().stream()
@@ -283,90 +281,91 @@ public class BusquedaHashController {
                 + " | pendiente por resolver"
                 + " | Tiempo: " + (fin - inicio) + " ns");
 
-        limpiarInsercion();
+        limpiarClave();
         return;
     }
 
-        // Encadenamiento (Arreglos anidados / Listas enlazadas)
-        if ("Arreglos anidados".equals(estrategia) || "Listas enlazadas".equals(estrategia)) {
-            // Evitar duplicados reales en el bucket
-            if (base.getColisiones().contains(claveTxt)) {
-                resultadoLabel.setText("Esa clave ya existe en el encadenamiento de la posición " + base.getPosicion() + ".");
-                limpiarInsercion();
-                return;
-            }
-
-            base.getColisiones().add(claveTxt);
-            tabla.refresh();
-
-            long fin = System.nanoTime();
-            resultadoLabel.setText("Insertada por encadenamiento en posición " + base.getPosicion()
-                    + " | Tiempo: " + (fin - inicio) + " ns");
-
-            limpiarInsercion();
+    if ("Arreglos anidados".equals(estrategia) || "Listas enlazadas".equals(estrategia)) {
+        if (base.getColisiones().contains(claveTxt)) {
+            resultadoLabel.setText("Esa clave ya existe en el encadenamiento de la posición " + base.getPosicion() + ".");
+            limpiarClave();
             return;
         }
 
-        // Probing: Lineal / Cuadrática / Doble hash
-        for (int i = 1; i < N; i++) {
-            int idx;
-
-            if ("Cuadrática".equals(estrategia)) {
-                idx = (start + i * i) % N;
-            } else if ("Doble Hash".equals(estrategia)) {
-                int k = Integer.parseInt(claveTxt);
-                int h2 = 1 + (k % Math.max(1, (N - 1)));
-                idx = (start + i * h2) % N;
-            } else { // Lineal
-                idx = (start + i) % N;
-            }
-
-            SlotHash slot = data.get(idx);
-            comparaciones++;
-
-            if (slot.isVacio()) {
-                slot.setClave(claveTxt);
-
-                // eliminar la marca de colisión en la posición base
-                base.getColisiones().removeIf(s -> s.contains(claveTxt));
-
-                actualizarVista();
-                tabla.getSelectionModel().select(slot);
-                tabla.scrollTo(slot);
-
-                long fin = System.nanoTime();
-                resultadoLabel.setText("Insertada en posición " + slot.getPosicion()
-                        + " (índice " + idx + ")"
-                        + " | Hash base: " + start
-                        + " | Colisiones: " + i
-                        + " | Comparaciones: " + comparaciones
-                        + " | Tiempo: " + (fin - inicio) + " ns");
-
-                claveInsertField.clear();
-                claveInsertField.requestFocus();
-                return;
-
-            }
-        }
+        base.getColisiones().add(claveTxt);
+        tabla.refresh();
 
         long fin = System.nanoTime();
-        resultadoLabel.setText("Tabla llena (sin espacio) | Comparaciones: " + comparaciones + " | Tiempo: " + (fin - inicio) + " ns");
+        resultadoLabel.setText("Insertada por encadenamiento en posición " + base.getPosicion()
+                + " | Tiempo: " + (fin - inicio) + " ns");
 
+        limpiarClave();
+        return;
     }
+
+    for (int i = 1; i < N; i++) {
+        int idx;
+
+        if ("Cuadrática".equals(estrategia)) {
+            idx = (start + i * i) % N;
+        } else if ("Doble Hash".equals(estrategia)) {
+            int k = Integer.parseInt(claveTxt);
+            int h2 = 1 + (k % Math.max(1, (N - 1)));
+            idx = (start + i * h2) % N;
+        } else {
+            idx = (start + i) % N;
+        }
+
+        SlotHash slot = data.get(idx);
+        comparaciones++;
+
+        if (slot.isVacio()) {
+            slot.setClave(claveTxt);
+            base.getColisiones().removeIf(s -> s.contains(claveTxt));
+
+            actualizarVista();
+            tabla.getSelectionModel().select(slot);
+            tabla.scrollTo(slot);
+
+            long fin = System.nanoTime();
+            resultadoLabel.setText("Insertada en posición " + slot.getPosicion()
+                    + " (índice " + idx + ")"
+                    + " | Hash base: " + start
+                    + " | Colisiones: " + i
+                    + " | Comparaciones: " + comparaciones
+                    + " | Tiempo: " + (fin - inicio) + " ns");
+
+            limpiarClave();
+            return;
+        }
+    }
+
+    long fin = System.nanoTime();
+    resultadoLabel.setText("Tabla llena (sin espacio) | Comparaciones: " + comparaciones + " | Tiempo: " + (fin - inicio) + " ns");
+    limpiarClave();
+}
 
     @FXML
     private void buscarClave() {
         if (!creada) {
             resultadoLabel.setText("Primero debes crear la estructura.");
+            limpiarClave();
             return;
         }
 
-        String claveTxt = normalizarClave(claveBuscarField.getText(), digitos);
-        claveBuscarField.setText(claveTxt);
+        String input = claveField.getText() == null ? "" : claveField.getText().trim();
+        if (input.isEmpty()) {
+            resultadoLabel.setText("Escribe una clave para buscar.");
+            limpiarClave();
+            return;
+        }
+
+        String claveTxt = normalizarClave(input, digitos);
+        claveField.setText(claveTxt);
 
         if (!claveValidaPorDigitos(claveTxt, digitos)) {
-            resultadoLabel.setText("La clave debe tener exactamente " + digitos + " dígitos. ");
-            limpiarBusqueda();
+            resultadoLabel.setText("La clave debe tener exactamente " + digitos + " dígitos.");
+            limpiarClave();
             return;
         }
 
@@ -376,11 +375,9 @@ public class BusquedaHashController {
         int comparaciones = 0;
         long inicio = System.nanoTime();
 
-        // 1) Revisar el slot base
         SlotHash base = data.get(start);
         comparaciones++;
 
-        // 2) Si está en el slot base
         if (claveTxt.equals(base.getClave())) {
             long fin = System.nanoTime();
             tabla.getSelectionModel().select(base);
@@ -390,12 +387,10 @@ public class BusquedaHashController {
                     + " | Método: " + estrategia
                     + " | Comparaciones: " + comparaciones
                     + " | Tiempo: " + (fin - inicio) + " ns");
-            limpiarBusqueda();
+            limpiarClave();
             return;
         }
 
-        // Si la clave está en el slot base
-        // 3)Buscar en colisiones del bucket (incluye NO RESUELTA y encadenamiento)
         if (existeEnColisiones(base, claveTxt)) {
             long fin = System.nanoTime();
             tabla.getSelectionModel().select(base);
@@ -405,11 +400,10 @@ public class BusquedaHashController {
                     + " | Método: " + estrategia
                     + " | Comparaciones: " + comparaciones
                     + " | Tiempo: " + (fin - inicio) + " ns");
-            limpiarBusqueda();
+            limpiarClave();
             return;
         }
 
-        // 4) Si hay encadenamiento, buscar dentro del bucket (colisiones)
         if ("Arreglos anidados".equals(estrategia) || "Listas enlazadas".equals(estrategia)) {
             if (base.getColisiones().contains(claveTxt)) {
                 long fin = System.nanoTime();
@@ -419,7 +413,7 @@ public class BusquedaHashController {
                         + " | Hash: " + start
                         + " | Comparaciones: " + comparaciones
                         + " | Tiempo: " + (fin - inicio) + " ns");
-                limpiarBusqueda();
+                limpiarClave();
                 return;
             }
 
@@ -427,11 +421,10 @@ public class BusquedaHashController {
             resultadoLabel.setText("No encontrada | Hash: " + start
                     + " | Comparaciones: " + comparaciones
                     + " | Tiempo: " + (fin - inicio) + " ns");
-            limpiarBusqueda();
+            limpiarClave();
             return;
         }
 
-        // 5) Probing: Lineal / Cuadrática / Doble hash
         for (int i = 1; i < N; i++) {
             int idx;
 
@@ -441,7 +434,7 @@ public class BusquedaHashController {
                 int k = Integer.parseInt(claveTxt);
                 int h2 = 1 + (k % Math.max(1, (N - 1)));
                 idx = (start + i * h2) % N;
-            } else { // Lineal
+            } else {
                 idx = (start + i) % N;
             }
 
@@ -457,7 +450,7 @@ public class BusquedaHashController {
                         + " | Hash: " + start
                         + " | Comparaciones: " + comparaciones
                         + " | Tiempo: " + (fin - inicio) + " ns");
-                limpiarBusqueda();
+                limpiarClave();
                 return;
             }
 
@@ -466,7 +459,7 @@ public class BusquedaHashController {
                 resultadoLabel.setText("No encontrada | Hash: " + start
                         + " | Comparaciones: " + comparaciones
                         + " | Tiempo: " + (fin - inicio) + " ns");
-                limpiarBusqueda();
+                limpiarClave();
                 return;
             }
         }
@@ -475,8 +468,8 @@ public class BusquedaHashController {
         resultadoLabel.setText("No encontrada | Hash: " + start
                 + " | Comparaciones: " + comparaciones
                 + " | Tiempo: " + (fin - inicio) + " ns");
-        limpiarBusqueda();
-        }
+        limpiarClave();
+    }
 
     @FXML
         private void arreglarColisiones() {
@@ -625,14 +618,9 @@ public class BusquedaHashController {
             return false;
         }
 
-    private void limpiarBusqueda() {
-        claveBuscarField.clear();
-        claveBuscarField.requestFocus();
-    }
-    
-    private void limpiarInsercion() {
-        claveInsertField.clear();
-        claveInsertField.requestFocus();
+    private void limpiarClave() {
+    claveField.clear();
+    claveField.requestFocus();
     }
     
     @FXML
@@ -650,9 +638,7 @@ public class BusquedaHashController {
         tabla.getSelectionModel().clearSelection();
         actualizarVista();
 
-        claveInsertField.clear();
-        claveBuscarField.clear();
-        claveInsertField.requestFocus();
+        limpiarClave();
 
         resultadoLabel.setText("La tabla hash fue limpiada.");
     }
@@ -827,67 +813,63 @@ public class BusquedaHashController {
             return;
         }
 
-        String claveTxt = normalizarClave(claveBuscarField.getText(), digitos);
-        claveBuscarField.setText(claveTxt);
-
-        if (!claveValidaPorDigitos(claveTxt, digitos)) {
-            resultadoLabel.setText("La clave debe tener exactamente " + digitos + " dígitos.");
-            limpiarBusqueda();
+        String input = claveField.getText() == null ? "" : claveField.getText().trim();
+        if (input.isEmpty()) {
+            resultadoLabel.setText("Escribe una clave para eliminar.");
+            limpiarClave();
             return;
         }
 
-        // 1) Eliminar de colisiones (en cualquier bucket)
+        String claveTxt = normalizarClave(input, digitos);
+        claveField.setText(claveTxt);
+
+        if (!claveValidaPorDigitos(claveTxt, digitos)) {
+            resultadoLabel.setText("La clave debe tener exactamente " + digitos + " dígitos.");
+            limpiarClave();
+            return;
+        }
+
         for (SlotHash s : data) {
             if (s.getColisiones() != null && !s.getColisiones().isEmpty()) {
                 boolean removed = s.getColisiones().removeIf(item -> claveTxt.equals(extraerClaveReal(item)));
                 if (removed) {
                     actualizarVista();
                     resultadoLabel.setText("Eliminada de colisiones en posición " + s.getPosicion());
-                    limpiarBusqueda();
+                    limpiarClave();
                     return;
                 }
             }
         }
 
-        // 2) Eliminar si está como clave principal
-        // Buscar en toda la tabla (incluye probing)
         for (int idx = 0; idx < N; idx++) {
             SlotHash slot = data.get(idx);
             if (claveTxt.equals(slot.getClave())) {
                 slot.setClave(null);
-
-                // Rehash del cluster siguiente para no romper búsquedas en probing
                 rehashDesde(idx);
 
                 actualizarVista();
                 resultadoLabel.setText("Eliminada de posición " + slot.getPosicion());
-                limpiarBusqueda();
+                limpiarClave();
                 return;
             }
         }
 
         resultadoLabel.setText("No se encontró la clave para eliminar.");
-        limpiarBusqueda();
+        limpiarClave();
     }
-
-/** Reinsertar claves del cluster después de borrar en probing (lineal/cuadrática/doble). */
-private void rehashDesde(int idxBorrado) {
-    // Guardar las claves siguientes que podrían depender del cluster
+    private void rehashDesde(int idxBorrado) {
     List<String> aReinsertar = new ArrayList<>();
 
-    // barrer el resto de la tabla completa (una vuelta) recogiendo claves hasta llegar a un vacío "natural"
-    // Como no tenemos tombstone, tomamos un enfoque seguro: recoger todo y reinsertar lo que estaba después.
-    // (educativo, funciona bien con N pequeño)
     for (int i = 1; i < N; i++) {
         int idx = (idxBorrado + i) % N;
         SlotHash slot = data.get(idx);
+
         if (slot.isVacio()) break;
 
         aReinsertar.add(slot.getClave());
         slot.setClave(null);
     }
 
-    // Reinsertar usando tu lógica de inserción (pero sin validación global porque son claves existentes)
     for (String k : aReinsertar) {
         reubicarPorProbing(k, colisionChoice.getValue());
     }

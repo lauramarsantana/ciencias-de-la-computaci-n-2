@@ -35,8 +35,7 @@ public class BusquedaHashExternaController {
     @FXML private TableColumn<SlotHashExterno, String> colClave;
     @FXML private TableColumn<SlotHashExterno, String> colColisiones;
 
-    @FXML private TextField claveInsertField;
-    @FXML private TextField claveBuscarField;
+    @FXML private TextField claveField;
     @FXML private Label resultadoLabel;
 
     private final ObservableList<SlotHashExterno> dataTabla = FXCollections.observableArrayList();
@@ -250,35 +249,42 @@ private int calcularOffsetDentroBloque(String claveTxt) {
     private void insertarClave() {
         if (!creada) {
             resultadoLabel.setText("Primero debes crear la estructura.");
-            limpiarInsercion();
+            limpiarClave();
             return;
         }
 
-        String claveTxt = normalizarClave(claveInsertField.getText(), digitos);
-        claveInsertField.setText(claveTxt);
+        String input = claveField.getText() == null ? "" : claveField.getText().trim();
+        if (input.isEmpty()) {
+            resultadoLabel.setText("Escribe una clave para insertar.");
+            limpiarClave();
+            return;
+        }
+
+        String claveTxt = normalizarClave(input, digitos);
+        claveField.setText(claveTxt);
 
         if (!claveValidaPorDigitos(claveTxt, digitos)) {
             resultadoLabel.setText("La clave debe tener exactamente " + digitos + " dígitos.");
-            limpiarInsercion();
+            limpiarClave();
             return;
         }
-        
+
         if ("Conversión de base".equals(hashChoice.getValue()) && !claveValidaParaBase(claveTxt, baseConversion)) {
             resultadoLabel.setText("Clave inválida para base " + baseConversion + ".");
-            limpiarInsercion();
+            limpiarClave();
             return;
         }
 
         if (existeClaveEnEstructura(claveTxt)) {
             resultadoLabel.setText("Esa clave ya existe en la estructura.");
-            limpiarInsercion();
+            limpiarClave();
             return;
         }
 
-        int hash = calcularHash(claveTxt);              // ejemplo: 34
-        int indiceBase = calcularIndiceBase(claveTxt); // ejemplo: 34
-        int bloqueBaseIdx = indiceBase / tamBloque;    // ejemplo: 3
-        int offsetBase = indiceBase % tamBloque;       // ejemplo: 4
+        int hash = calcularHash(claveTxt);
+        int indiceBase = calcularIndiceBase(claveTxt);
+        int bloqueBaseIdx = indiceBase / tamBloque;
+        int offsetBase = indiceBase % tamBloque;
 
         String estrategia = colisionChoice.getValue();
         boolean resolver = resolverCheck.isSelected();
@@ -290,7 +296,6 @@ private int calcularOffsetDentroBloque(String claveTxt) {
         SlotHashExterno slotBase = bloqueBase.getSlots().get(offsetBase);
         comparaciones++;
 
-        // Caso normal: la posición base está libre
         if (slotBase.isVacio()) {
             slotBase.setClave(claveTxt);
             slotBase.setHash(hash);
@@ -302,11 +307,10 @@ private int calcularOffsetDentroBloque(String claveTxt) {
                     " | Hash: " + hash +
                     " | Tiempo: " + (fin - inicio) + " ns");
 
-            limpiarInsercion();
+            limpiarClave();
             return;
         }
 
-        // Aquí sí hay colisión real
         if (!resolver) {
             String marca = "⚠ " + claveTxt;
 
@@ -325,11 +329,10 @@ private int calcularOffsetDentroBloque(String claveTxt) {
                     " | Pendiente por resolver" +
                     " | Tiempo: " + (fin - inicio) + " ns");
 
-            limpiarInsercion();
+            limpiarClave();
             return;
         }
 
-        // Encadenamiento: guardar la colisión en la misma posición base
         if ("Encadenamiento de bloques".equals(estrategia)) {
             if (!slotBase.getColisiones().contains(claveTxt)) {
                 slotBase.getColisiones().add(claveTxt);
@@ -342,11 +345,10 @@ private int calcularOffsetDentroBloque(String claveTxt) {
                     " | Hash: " + hash +
                     " | Tiempo: " + (fin - inicio) + " ns");
 
-            limpiarInsercion();
+            limpiarClave();
             return;
         }
 
-        // Probing sobre TODA la estructura (no solo por bloques)
         for (int i = 1; i < N; i++) {
             int idx;
 
@@ -356,7 +358,7 @@ private int calcularOffsetDentroBloque(String claveTxt) {
                 int k = Integer.parseInt(claveTxt);
                 int h2 = 1 + (k % Math.max(1, N - 1));
                 idx = (indiceBase + i * h2) % N;
-            } else { // Lineal
+            } else {
                 idx = (indiceBase + i) % N;
             }
 
@@ -370,7 +372,6 @@ private int calcularOffsetDentroBloque(String claveTxt) {
                 slot.setClave(claveTxt);
                 slot.setHash(hash);
 
-                // quitar posible marca pendiente
                 slotBase.getColisiones().removeIf(c -> claveTxt.equals(extraerClaveReal(c)));
 
                 actualizarVista();
@@ -384,7 +385,7 @@ private int calcularOffsetDentroBloque(String claveTxt) {
                         " | Comparaciones: " + comparaciones +
                         " | Tiempo: " + (fin - inicio) + " ns");
 
-                limpiarInsercion();
+                limpiarClave();
                 return;
             }
         }
@@ -393,28 +394,36 @@ private int calcularOffsetDentroBloque(String claveTxt) {
         resultadoLabel.setText("Estructura llena | Hash base: " + hash +
                 " | Comparaciones: " + comparaciones +
                 " | Tiempo: " + (fin - inicio) + " ns");
-        limpiarInsercion();
+        limpiarClave();
     }
 
     @FXML
     private void buscarClave() {
         if (!creada) {
             resultadoLabel.setText("Primero debes crear la estructura.");
+            limpiarClave();
             return;
         }
 
-        String claveTxt = normalizarClave(claveBuscarField.getText(), digitos);
-        claveBuscarField.setText(claveTxt);
+        String input = claveField.getText() == null ? "" : claveField.getText().trim();
+        if (input.isEmpty()) {
+            resultadoLabel.setText("Escribe una clave para buscar.");
+            limpiarClave();
+            return;
+        }
+
+        String claveTxt = normalizarClave(input, digitos);
+        claveField.setText(claveTxt);
 
         if (!claveValidaPorDigitos(claveTxt, digitos)) {
             resultadoLabel.setText("La clave debe tener exactamente " + digitos + " dígitos.");
-            limpiarBusqueda();
+            limpiarClave();
             return;
         }
-        
+
         if ("Conversión de base".equals(hashChoice.getValue()) && !claveValidaParaBase(claveTxt, baseConversion)) {
             resultadoLabel.setText("Clave inválida para base " + baseConversion + ".");
-            limpiarBusqueda();
+            limpiarClave();
             return;
         }
 
@@ -439,7 +448,7 @@ private int calcularOffsetDentroBloque(String claveTxt) {
                     " | Hash: " + hash +
                     " | Comparaciones: " + comparaciones +
                     " | Tiempo: " + (fin - inicio) + " ns");
-            limpiarBusqueda();
+            limpiarClave();
             return;
         }
 
@@ -450,7 +459,7 @@ private int calcularOffsetDentroBloque(String claveTxt) {
                     " | Hash: " + hash +
                     " | Comparaciones: " + comparaciones +
                     " | Tiempo: " + (fin - inicio) + " ns");
-            limpiarBusqueda();
+            limpiarClave();
             return;
         }
 
@@ -459,7 +468,7 @@ private int calcularOffsetDentroBloque(String claveTxt) {
             resultadoLabel.setText("No encontrada | Hash: " + hash +
                     " | Comparaciones: " + comparaciones +
                     " | Tiempo: " + (fin - inicio) + " ns");
-            limpiarBusqueda();
+            limpiarClave();
             return;
         }
 
@@ -490,7 +499,7 @@ private int calcularOffsetDentroBloque(String claveTxt) {
                         " | Hash: " + hash +
                         " | Comparaciones: " + comparaciones +
                         " | Tiempo: " + (fin - inicio) + " ns");
-                limpiarBusqueda();
+                limpiarClave();
                 return;
             }
 
@@ -503,7 +512,7 @@ private int calcularOffsetDentroBloque(String claveTxt) {
         resultadoLabel.setText("No encontrada | Hash: " + hash +
                 " | Comparaciones: " + comparaciones +
                 " | Tiempo: " + (fin - inicio) + " ns");
-        limpiarBusqueda();
+        limpiarClave();
     }
 
     @FXML
@@ -513,35 +522,40 @@ private int calcularOffsetDentroBloque(String claveTxt) {
             return;
         }
 
-        String claveTxt = normalizarClave(claveBuscarField.getText(), digitos);
-        claveBuscarField.setText(claveTxt);
+        String input = claveField.getText() == null ? "" : claveField.getText().trim();
+        if (input.isEmpty()) {
+            resultadoLabel.setText("Escribe una clave para eliminar.");
+            limpiarClave();
+            return;
+        }
+
+        String claveTxt = normalizarClave(input, digitos);
+        claveField.setText(claveTxt);
 
         if (!claveValidaPorDigitos(claveTxt, digitos)) {
             resultadoLabel.setText("La clave debe tener exactamente " + digitos + " dígitos.");
-            limpiarBusqueda();
-            return;
-        }
-        
-        if ("Conversión de base".equals(hashChoice.getValue()) && !claveValidaParaBase(claveTxt, baseConversion)) {
-            resultadoLabel.setText("Clave inválida para base " + baseConversion + ".");
-            limpiarBusqueda();
+            limpiarClave();
             return;
         }
 
-        // eliminar de colisiones pendientes
+        if ("Conversión de base".equals(hashChoice.getValue()) && !claveValidaParaBase(claveTxt, baseConversion)) {
+            resultadoLabel.setText("Clave inválida para base " + baseConversion + ".");
+            limpiarClave();
+            return;
+        }
+
         for (BloqueHash bloque : bloques) {
             for (SlotHashExterno slot : bloque.getSlots()) {
                 boolean removed = slot.getColisiones().removeIf(item -> claveTxt.equals(extraerClaveReal(item)));
                 if (removed) {
                     actualizarVista();
                     resultadoLabel.setText("Eliminada de colisiones del bloque " + bloque.getNumeroBloque());
-                    limpiarBusqueda();
+                    limpiarClave();
                     return;
                 }
             }
         }
 
-        // eliminar clave real
         for (BloqueHash bloque : bloques) {
             for (SlotHashExterno slot : bloque.getSlots()) {
                 if (claveTxt.equals(slot.getClave())) {
@@ -550,14 +564,14 @@ private int calcularOffsetDentroBloque(String claveTxt) {
                     actualizarVista();
                     resultadoLabel.setText("Eliminada del bloque " + bloque.getNumeroBloque() +
                             ", posición " + slot.getPosicion());
-                    limpiarBusqueda();
+                    limpiarClave();
                     return;
                 }
             }
         }
 
         resultadoLabel.setText("No se encontró la clave para eliminar.");
-        limpiarBusqueda();
+        limpiarClave();
     }
     
     @FXML
@@ -578,9 +592,7 @@ private int calcularOffsetDentroBloque(String claveTxt) {
         tabla.getSelectionModel().clearSelection();
         actualizarVista();
 
-        claveInsertField.clear();
-        claveBuscarField.clear();
-        claveInsertField.requestFocus();
+        limpiarClave();
 
         resultadoLabel.setText("La estructura hash externa fue limpiada.");
     }
@@ -928,14 +940,9 @@ private int calcularOffsetDentroBloque(String claveTxt) {
         tabla.scrollTo(slot);
     }
 
-    private void limpiarBusqueda() {
-        claveBuscarField.clear();
-        claveBuscarField.requestFocus();
-    }
-
-    private void limpiarInsercion() {
-        claveInsertField.clear();
-        claveInsertField.requestFocus();
+    private void limpiarClave() {
+    claveField.clear();
+    claveField.requestFocus();
     }
 
     private Integer leerEntero(String txt) {

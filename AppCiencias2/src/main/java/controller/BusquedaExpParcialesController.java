@@ -2,8 +2,6 @@ package controller;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -21,6 +19,11 @@ import java.util.List;
 
 public class BusquedaExpParcialesController {
 
+    @FXML private AnchorPane expPane;
+    @FXML private AnchorPane menuPane;
+    @FXML private VBox subMenuBusquedas;
+    @FXML private VBox subMenuInternas;
+
     @FXML private TextField nField;
     @FXML private ChoiceBox<Integer> digitosChoice;
     @FXML private ChoiceBox<Integer> filasChoice;
@@ -30,8 +33,7 @@ public class BusquedaExpParcialesController {
 
     private final ObservableList<ObservableList<String>> dataUI = FXCollections.observableArrayList();
 
-    @FXML private TextField claveInsertField;
-    @FXML private TextField claveBuscarField;
+    @FXML private TextField claveField;
     @FXML private Label resultadoLabel;
 
     @FXML private Label doLabel;
@@ -59,22 +61,26 @@ public class BusquedaExpParcialesController {
     // Tabla invertida
     // =========================
     private void construirTablaInvertida(int nCubetas) {
-    tabla.getColumns().clear();
+        tabla.getColumns().clear();
 
-    TableColumn<ObservableList<String>, String> c0 = new TableColumn<>("");
-    c0.setPrefWidth(60);
-    c0.setCellValueFactory(p ->
-            new javafx.beans.property.SimpleStringProperty(p.getValue().get(0))
-    );
-    tabla.getColumns().add(c0);
+        TableColumn<ObservableList<String>, String> c0 = new TableColumn<>("");
+        c0.setPrefWidth(60);
+        c0.setCellValueFactory(p -> {
+            ObservableList<String> fila = p.getValue();
+            String valor = (fila != null && fila.size() > 0) ? fila.get(0) : "";
+            return new javafx.beans.property.SimpleStringProperty(valor);
+        });
+        tabla.getColumns().add(c0);
 
         for (int i = 0; i < nCubetas; i++) {
             final int colIndex = i + 1;
             TableColumn<ObservableList<String>, String> col = new TableColumn<>(String.valueOf(i));
             col.setPrefWidth(80);
-            col.setCellValueFactory(p ->
-                    new javafx.beans.property.SimpleStringProperty(p.getValue().get(colIndex))
-            );
+            col.setCellValueFactory(p -> {
+                ObservableList<String> fila = p.getValue();
+                String valor = (fila != null && fila.size() > colIndex) ? fila.get(colIndex) : "";
+                return new javafx.beans.property.SimpleStringProperty(valor);
+            });
             tabla.getColumns().add(col);
         }
 
@@ -117,11 +123,18 @@ public class BusquedaExpParcialesController {
         tabla.refresh();
 
         if (doLabel != null) {
-            double doVal = estructura.densidadOcupacional();
-            doLabel.setText(String.format("DO: %.2f%% (%d/%d) | 75/25",
-                    doVal * 100.0,
+            double doExp = estructura.densidadExpansion();
+            double doRed = estructura.densidadReduccion();
+
+            doLabel.setText(String.format(
+                    "DO Exp: %.2f%% (%d/%d) | DO Red: %.2f%% (%d/%d cubetas)",
+                    doExp * 100.0,
                     estructura.totalOcupados(),
-                    estructura.getN() * estructura.getFilas()));
+                    estructura.getN() * estructura.getFilas(),
+                    doRed * 100.0,
+                    estructura.totalCubetasOcupadas(),
+                    estructura.getN()
+            ));
         }
 
         if (pendientesLabel != null) {
@@ -153,65 +166,83 @@ public class BusquedaExpParcialesController {
         resultadoLabel.setText("Estructura creada " + filas + "x" + estructura.getN()
                 + " | Expansiones parciales | Dígitos=" + digitos);
 
-        limpiarInsercion();
-        limpiarBusqueda();
+        limpiarClave();
     }
 
     @FXML
     private void insertarClave() {
-        if (!creada) {
+        if (!creada || estructura == null) {
             resultadoLabel.setText("Primero debes crear la estructura.");
-            limpiarInsercion();
+            limpiarClave();
             return;
         }
 
-        String claveTxt = normalizarClave(claveInsertField.getText(), digitos);
-        claveInsertField.setText(claveTxt);
+        String input = claveField.getText() == null ? "" : claveField.getText().trim();
+        if (input.isEmpty()) {
+            resultadoLabel.setText("Escribe una clave para insertar.");
+            limpiarClave();
+            return;
+        }
+
+        String claveTxt = normalizarClave(input, digitos);
+        claveField.setText(claveTxt);
 
         if (!claveValidaPorDigitos(claveTxt, digitos)) {
             resultadoLabel.setText("La clave debe tener exactamente " + digitos + " dígitos.");
-            limpiarInsercion();
+            limpiarClave();
             return;
         }
 
-        if (estructura.contiene(claveTxt)) {
+        if (estructura.existeClave(claveTxt)) {
             resultadoLabel.setText("Esa clave ya existe (en tabla o pendiente).");
-            limpiarInsercion();
+            limpiarClave();
             return;
         }
 
-        int nAntes = estructura.getN();
         int pendientesAntes = estructura.getPendientes().size();
 
-        estructura.insertar(claveTxt);
+        boolean ok = estructura.insertar(claveTxt);
+        if (!ok) {
+            resultadoLabel.setText("No se pudo insertar la clave.");
+            limpiarClave();
+            return;
+        }
 
-        int nDespues = estructura.getN();
         int pendientesDespues = estructura.getPendientes().size();
 
         refrescarTabla();
 
-        String msg = "Insertada " + claveTxt + " | h(k)=" + ((Integer.parseInt(claveTxt) % nDespues + nDespues) % nDespues);
-        if (nDespues != nAntes) msg += " | EXPANDIÓ: " + filas + "x" + nAntes + " → " + filas + "x" + nDespues;
-        if (pendientesDespues > pendientesAntes) msg += " | Colisión: quedó pendiente";
-        resultadoLabel.setText(msg);
+        int hk = ((Integer.parseInt(claveTxt) % estructura.getN()) + estructura.getN()) % estructura.getN();
 
-        limpiarInsercion();
+        StringBuilder msg = new StringBuilder();
+        msg.append("Insertada ").append(claveTxt).append(" | h(k)=").append(hk);
+
+        if (pendientesDespues > pendientesAntes) {
+            msg.append(" | Colisión: quedó pendiente");
+        }
+
+        if (estructura.densidadExpansion() >= 0.75) {
+            msg.append(" | Se recomienda expansión");
+        }
+
+        resultadoLabel.setText(msg.toString());
+        limpiarClave();
     }
 
     @FXML
     private void buscarClave() {
-        if (!creada) {
+        if (!creada || estructura == null) {
             resultadoLabel.setText("Primero debes crear la estructura.");
-            limpiarBusqueda();
+            limpiarClave();
             return;
         }
 
-        String claveTxt = normalizarClave(claveBuscarField.getText(), digitos);
-        claveBuscarField.setText(claveTxt);
+        String claveTxt = normalizarClave(claveField.getText(), digitos);
+        claveField.setText(claveTxt);
 
         if (!claveValidaPorDigitos(claveTxt, digitos)) {
             resultadoLabel.setText("La clave debe tener exactamente " + digitos + " dígitos.");
-            limpiarBusqueda();
+            limpiarClave();
             return;
         }
 
@@ -225,53 +256,108 @@ public class BusquedaExpParcialesController {
             resultadoLabel.setText(info + " | Tiempo: " + (fin - inicio) + " ns");
         }
 
-        limpiarBusqueda();
+        limpiarClave();
     }
 
     @FXML
     private void eliminarClave() {
-        if (!creada) {
+        if (!creada || estructura == null) {
             resultadoLabel.setText("Primero debes crear la estructura.");
+            limpiarClave();
             return;
         }
 
-        String input = claveBuscarField.getText() == null ? "" : claveBuscarField.getText().trim();
+        String input = claveField.getText() == null ? "" : claveField.getText().trim();
         if (input.isEmpty()) {
             resultadoLabel.setText("Escribe una clave para eliminar.");
+            limpiarClave();
             return;
         }
 
         String claveTxt = normalizarClave(input, digitos);
-        claveBuscarField.setText(claveTxt);
+        claveField.setText(claveTxt);
 
         if (!claveValidaPorDigitos(claveTxt, digitos)) {
             resultadoLabel.setText("La clave debe tener exactamente " + digitos + " dígitos.");
-            limpiarBusqueda();
+            limpiarClave();
             return;
         }
 
-        int nAntes = estructura.getN();
         boolean ok = estructura.eliminar(claveTxt);
-        int nDespues = estructura.getN();
 
         if (!ok) {
             resultadoLabel.setText("No se encontró la clave para eliminar.");
-            limpiarBusqueda();
+            limpiarClave();
             return;
         }
 
         refrescarTabla();
-        String msg = "Eliminada " + claveTxt;
-        if (nDespues != nAntes) msg += " | REDUJO: " + filas + "x" + nAntes + " → " + filas + "x" + nDespues;
-        resultadoLabel.setText(msg);
 
-        limpiarBusqueda();
+        StringBuilder msg = new StringBuilder();
+        msg.append("Eliminada ").append(claveTxt);
+
+        if (estructura.densidadReduccion() <= 0.25) {
+            msg.append(" | Se recomienda reducción");
+        }
+
+        resultadoLabel.setText(msg.toString());
+        limpiarClave();
+    }
+
+    @FXML
+    private void expandirManual() {
+        if (!creada || estructura == null) {
+            resultadoLabel.setText("Primero debes crear la estructura.");
+            return;
+        }
+
+        int nAntes = estructura.getN();
+        int faseAntes = estructura.getFase();
+        boolean ok = estructura.expandir();
+        int nDespues = estructura.getN();
+        int faseDespues = estructura.getFase();
+
+        if (!ok) {
+            resultadoLabel.setText("No se puede expandir. La DO de expansión debe ser 75% o más.");
+            return;
+        }
+
+        construirTablaInvertida(estructura.getN());
+        refrescarTabla();
+
+        resultadoLabel.setText("Expansión realizada: " + filas + "x" + nAntes + " → " + filas + "x" + nDespues
+                + " | Fase: " + faseAntes + " → " + faseDespues);
+    }
+
+    @FXML
+    private void reducirManual() {
+        if (!creada || estructura == null) {
+            resultadoLabel.setText("Primero debes crear la estructura.");
+            return;
+        }
+
+        int nAntes = estructura.getN();
+        int faseAntes = estructura.getFase();
+        boolean ok = estructura.reducir();
+        int nDespues = estructura.getN();
+        int faseDespues = estructura.getFase();
+
+        if (!ok) {
+            resultadoLabel.setText("No se puede reducir. La DO de reducción debe ser 25% o menos.");
+            return;
+        }
+
+        construirTablaInvertida(estructura.getN());
+        refrescarTabla();
+
+        resultadoLabel.setText("Reducción realizada: " + filas + "x" + nAntes + " → " + filas + "x" + nDespues
+                + " | Fase: " + faseAntes + " → " + faseDespues);
     }
 
     private void refrescarTabla() {
         refrescarTablaInvertida();
     }
-    
+
     @FXML
     private void limpiarEstructura() {
         if (!creada || estructura == null) {
@@ -284,9 +370,8 @@ public class BusquedaExpParcialesController {
         construirTablaInvertida(estructura.getN());
         refrescarTabla();
 
-        claveInsertField.clear();
-        claveBuscarField.clear();
-        claveInsertField.requestFocus();
+        claveField.clear();
+        claveField.requestFocus();
 
         resultadoLabel.setText("La estructura fue limpiada y reiniciada.");
     }
@@ -313,22 +398,24 @@ public class BusquedaExpParcialesController {
             bw.write("TIPO=EXP_PARCIALES"); bw.newLine();
             bw.write("N=" + estructura.getN()); bw.newLine();
             bw.write("DIGITOS=" + digitos); bw.newLine();
-            bw.write("DATA"); bw.newLine();
             bw.write("FILAS=" + filas); bw.newLine();
+            bw.write("NBASE=" + estructura.getNBase()); bw.newLine();
+            bw.write("FASE=" + estructura.getFase()); bw.newLine();
+            bw.write("DATA"); bw.newLine();
 
             List<SlotCubeta> snapshot = estructura.snapshotTabla();
             for (SlotCubeta s : snapshot) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(s.getCubeta());
+                StringBuilder sb = new StringBuilder();
+                sb.append(s.getCubeta());
 
-            for (int f = 0; f < filas; f++) {
-                String valor = s.getFila(f);
-                sb.append("|").append(valor == null ? "" : valor);
+                for (int f = 0; f < filas; f++) {
+                    String valor = s.getFila(f);
+                    sb.append("|").append(valor == null ? "" : valor);
+                }
+
+                bw.write(sb.toString());
+                bw.newLine();
             }
-
-            bw.write(sb.toString());
-            bw.newLine();
-        }
 
             bw.write("PENDIENTES"); bw.newLine();
             for (String p : estructura.getPendientes()) {
@@ -421,14 +508,20 @@ public class BusquedaExpParcialesController {
             }
 
             for (String c : claves) {
-                if (claveValidaPorDigitos(c, digitos)) estructura.insertar(c);
+                if (claveValidaPorDigitos(c, digitos)) {
+                    estructura.insertar(c);
+                }
             }
+
             for (String p : pend) {
-                if (claveValidaPorDigitos(p, digitos)) estructura.insertar(p);
+                if (claveValidaPorDigitos(p, digitos)) {
+                    estructura.insertar(p);
+                }
             }
 
             refrescarTabla();
             resultadoLabel.setText("Cargado: " + file.getName());
+            limpiarClave();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -465,13 +558,8 @@ public class BusquedaExpParcialesController {
         return true;
     }
 
-    private void limpiarBusqueda() {
-        claveBuscarField.clear();
-        claveBuscarField.requestFocus();
-    }
-
-    private void limpiarInsercion() {
-        claveInsertField.clear();
-        claveInsertField.requestFocus();
+    private void limpiarClave() {
+        claveField.clear();
+        claveField.requestFocus();
     }
 }

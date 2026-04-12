@@ -7,11 +7,11 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import utilities.SlotClave;
 import javafx.stage.FileChooser;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class BusquedaBinariaController {
 
@@ -24,14 +24,12 @@ public class BusquedaBinariaController {
     @FXML private TableColumn<SlotClave, Integer> colPos;
     @FXML private TableColumn<SlotClave, String> colClave;
 
-    @FXML private TextField claveInsertField;
-    @FXML private TextField claveBuscarField;
+    @FXML private TextField claveField;
     @FXML private Label resultadoLabel;
 
     private final ObservableList<SlotClave> data = FXCollections.observableArrayList();
     private boolean creada = false;
     private int digitos = 2;
-
 
     @FXML
     public void initialize() {
@@ -45,9 +43,10 @@ public class BusquedaBinariaController {
 
         colPos.setCellValueFactory(new PropertyValueFactory<>("posicion"));
         colClave.setCellValueFactory(new PropertyValueFactory<>("clave"));
+
         tabla.setItems(data);
         tabla.getColumns().setAll(colPos, colClave);
-        tabla.getColumns().setAll(colPos, colClave);
+
         colPos.prefWidthProperty().bind(tabla.widthProperty().multiply(0.3));
         colClave.prefWidthProperty().bind(tabla.widthProperty().multiply(0.7));
     }
@@ -66,52 +65,54 @@ public class BusquedaBinariaController {
 
         creada = true;
         resultadoLabel.setText("Estructura creada (1.." + n + ").");
+        limpiarClave();
     }
 
-    // Inserta y mantiene ORDEN ASCENDENTE
     @FXML
     private void insertarClaveOrdenada() {
         if (!creada) {
             resultadoLabel.setText("Primero debes crear la estructura.");
-            limpiarInsercion();
+            limpiarClave();
             return;
         }
 
-        String claveTxt = normalizarClave(claveInsertField.getText(), digitos);
-        claveInsertField.setText(claveTxt);
+        String input = claveField.getText() == null ? "" : claveField.getText().trim();
+        if (input.isEmpty()) {
+            resultadoLabel.setText("Escribe una clave para insertar.");
+            limpiarClave();
+            return;
+        }
+
+        String claveTxt = normalizarClave(input, digitos);
+        claveField.setText(claveTxt);
 
         if (!claveValidaPorDigitos(claveTxt, digitos)) {
-            resultadoLabel.setText("La clave debe tener exactamente " + digitos + " dígitos. ");
-            limpiarInsercion();
+            resultadoLabel.setText("La clave debe tener exactamente " + digitos + " dígitos.");
+            limpiarClave();
             return;
         }
 
-        // No repetición
         for (SlotClave s : data) {
             if (claveTxt.equals(s.getClave())) {
                 resultadoLabel.setText("Esa clave ya existe en la estructura.");
-                limpiarInsercion();
+                limpiarClave();
                 return;
             }
         }
 
-        // ¿Hay espacio?
         int usados = contarClaves();
         if (usados >= n) {
             resultadoLabel.setText("La estructura está llena. No se puede insertar más.");
-            limpiarInsercion();
+            limpiarClave();
             return;
         }
 
-        // Insertar nueva clave
         data.add(new SlotClave(usados + 1, claveTxt));
 
-        // Ordenar por clave
         var listaOrdenada = data.stream()
                 .sorted((a, b) -> a.getClave().compareTo(b.getClave()))
                 .toList();
 
-        // Reconstruir la tabla con posiciones actualizadas
         data.clear();
         for (int i = 0; i < listaOrdenada.size(); i++) {
             data.add(new SlotClave(i + 1, listaOrdenada.get(i).getClave()));
@@ -119,33 +120,37 @@ public class BusquedaBinariaController {
 
         tabla.refresh();
         resultadoLabel.setText("Insertada y ordenada. Total claves: " + listaOrdenada.size() + ".");
-        // limpiar solo si fue exitoso
-        claveInsertField.clear();
-        claveInsertField.requestFocus();
+        limpiarClave();
     }
 
     @FXML
     private void buscarClaveBinaria() {
         if (!creada) {
             resultadoLabel.setText("Primero debes crear la estructura.");
-            limpiarBusqueda();
+            limpiarClave();
             return;
         }
 
-        String claveTxt = normalizarClave(claveBuscarField.getText(), digitos);
-        claveBuscarField.setText(claveTxt);
+        String input = claveField.getText() == null ? "" : claveField.getText().trim();
+        if (input.isEmpty()) {
+            resultadoLabel.setText("Escribe una clave para buscar.");
+            limpiarClave();
+            return;
+        }
+
+        String claveTxt = normalizarClave(input, digitos);
+        claveField.setText(claveTxt);
 
         if (!claveValidaPorDigitos(claveTxt, digitos)) {
-            resultadoLabel.setText("La clave debe tener exactamente " + digitos + " dígitos. ");
-            limpiarBusqueda();
+            resultadoLabel.setText("La clave debe tener exactamente " + digitos + " dígitos.");
+            limpiarClave();
             return;
         }
 
-        // Tomamos solo el segmento lleno (0..usados-1) porque el resto está vacío
         int usados = contarClaves();
         if (usados == 0) {
             resultadoLabel.setText("No hay claves insertadas.");
-            limpiarBusqueda();
+            limpiarClave();
             return;
         }
 
@@ -172,7 +177,7 @@ public class BusquedaBinariaController {
                         + " | Comparaciones: " + comparaciones
                         + " | Tiempo: " + (fin - inicio) + " ns");
 
-                limpiarBusqueda();
+                limpiarClave();
                 return;
             } else if (cmp < 0) {
                 high = mid - 1;
@@ -183,7 +188,7 @@ public class BusquedaBinariaController {
 
         long fin = System.nanoTime();
         resultadoLabel.setText("No encontrada | Comparaciones: " + comparaciones + " | Tiempo: " + (fin - inicio) + " ns");
-        limpiarBusqueda();
+        limpiarClave();
     }
 
     @FXML
@@ -196,16 +201,10 @@ public class BusquedaBinariaController {
         data.clear();
         tabla.getSelectionModel().clearSelection();
 
-        claveInsertField.clear();
-        claveBuscarField.clear();
-        claveInsertField.requestFocus();
+        limpiarClave();
 
         resultadoLabel.setText("La tabla fue limpiada.");
     }
-
-    // =====================
-    // GUARDAR / CARGAR / ELIMINAR (BINARIA)
-    // =====================
 
     @FXML
     private void guardarTabla() {
@@ -228,7 +227,6 @@ public class BusquedaBinariaController {
             bw.write("DIGITOS=" + digitos); bw.newLine();
             bw.write("DATA"); bw.newLine();
 
-            // Guardar en el orden actual (ya está ordenado)
             for (SlotClave s : data) {
                 String clave = (s.getClave() == null) ? "" : s.getClave().trim();
                 bw.write(s.getPosicion() + "|" + clave);
@@ -259,7 +257,6 @@ public class BusquedaBinariaController {
             Integer newN = null;
             Integer newDig = null;
 
-            // Leer cabecera hasta DATA
             while ((line = br.readLine()) != null) {
                 line = line.trim();
                 if (line.equals("DATA")) break;
@@ -274,7 +271,6 @@ public class BusquedaBinariaController {
             }
             if (newDig == null || newDig < 1) newDig = 2;
 
-            // Aplicar config
             this.n = newN;
             this.digitos = newDig;
             this.creada = true;
@@ -282,7 +278,6 @@ public class BusquedaBinariaController {
             nField.setText(String.valueOf(n));
             digitosChoice.setValue(digitos);
 
-            // Leer todas las claves (sin importar posiciones guardadas)
             List<String> claves = new ArrayList<>();
 
             while ((line = br.readLine()) != null) {
@@ -302,15 +297,12 @@ public class BusquedaBinariaController {
                 }
             }
 
-            // Quitar duplicadas por seguridad (binaria no debe tener repetidas)
             claves = claves.stream().distinct().toList();
 
-            // No exceder N
             if (claves.size() > n) {
                 claves = claves.subList(0, n);
             }
 
-            // Ordenar y reconstruir data con posiciones 1..k
             claves = new ArrayList<>(claves);
             claves.sort(String::compareTo);
 
@@ -321,6 +313,7 @@ public class BusquedaBinariaController {
 
             tabla.refresh();
             resultadoLabel.setText("Cargado: " + file.getName() + " | Total claves: " + data.size());
+            limpiarClave();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -335,15 +328,14 @@ public class BusquedaBinariaController {
             return;
         }
 
-        // 1) Si el usuario escribió una clave, SIEMPRE eliminar por esa clave
-        String input = claveBuscarField.getText() == null ? "" : claveBuscarField.getText().trim();
+        String input = claveField.getText() == null ? "" : claveField.getText().trim();
         if (!input.isEmpty()) {
             String claveTxt = normalizarClave(input, digitos);
-            claveBuscarField.setText(claveTxt);
+            claveField.setText(claveTxt);
 
             if (!claveValidaPorDigitos(claveTxt, digitos)) {
                 resultadoLabel.setText("La clave debe tener exactamente " + digitos + " dígitos.");
-                limpiarBusqueda();
+                limpiarClave();
                 return;
             }
 
@@ -357,11 +349,10 @@ public class BusquedaBinariaController {
                 resultadoLabel.setText("No se encontró la clave para eliminar.");
             }
 
-            limpiarBusqueda();
+            limpiarClave();
             return;
         }
 
-        // 2) Si el campo está vacío, eliminar lo seleccionado (si hay selección)
         SlotClave sel = tabla.getSelectionModel().getSelectedItem();
         if (sel != null && sel.getClave() != null && !sel.getClave().isBlank()) {
             String clave = sel.getClave();
@@ -376,21 +367,14 @@ public class BusquedaBinariaController {
     }
 
     private void reindexarPosiciones() {
-        // Después de eliminar, mantener posiciones 1..k (binaria depende de orden + segmento lleno)
         for (int i = 0; i < data.size(); i++) {
             data.get(i).setPosicion(i + 1);
         }
     }
 
-    // Helpers
-    private void limpiarBusqueda() {
-        this.claveBuscarField.clear();
-        this.claveBuscarField.requestFocus();
-    }
-
-    private void limpiarInsercion() {
-        claveInsertField.clear();
-        claveInsertField.requestFocus();
+    private void limpiarClave() {
+        claveField.clear();
+        claveField.requestFocus();
     }
 
     private int contarClaves() {
@@ -405,7 +389,11 @@ public class BusquedaBinariaController {
         if (txt == null) return null;
         txt = txt.trim();
         if (txt.isEmpty()) return null;
-        try { return Integer.parseInt(txt); } catch (NumberFormatException e) { return null; }
+        try {
+            return Integer.parseInt(txt);
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     private boolean claveValidaPorDigitos(String clave, int digitos) {
@@ -420,5 +408,4 @@ public class BusquedaBinariaController {
         if (!clave.matches("\\d+")) return clave;
         return String.format("%0" + digitos + "d", Integer.parseInt(clave));
     }
-
 }
