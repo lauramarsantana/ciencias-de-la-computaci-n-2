@@ -57,7 +57,7 @@ public class LayoutController {
     }
 
     @FXML
-    private void openMenu(javafx.scene.input.MouseEvent event) {
+    public void openMenu(javafx.scene.input.MouseEvent event) {
         System.out.println("abriendo menu...");
         boolean visible = !menuPane.isVisible(); // Invertimos el estado
 
@@ -119,6 +119,9 @@ public class LayoutController {
             }
             if (controller instanceof IndicesExternosController indicesController){
                 indicesController.setLayoutController(this);
+            }
+            if (controller instanceof GrafosController grafosController){
+                grafosController.setLayoutController(this);
             }
 
             // incrementar contador de cambios

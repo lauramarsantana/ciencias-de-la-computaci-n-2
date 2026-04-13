@@ -117,7 +117,7 @@
                         </Label>
                         <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
                            <children>
-                              <Label accessibleRole="BUTTON" onMouseClicked="#openResiduos" text="B. por residuos" textFill="WHITE">
+                              <Label accessibleRole="BUTTON" onMouseClicked="#openResiduos" text="B. por Árboles" textFill="WHITE">
                                  <font>
                                     <Font name="Myanmar Text" size="14.0" />
                                  </font>
@@ -161,7 +161,7 @@
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
                               </Label>
-                              <Label accessibleRole="BUTTON" onMouseClicked="#openFuncionHash" text="Árbol Huffman" textFill="WHITE">
+                              <Label accessibleRole="BUTTON" onMouseClicked="#openHuffman" text="Árbol Huffman" textFill="WHITE">
                                  <font>
                                     <Font name="Myanmar Text" size="14.0" />
                                  </font>

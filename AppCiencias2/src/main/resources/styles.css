@@ -62,34 +62,44 @@
     -fx-background-color: white;     /* color del símbolo de la flecha */
 }
 
-
-.table-view .column-header-background {
-    -fx-background-color: linear-gradient(to right, #2262C6, #4A90E2);
-    -fx-background-radius: 10 10 0 0;
+/* Estilo para la Tabla */
+.table-view {
+    -fx-border-color: #2262C6; /* Azul del encabezado */
+    -fx-border-width: 2px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-background-color: white;
 }
 
-.table-view .column-header, .table-view .column-header .label {
+/* Encabezados Azules */
+.table-view .column-header-background {
+    -fx-background-color: #2262C6;
+    -fx-background-radius: 8px 8px 0px 0px;
+}
+
+.table-view .column-header {
+    -fx-background-color: transparent;
+    -fx-size: 35px;
+}
+
+.table-view .column-header .label {
     -fx-text-fill: white;
     -fx-font-weight: bold;
-    -fx-font-size: 14px;
+    -fx-font-size: 13px;
+}
+
+/* Celdas internas */
+.table-view .table-cell {
     -fx-alignment: CENTER;
-    -fx-background-color:  #2262C6;
+    -fx-border-color: #f4f4f4;
+    -fx-padding: 2px;
+    -fx-text-fill: #1B4F72;
+    -fx-height: 8px;
 }
 
-
-.table-cell {
-    -fx-padding: 4 8 4 8;   /* reduce espacio interno */
-    -fx-font-size: 13px;    /* tipografía más pequeña */
-    -fx-alignment: CENTER;  /* centra el contenido */
-}
-.table-row-cell {
-    -fx-background-color: #f9f9f9;
-}
-.table-row-cell:odd {
-    -fx-background-color: #eef6ff;
-}
+/* Fila seleccionada */
 .table-row-cell:selected {
-    -fx-background-color: #cce0ff;
+    -fx-background-color: #D4E6F1;
 }
 
 .button {

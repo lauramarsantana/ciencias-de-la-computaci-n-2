@@ -25,9 +25,11 @@ public class BPorResiduosController {
     @FXML
     private void openResiduosMultiples(MouseEvent event){
         System.out.println("abriendo multiples...");
+        layoutController.loadPanel("/residuosMultiples.fxml");
     }
     @FXML
     private void openHuffman(MouseEvent event){
         System.out.println("abriendo huffman...");
+        layoutController.loadPanel("/huffman.fxml");
     }
 }

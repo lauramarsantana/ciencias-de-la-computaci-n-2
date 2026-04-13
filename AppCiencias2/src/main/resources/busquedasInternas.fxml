@@ -85,7 +85,7 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </ImageView>
-                  <Label text="BUSQUEDA POR RESIDUOS">
+                  <Label text="BUSQUEDA POR ÁRBOLES">
                      <font>
                         <Font name="Myanmar Text Bold" size="24.0" />
                      </font>

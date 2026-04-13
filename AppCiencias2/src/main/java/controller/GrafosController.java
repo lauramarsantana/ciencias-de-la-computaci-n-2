@@ -2,11 +2,20 @@ package controller;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
 
 public class GrafosController {
+    @FXML private LayoutController layoutController;
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("busquedas.fxml"));
+    public void setLayoutController(LayoutController layoutController) {
+        this.layoutController = layoutController;
+    }
 
+
+    @FXML
+    private void openOperaciones(MouseEvent event){
+        System.out.println("abriendo operaciones con grafos");
+        layoutController.loadPanel("/operaciones.fxml");
+
+    }
 }

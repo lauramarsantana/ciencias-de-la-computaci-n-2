@@ -8,24 +8,28 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import java.util.*;
+import utilities.CodigoLetra; // Asegúrate de haber creado este archivo en utilities
 
 public class TriesResiduosController {
 
     @FXML private TextField mensajeField;
     @FXML private TextField buscarField;
-    @FXML private TableView<CodigoLetra> tablaCodigos;
-    @FXML private TableColumn<CodigoLetra, String> colLetra;
-    @FXML private TableColumn<CodigoLetra, Integer> colPos;
-    @FXML private TableColumn<CodigoLetra, String> colBinario;
     @FXML private Label resultadoLabel;
     @FXML private Pane arbolPane;
+
+    // Configuración de la Tabla
+    @FXML private TableView<CodigoLetra> tablaCodigos;
+    @FXML private TableColumn<CodigoLetra, String> colLetra;
+    @FXML private TableColumn<CodigoLetra, Integer> colAlfabeto;
+    @FXML private TableColumn<CodigoLetra, String> colBinario;
 
     private NodoDigital raiz = new NodoDigital();
 
     @FXML
     public void initialize() {
+        // Enlazar columnas con los atributos de CodigoLetra
         colLetra.setCellValueFactory(new PropertyValueFactory<>("letra"));
-        colPos.setCellValueFactory(new PropertyValueFactory<>("posición"));
+        colAlfabeto.setCellValueFactory(new PropertyValueFactory<>("valorAlfabeto"));
         colBinario.setCellValueFactory(new PropertyValueFactory<>("binario"));
 
         // Limitar búsqueda a 1 carácter
@@ -38,33 +42,27 @@ public class TriesResiduosController {
 
     @FXML
     private void procesarMensaje() {
-        String mensaje = mensajeField.getText().trim().toUpperCase();
-        if (mensaje.isEmpty()) {
+        String texto = mensajeField.getText().trim().toUpperCase();
+        if (texto.isEmpty()) {
             resultadoLabel.setText("Ingresa un mensaje válido.");
             return;
         }
 
-        tablaCodigos.getItems().clear();
-        raiz = new NodoDigital(); // Reiniciar raíz para nueva construcción
+        initializeTree(); // Limpia todo antes de empezar
 
-        int pos = 1;
-        for (char c : mensaje.toCharArray()) {
+        for (char c : texto.toCharArray()) {
             if (Character.isLetter(c) || c == 'Ñ') {
-                String binario = convertirABinario(c);
-                tablaCodigos.getItems().add(new CodigoLetra(String.valueOf(c), pos++, binario));
-                insertarClave(binario, String.valueOf(c)); //
+                int valor = (c == 'Ñ') ? 27 : (c - 'A' + 1);
+                String binario = String.format("%5s", Integer.toBinaryString(valor)).replace(' ', '0');
+
+                // Llenar tabla y árbol
+                tablaCodigos.getItems().add(new CodigoLetra(String.valueOf(c), valor, binario));
+                insertarClave(binario, String.valueOf(c));
             }
         }
 
         actualizarArbolVisual();
-        resultadoLabel.setText("Trie por residuos construido (5 niveles).");
-    }
-
-    private String convertirABinario(char c) {
-        int valor;
-        if (c == 'Ñ') valor = 27;
-        else valor = (c - 'A' + 1);
-        return String.format("%5s", Integer.toBinaryString(valor)).replace(' ', '0'); //
+        resultadoLabel.setText("Trie construido exitosamente.");
     }
 
     private void insertarClave(String binario, String letra) {
@@ -76,19 +74,15 @@ public class TriesResiduosController {
     }
 
     private void insertarRecursivo(NodoDigital actual, String nuevaLetra, String nuevoBinario, int bitIndex) {
-        // 1. Caso: El nodo actual es una hoja (tiene una letra) -> Hay Colisión
         if (actual.letra != null) {
             String letraExistente = actual.letra;
-            String binarioExistente = convertirABinario(letraExistente.charAt(0));
-            actual.letra = null; // Deja de ser hoja para volverse nodo de enlace
+            int valorE = (letraExistente.charAt(0) == 'Ñ') ? 27 : (letraExistente.charAt(0) - 'A' + 1);
+            String binarioExistente = String.format("%5s", Integer.toBinaryString(valorE)).replace(' ', '0');
 
-            // Bajamos la letra que ya estaba
+            actual.letra = null; // Nodo intermedio
             moverABajo(actual, letraExistente, binarioExistente, bitIndex);
-            // Bajamos la letra nueva
             moverABajo(actual, nuevaLetra, nuevoBinario, bitIndex);
-        }
-        // 2. Caso: Es un nodo de enlace (no tiene letra, tiene hijos)
-        else {
+        } else {
             moverABajo(actual, nuevaLetra, nuevoBinario, bitIndex);
         }
     }
@@ -100,12 +94,10 @@ public class TriesResiduosController {
         NodoDigital hijo = actual.hijos.get(bit);
 
         if (hijo == null) {
-            // Si el camino está libre, la letra se queda aquí (Detención temprana)
             NodoDigital nuevo = new NodoDigital();
             nuevo.letra = letra;
             actual.hijos.put(bit, nuevo);
         } else {
-            // Si ya hay un hijo (nodo de enlace o colisión futura), seguimos bajando
             insertarRecursivo(hijo, letra, binario, bitIndex + 1);
         }
     }
@@ -113,93 +105,78 @@ public class TriesResiduosController {
     @FXML
     private void buscarClave() {
         String letraInput = buscarField.getText().trim().toUpperCase();
-        if (letraInput.isEmpty()) {
-            resultadoLabel.setText("Ingresa una letra.");
-            return;
-        }
+        if (letraInput.isEmpty()) return;
 
-        String claveBinaria = convertirABinario(letraInput.charAt(0));
+        int valor = (letraInput.charAt(0) == 'Ñ') ? 27 : (letraInput.charAt(0) - 'A' + 1);
+        String claveBinaria = String.format("%5s", Integer.toBinaryString(valor)).replace(' ', '0');
+
         NodoDigital actual = raiz;
         boolean encontrada = true;
 
-        // Búsqueda real siguiendo los bits en el árbol [cíte: 53, 54]
         for (char bit : claveBinaria.toCharArray()) {
             actual = actual.hijos.get(bit);
             if (actual == null) {
                 encontrada = false;
                 break;
             }
+            if (actual.letra != null && actual.letra.equals(letraInput)) break;
         }
 
-        if (encontrada && actual.esFinClave) {
+        if (encontrada && actual != null && letraInput.equals(actual.letra)) {
             resultadoLabel.setText("Letra '" + letraInput + "' encontrada.");
         } else {
             resultadoLabel.setText("Letra '" + letraInput + "' no está en el árbol.");
         }
     }
 
-    // ================== Dibujo Optimizado ==================
     private void actualizarArbolVisual() {
         arbolPane.getChildren().clear();
-        // Spacing inicial más controlado para que no se salga
-        dibujarNodo(raiz, arbolPane.getWidth() / 2, 30, 140);
+        dibujarNodo(raiz, arbolPane.getWidth() / 2, 40, 150);
     }
 
     private void dibujarNodo(NodoDigital nodo, double x, double y, double spacing) {
         if (nodo == null) return;
 
-        // Radio reducido a 12 para que sea más pequeño
-        Circle circle = new Circle(x, y, 12);
+        double radio = 14;
+        Circle circle = new Circle(x, y, radio);
         circle.setStyle("-fx-fill: white; -fx-stroke: black;");
+        if (nodo.letra != null) circle.setStyle("-fx-fill: #D4E6F1; -fx-stroke: #2E86C1;");
 
-        // Si tiene letra, la pintamos dentro
-        Text text = new Text(x - 5, y + 4, nodo.letra != null ? nodo.letra : "");
-        text.setStyle("-fx-font-size: 11px; -fx-font-weight: bold; -fx-fill: blue;");
+        Text text = new Text(x - 5, y + 5, nodo.letra != null ? nodo.letra : "");
+        text.setStyle("-fx-font-weight: bold; -fx-fill: #1B4F72;");
 
         arbolPane.getChildren().addAll(circle, text);
 
-        double verticalGap = 50; // Más corto para que quepa verticalmente
-        double childSpacing = spacing * 0.6; // Reducción de ancho por nivel
-
         if (nodo.hijos.containsKey('0')) {
-            dibujarLinea(x, y, x - spacing, y + verticalGap, "0");
-            dibujarNodo(nodo.hijos.get('0'), x - spacing, y + verticalGap, childSpacing);
+            dibujarConexion(x, y, x - spacing, y + 60, "0", radio);
+            dibujarNodo(nodo.hijos.get('0'), x - spacing, y + 60, spacing * 0.5);
         }
         if (nodo.hijos.containsKey('1')) {
-            dibujarLinea(x, y, x + spacing, y + verticalGap, "1");
-            dibujarNodo(nodo.hijos.get('1'), x + spacing, y + verticalGap, childSpacing);
+            dibujarConexion(x, y, x + spacing, y + 60, "1", radio);
+            dibujarNodo(nodo.hijos.get('1'), x + spacing, y + 60, spacing * 0.5);
         }
     }
 
-    private void dibujarLinea(double x1, double y1, double x2, double y2, String bit) {
-        Line line = new Line(x1, y1 + 12, x2, y2 - 12);
-        Text label = new Text((x1 + x2) / 2 - 8, (y1 + y2) / 2, bit);
-        label.setStyle("-fx-fill: red; -fx-font-weight: bold; -fx-font-size: 10px;");
+    private void dibujarConexion(double x1, double y1, double x2, double y2, String bit, double r) {
+        Line line = new Line(x1, y1 + r, x2, y2 - r);
+        Text label = new Text((x1 + x2) / 2 - 10, (y1 + y2) / 2, bit);
+        label.setStyle("-fx-fill: red; -fx-font-weight: bold;");
         arbolPane.getChildren().addAll(line, label);
     }
 
-    // Resto de métodos de navegación FXML (openMenu, loadPanel, etc.) se mantienen igual...
-    @FXML private void initializeTree() {
+    @FXML
+    private void initializeTree() {
         raiz = new NodoDigital();
         tablaCodigos.getItems().clear();
         arbolPane.getChildren().clear();
-        resultadoLabel.setText("Trie reiniciado.");
+        resultadoLabel.setText("Sistema reiniciado.");
     }
 
     @FXML private void clearSearch() { buscarField.clear(); resultadoLabel.setText("Listo."); }
 
+    // Clases Auxiliares
     public static class NodoDigital {
         Map<Character, NodoDigital> hijos = new HashMap<>();
-        boolean esFinClave = false;
         String letra = null;
-    }
-
-    public static class CodigoLetra {
-        private String letra, binario;
-        private int posicion;
-        public CodigoLetra(String l, int p, String b) { this.letra = l; this.posicion = p; this.binario = b; }
-        public String getLetra() { return letra; }
-        public int getPosicion() { return posicion; }
-        public String getBinario() { return binario; }
     }
 }

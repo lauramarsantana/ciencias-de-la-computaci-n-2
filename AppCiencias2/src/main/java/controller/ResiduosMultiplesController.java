@@ -1,257 +1,158 @@
 package controller;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
+import utilities.ArbolResiduosMultiples;
+import utilities.CodigoLetra; // Importamos la clase compartida
+import utilities.NodoMulti;
+
 import java.util.*;
 
 public class ResiduosMultiplesController {
 
     @FXML private TextField mensajeField;
-    @FXML private TextField buscarField;
-    @FXML private TableView<CodigoLetra> tablaCodigos;
-    @FXML private TableColumn<CodigoLetra, String> colLetra;
-    @FXML private TableColumn<CodigoLetra, Integer> colPos;
-    @FXML private TableColumn<CodigoLetra, String> colBinario;
     @FXML private Label resultadoLabel;
     @FXML private Pane arbolPane;
-    @FXML private AnchorPane mainPane;
-    @FXML private AnchorPane menuPane;
-    @FXML private VBox subMenuBusquedas;
-    @FXML private VBox subMenuInternas;
-    @FXML private AnchorPane multiplePane;
+    @FXML private Slider sliderM;
+    @FXML private Label labelM;
 
-    private NodoMultiple raiz = new NodoMultiple();
+    // Tabla minimalista
+    @FXML private TableView<CodigoLetra> tablaCodigos;
+    @FXML private TableColumn<CodigoLetra, String> colLetra;
+    @FXML private TableColumn<CodigoLetra, Integer> colAlfabeto;
+    @FXML private TableColumn<CodigoLetra, String> colBinario;
+
+    private ArbolResiduosMultiples arbol; // Asegúrate de que esta clase exista en tu proyecto
+    private int m = 2;
 
     @FXML
     public void initialize() {
+        // Configuración de columnas
         colLetra.setCellValueFactory(new PropertyValueFactory<>("letra"));
-        colPos.setCellValueFactory(new PropertyValueFactory<>("posicion"));
+        colAlfabeto.setCellValueFactory(new PropertyValueFactory<>("valorAlfabeto"));
         colBinario.setCellValueFactory(new PropertyValueFactory<>("binario"));
 
-        if (menuPane != null) {
-            menuPane.setVisible(false);
-            menuPane.setManaged(false);
-        }
+        // TRUCO DE CENTRADO: Escuchar cuando el panel cambia de tamaño para redibujar
+        arbolPane.widthProperty().addListener((obs, oldVal, newVal) -> {
+            if (!mensajeField.getText().isEmpty()) {
+                actualizarArbolVisual();
+            }
+        });
+
+        // Listener del Slider
+        sliderM.valueProperty().addListener((obs, oldVal, newVal) -> {
+            m = newVal.intValue();
+            int M = (int) Math.pow(2, m);
+            labelM.setText("m = " + m + " (M = " + M + " hijos)");
+            reiniciarArbol();
+        });
+
+        reiniciarArbol();
     }
 
     @FXML
     private void procesarMensaje() {
-        String mensaje = mensajeField.getText().trim().toUpperCase();
-        if (mensaje.isEmpty()) return;
+        String texto = mensajeField.getText().toUpperCase().trim();
+        if (texto.isEmpty()) return;
 
+        reiniciarArbol();
         tablaCodigos.getItems().clear();
-        raiz = new NodoMultiple();
 
-        int pos = 1;
-        for (char c : mensaje.toCharArray()) {
+        for (char c : texto.toCharArray()) {
             if (Character.isLetter(c) || c == 'Ñ') {
-                String binario = convertirABinario(c);
-                tablaCodigos.getItems().add(new CodigoLetra(String.valueOf(c), pos++, binario));
-                insertarClave(binario, String.valueOf(c));
+                int valor = (c == 'Ñ') ? 27 : (c - 'A' + 1);
+                // Usamos 6 bits para que sea múltiplo de 2 y 3 (más versátil)
+                String binario = String.format("%5s", Integer.toBinaryString(valor)).replace(' ', '0');
+
+                tablaCodigos.getItems().add(new CodigoLetra(String.valueOf(c), valor, binario));
+                arbol.insertar(String.valueOf(c), binario);
             }
         }
         actualizarArbolVisual();
-        resultadoLabel.setText("Trie Base 4 (Residuos de 2 bits) construido.");
+        resultadoLabel.setText("Árbol generado con m = " + m);
     }
 
-    private String convertirABinario(char c) {
-        int valor = (c == 'Ñ') ? 27 : (c - 'A' + 1);
-        String b = Integer.toBinaryString(valor);
-        while (b.length() < 6) b = "0" + b;
-        return b;
+    private void reiniciarArbol() {
+        arbol = new ArbolResiduosMultiples(m); // Instancia de tu lógica
+        arbolPane.getChildren().clear();
     }
 
-    private void insertarClave(String binario, String letra) {
-        // Si el árbol está vacío, la raíz toma la primera letra
-        if (raiz.letra == null && raiz.hijos.isEmpty()) {
-            raiz.letra = letra;
-            return;
-        }
-        insertarRecursivo(raiz, letra, binario, 0);
-    }
-
-    private void insertarRecursivo(NodoMultiple actual, String nuevaLetra, String nuevoBinario, int index) {
-        if (index >= nuevoBinario.length()) return;
-
-        // Si el nodo actual tiene una letra, hay colisión
-        if (actual.letra != null) {
-            String letraEx = actual.letra;
-            String binEx = convertirABinario(letraEx.charAt(0));
-            actual.letra = null; // Se convierte en nodo de enlace
-
-            // Re-insertamos ambas letras desde este nivel
-            moverABajo(actual, letraEx, binEx, index);
-            moverABajo(actual, nuevaLetra, nuevoBinario, index);
-        } else {
-            // Si es nodo de enlace, simplemente intentamos bajar la nueva letra
-            moverABajo(actual, nuevaLetra, nuevoBinario, index);
-        }
-    }
-
-    private void moverABajo(NodoMultiple actual, String letra, String binario, int index) {
-        if (index + 2 > binario.length()) return;
-
-        String residuo = binario.substring(index, index + 2);
-        NodoMultiple hijo = actual.hijos.get(residuo);
-
-        if (hijo == null) {
-            // Camino libre: creamos hoja con la letra (Detención temprana)
-            NodoMultiple nuevo = new NodoMultiple();
-            nuevo.letra = letra;
-            actual.hijos.put(residuo, nuevo);
-        } else {
-            // El camino ya existe (es un nodo de enlace o una hoja que colisionará)
-            insertarRecursivo(hijo, letra, binario, index + 2);
-        }
-    }
-
-    // ================== Dibujo (Abanico de 4 hijos) ==================
     private void actualizarArbolVisual() {
         arbolPane.getChildren().clear();
-        double startX = arbolPane.getWidth() / 2;
-        dibujarNodo(raiz, startX, 40, startX * 0.5);
-    }
 
-    private void dibujarNodo(NodoMultiple nodo, double x, double y, double spacing) {
-        if (nodo == null) return;
+        // 1. Usamos el ancho real de la ventana para el centrado
+        double anchoPanel = arbolPane.getWidth();
+        if (anchoPanel <= 0) anchoPanel = 1200; // Valor base por seguridad
 
-        Circle circle = new Circle(x, y, 14);
-        circle.setStyle("-fx-fill: white; -fx-stroke: #2262C6; -fx-stroke-width: 2;");
+        double centroX = anchoPanel / 2;
 
-        Text text = new Text(x - 6, y + 5, nodo.letra != null ? nodo.letra : "");
-        text.setStyle("-fx-font-weight: bold; -fx-fill: #2262C6;");
-        arbolPane.getChildren().addAll(circle, text);
+        if (arbol != null && arbol.getRaiz() != null) {
+            // --- LÓGICA ADAPTATIVA ---
+            double xOffsetInicial;
+            double verticalGap;
+            double factorReduccion;
 
-        String[] residuos = {"00", "01", "10", "11"};
-        double verticalGap = 80;
-
-        for (int i = 0; i < residuos.length; i++) {
-            String r = residuos[i];
-            if (nodo.hijos.containsKey(r)) {
-                // Cálculo de posición horizontal para los 4 hijos
-                double childX = x + (i - 1.5) * spacing;
-
-                Line line = new Line(x, y + 14, childX, y + verticalGap - 14);
-                line.setStrokeWidth(1.5);
-
-                Text label = new Text((x + childX) / 2 - 10, (y + y + verticalGap) / 2, r);
-                label.setStyle("-fx-fill: red; -fx-font-weight: bold; -fx-font-size: 10px;");
-
-                arbolPane.getChildren().addAll(line, label);
-                dibujarNodo(nodo.hijos.get(r), childX, y + verticalGap, spacing * 0.5);
+            if (m == 1) {
+                // Para m=1 (Binario), necesitamos que sea ancho y alto
+                xOffsetInicial = anchoPanel * 0.25;
+                verticalGap = 60;
+                factorReduccion = 0.5; // Reducción estándar para binarios
+            } else {
+                // Para m >= 2 (Multicamino), comprimimos más para que no se salga
+                xOffsetInicial = anchoPanel / (Math.pow(2, m) + 1);
+                verticalGap = 80;
+                factorReduccion = 0.35; // Reducción agresiva
             }
+
+            pintarNodo(arbol.getRaiz(), centroX, 40, xOffsetInicial, verticalGap, factorReduccion);
         }
     }
 
-    // Clases Auxiliares
-    public static class NodoMultiple {
-        Map<String, NodoMultiple> hijos = new HashMap<>(); // Llave: "00", "01", etc.
-        String letra = null;
-    }
+    // Actualiza la firma del método para recibir el factorReduccion
+    private void pintarNodo(NodoMulti nodo, double x, double y, double xOffset, double yGap, double factorReduccion) {
+        double radio = (m > 2) ? 10 : 13;
 
-    @FXML
-    private void openMenu(javafx.scene.input.MouseEvent event){
-        System.out.println("abriendo menu...");
-        menuPane.setVisible(true); // para que el panel del menu se vea
-        menuPane.setManaged(true);// posiciona de primeras al panel
-    }
-    @FXML
-    private void closeMenu(javafx.scene.input.MouseEvent event){
-        System.out.println("cerrando menu...");
-        menuPane.setVisible(false);// para que el panel del menu se oculte
-        menuPane.setManaged(false);// lo quita de la primera capa, para liberar el espacio
-    }
-
-    @FXML
-    private void openMenuBusquedas(javafx.scene.input.MouseEvent event){
-        System.out.println("abriendo submenu de busquedas...");
-        boolean isVisible = subMenuBusquedas.isVisible();
-        subMenuBusquedas.setVisible(!isVisible);
-        subMenuBusquedas.setManaged(!isVisible);
-    }
-    @FXML
-    private void openMenuInternas(javafx.scene.input.MouseEvent event){
-        System.out.println("abriendo submenu de busquedas internas...");
-        boolean isVisible = subMenuInternas.isVisible();
-        subMenuInternas.setVisible(!isVisible);
-        subMenuInternas.setManaged(!isVisible);
-    }
-    @FXML
-    private void mostrarBusquedaLineal(javafx.scene.input.MouseEvent event) {
-        System.out.println("Abriendo busquedaLineal.fxml");
-        loadPanel("busquedaLineal.fxml");
-    }
-    @FXML
-    private void openBinario(javafx.scene.input.MouseEvent event){
-        System.out.println("abriendo busquedaBinaria.fxml");
-        loadPanel("busquedaBinaria.fxml");
-    }
-    @FXML
-    private void openFuncionHash(javafx.scene.input.MouseEvent event){
-        System.out.println("abriendo busquedaHash.fxml");
-        loadPanel("busquedaHash.fxml");
-    }
-    @FXML
-    private void openBResiduos(javafx.scene.input.MouseEvent event){
-        System.out.println("abriendo busquedaPorResiduos.fxml...");
-        loadPanel("busquedaPorResiduos.fxml");
-    }
-    @FXML
-    private void openGrafos(javafx.scene.input.MouseEvent event){
-        System.out.println("Abriendo grafos.fxml...");
-        loadPanel("grafos.fxml");
-    }
-
-    @FXML
-    private void openInicio(javafx.scene.input.MouseEvent event){
-        System.out.println("Abriendo inicio.fxml...");
-        loadPanel("inicio.fxml");
-    }
-    @FXML
-    private void openInternas(javafx.scene.input.MouseEvent event){
-        System.out.println("abriendo busquedasInternas.fxml...");
-        loadPanel("busquedasInternas.fxml");
-    }
-
-    @FXML
-    private void openLineal(javafx.scene.input.MouseEvent event) {
-        System.out.println("abriendo busquedaILineal.fxml...");
-        loadPanel("busquedaLineal.fxml");
-    }
-
-    @FXML private void buscarClave() {
-        // Lógica de búsqueda simplificada
-        resultadoLabel.setText("Búsqueda realizada en estructura Base 4.");
-    }
-
-    private void loadPanel(String fxml) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/" + fxml));
-            Parent panel = loader.load();
-
-            multiplePane.getChildren().clear();
-            multiplePane.getChildren().add(panel);
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        Circle circulo = new Circle(x, y, radio);
+        circulo.setStyle("-fx-fill: white; -fx-stroke: #2262C6; -fx-stroke-width: 1.5;");
+        if (nodo.esHoja) {
+            circulo.setStyle("-fx-fill: #b2ffb2; -fx-stroke: #27AE60;");
         }
-    }
+        arbolPane.getChildren().add(circulo);
 
-    public static class CodigoLetra {
-        private String letra, binario;
-        private int posicion;
-        public CodigoLetra(String l, int p, String b) { this.letra = l; this.posicion = p; this.binario = b; }
-        public String getLetra() { return letra; }
-        public int getPosicion() { return posicion; }
-        public String getBinario() { return binario; }
+        if (nodo.esHoja) {
+            Text t = new Text(x - 4, y + 4, nodo.letra);
+            t.setStyle("-fx-font-weight: bold; -fx-fill: #1B4F72; -fx-font-size: 11px;");
+            arbolPane.getChildren().add(t);
+            return;
+        }
+
+        int M = (int) Math.pow(2, m);
+        for (int i = 0; i < M; i++) {
+            if (nodo.hijos[i] != null) {
+                // Posicionamiento simétrico
+                double hijoX = x + (i - (M - 1) / 2.0) * xOffset;
+                double hijoY = y + yGap;
+
+                // Dibujar línea
+                Line linea = new Line(x, y + radio, hijoX, hijoY - radio);
+                linea.setStyle("-fx-stroke: #D5DBDB;");
+                arbolPane.getChildren().add(linea);
+
+                // Etiquetas de bits más pequeñas
+                String bitLabel = String.format("%" + m + "s", Integer.toBinaryString(i)).replace(' ', '0');
+                Text txtBit = new Text((x + hijoX) / 2 - 8, (y + hijoY) / 2, bitLabel);
+                txtBit.setStyle("-fx-fill: #E74C3C; -fx-font-size: 9px; -fx-font-weight: bold;");
+                arbolPane.getChildren().add(txtBit);
+
+                // Reducción agresiva del offset para que los nietos no se pisen
+                // Usamos un factor menor (0.35) para mantener todo compacto
+                // Usamos el factor de reducción que calculamos arriba
+                pintarNodo(nodo.hijos[i], hijoX, hijoY, xOffset * factorReduccion, yGap, factorReduccion);}
+        }
     }
 }

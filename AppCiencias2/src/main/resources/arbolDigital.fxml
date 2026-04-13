@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.URL?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
@@ -11,8 +12,10 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="digitalPanel" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ArbolDigitalController">
-
+<AnchorPane fx:id="digitalPanel" maxWidth="690.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ArbolDigitalController">
+    <stylesheets>
+        <URL value="@/styles.css" />
+    </stylesheets>
     <children>
         <VBox alignment="CENTER" spacing="12">
             <padding>
@@ -48,7 +51,7 @@
             <Label fx:id="resultadoLabel" style="-fx-font-size: 14px; -fx-text-fill: #2262C6;" text="Listo." />
 
                   <!-- Visualización del árbol -->
-            <Pane fx:id="arbolPane" prefHeight="250.0" prefWidth="1280.0" style="-fx-background-color: #f4f4f4;" />
+            <Pane fx:id="arbolPane" prefHeight="300.0" prefWidth="1280.0" style="-fx-background-color: #fff;" VBox.vgrow="ALWAYS" />
         </VBox>
     </children>
 </AnchorPane>

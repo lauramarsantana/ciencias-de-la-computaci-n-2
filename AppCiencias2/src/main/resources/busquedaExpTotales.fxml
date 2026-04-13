@@ -38,7 +38,7 @@
                                         </cursor>
                                     </TextField>
 
-                                    <Label text="Filas:" />
+                                    <Label text="Registros:" />
                                     <ChoiceBox fx:id="filasChoice" maxHeight="20.0" prefWidth="60.0" />
 
                                     <Label text="Dígitos clave:" />

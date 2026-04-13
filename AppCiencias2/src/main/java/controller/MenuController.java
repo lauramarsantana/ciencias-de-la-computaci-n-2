@@ -169,6 +169,11 @@ public class MenuController {
     }
 
     @FXML
+    private void openHuffman(MouseEvent event){
+        layoutController.loadPanel("/huffman.fxml");
+    }
+
+    @FXML
     private void openExternas(MouseEvent event){
         System.out.println("abriendo externas desde el menu...");
         layoutController.loadPanel("/busquedsExternas");
