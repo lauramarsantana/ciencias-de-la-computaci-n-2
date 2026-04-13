@@ -61,25 +61,25 @@
                     </columns>
                 </TableView>
 
-                <!-- Insertar -->
+                <!-- Campo único para clave -->
                 <HBox alignment="CENTER" spacing="10" VBox.vgrow="ALWAYS">
                     <children>
-                        <Label text="Insertar:" />
-                        <TextField fx:id="claveInsertField" prefWidth="60.0" promptText="Ej: 24" />
+                        <Label text="Clave:" />
+                        <TextField fx:id="claveField" prefWidth="80.0" promptText="Ej: 24" />
                         <Button onAction="#insertarClave" text="Insertar" />
+                        <Button onAction="#buscarClave" text="Buscar" />
+                        <Button onAction="#eliminarClave" text="Eliminar" />
                     </children>
                 </HBox>
 
-                <!-- Buscar / eliminar -->
+                <!-- Acciones generales -->
                 <HBox alignment="CENTER" spacing="10" VBox.vgrow="ALWAYS">
                     <children>
-                        <Label text="Buscar/Eliminar:" />
-                        <TextField fx:id="claveBuscarField" prefWidth="60.0" promptText="Ej: 24" />
-                        <Button onAction="#buscarClave" text="Buscar" />
-                        <Button onAction="#eliminarClave" text="Eliminar" />
                         <Button onAction="#limpiarEstructura" text="Limpiar" />
                         <Button onAction="#guardarTabla" text="Guardar" />
                         <Button onAction="#cargarTabla" text="Cargar" />
+                        <Button onAction="#expandirManual" text="Expandir" />
+                        <Button onAction="#reducirManual" text="Reducir" />
                     </children>
                 </HBox>
 

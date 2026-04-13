@@ -55,19 +55,58 @@ public class HashExpParciales {
         return filas;
     }
 
+    public int getNBase() {
+        return nBase;
+    }
+
+    public int getFase() {
+        return fase;
+    }
+
     public List<String> getPendientes() {
         return Collections.unmodifiableList(pendientes);
     }
 
     public int totalOcupados() {
         int c = 0;
-        for (Cubeta b : cubetas) c += b.ocupados();
+        for (Cubeta b : cubetas) {
+            c += b.ocupados();
+        }
         return c;
     }
 
-    public double densidadOcupacional() {
+    public int totalCubetasOcupadas() {
+        int contador = 0;
+        for (Cubeta b : cubetas) {
+            if (b.ocupados() > 0) {
+                contador++;
+            }
+        }
+        return contador;
+    }
+
+    /**
+     * Para expansión:
+     * ocupados / (cubetas * filas)
+     */
+    public double densidadExpansion() {
         int espacios = n * filas;
-        return espacios == 0 ? 0 : (double) totalOcupados() / espacios;
+        return espacios == 0 ? 0.0 : (double) totalOcupados() / espacios;
+    }
+
+    /**
+     * Para reducción:
+     * cubetas ocupadas / cubetas totales
+     */
+    public double densidadReduccion() {
+        return n == 0 ? 0.0 : (double) totalCubetasOcupadas() / n;
+    }
+
+    /**
+     * Se deja por compatibilidad.
+     */
+    public double densidadOcupacional() {
+        return densidadExpansion();
     }
 
     public boolean contiene(String clave) {
@@ -82,27 +121,29 @@ public class HashExpParciales {
         return cubetas.get(idx).filaDe(clave) != -1;
     }
 
-    public void insertar(String clave) {
-        if (clave == null || clave.isBlank()) return;
+    public boolean existeClave(String clave) {
+        return contiene(clave);
+    }
+
+    /**
+     * Inserta sin expansión automática.
+     */
+    public boolean insertar(String clave) {
+        if (clave == null || clave.isBlank()) return false;
         clave = clave.trim();
 
-        if (contiene(clave)) return;
+        if (contiene(clave)) return false;
 
         int idx = hash(clave);
-        if (idx == -1) return;
+        if (idx == -1) return false;
 
         Cubeta b = cubetas.get(idx);
 
         if (!b.insertar(clave)) {
             pendientes.add(clave);
-            expandirHastaSinPendientes();
-            return;
         }
 
-        if (densidadOcupacional() >= EXPAND) {
-            expandirUnaVez();
-            reubicarPendientesSiSePuede();
-        }
+        return true;
     }
 
     public String buscarInfo(String clave) {
@@ -122,15 +163,14 @@ public class HashExpParciales {
         return "Encontrada en cubeta " + idx + ", fila " + fila + " (h(k)=" + idx + ").";
     }
 
+    /**
+     * Elimina sin reducción automática.
+     */
     public boolean eliminar(String clave) {
         if (clave == null || clave.isBlank()) return false;
         clave = clave.trim();
 
         if (pendientes.remove(clave)) {
-            if (densidadOcupacional() <= SHRINK && n > 2) {
-                reducirUnaVez();
-                reubicarPendientesSiSePuede();
-            }
             return true;
         }
 
@@ -141,13 +181,38 @@ public class HashExpParciales {
         if (!ok) return false;
 
         reubicarPendientesSiSePuede();
+        return true;
+    }
 
-        if (densidadOcupacional() <= SHRINK && n > 2) {
-            reducirUnaVez();
-            reubicarPendientesSiSePuede();
+    /**
+     * Expansión manual respetando las fases parciales.
+     */
+    public boolean expandir() {
+        if (densidadExpansion() < EXPAND) {
+            return false;
         }
 
+        expandirUnaVez();
+        reubicarPendientesSiSePuede();
         return true;
+    }
+
+    /**
+     * Reducción manual respetando las fases parciales.
+     */
+    public boolean reducir() {
+        if (densidadReduccion() > SHRINK) {
+            return false;
+        }
+
+        int nAntes = n;
+        int baseAntes = nBase;
+        int faseAntes = fase;
+
+        reducirUnaVez();
+        reubicarPendientesSiSePuede();
+
+        return n != nAntes || nBase != baseAntes || fase != faseAntes;
     }
 
     public List<SlotCubeta> snapshotTabla() {
@@ -165,17 +230,6 @@ public class HashExpParciales {
         }
 
         return out;
-    }
-
-    private void expandirHastaSinPendientes() {
-        int seguridad = 20;
-        while (!pendientes.isEmpty() && seguridad-- > 0) {
-            int nAntes = n;
-            expandirUnaVez();
-            reubicarPendientesSiSePuede();
-
-            if (n == nAntes) break;
-        }
     }
 
     private void expandirUnaVez() {

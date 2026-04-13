@@ -58,24 +58,6 @@
 
             <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
                <children>
-                  <ImageView fx:id="btnIndiceAgrupamiento" accessibleRole="BUTTON" fitHeight="120.0" fitWidth="140.0" onMouseClicked="#openIndiceAgrupamiento" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@/icono-b.externas.png" />
-                     </image>
-                     <cursor>
-                        <Cursor fx:constant="HAND" />
-                     </cursor>
-                  </ImageView>
-                  <Label text="AGRUPAMIENTO">
-                     <font>
-                        <Font name="Myanmar Text Bold" size="16.0" />
-                     </font>
-                  </Label>
-               </children>
-            </VBox>
-
-            <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
-               <children>
                   <ImageView fx:id="btnIndiceMultinivel" accessibleRole="BUTTON" fitHeight="120.0" fitWidth="140.0" onMouseClicked="#openIndiceMultinivel" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@/icono-b.externas.png" />

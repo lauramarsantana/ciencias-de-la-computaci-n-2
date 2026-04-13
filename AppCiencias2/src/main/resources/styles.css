@@ -2,7 +2,7 @@
     -fx-background-color: #2262C6; /* mismo azul del panel */
 }
 #menuVBox .label {
-    -fx-text-fill: white;  /* 👈 cambia el color del texto */
+    -fx-text-fill: white;  /*  cambia el color del texto */
     -fx-font-size: 14px;
 }
 .menu {

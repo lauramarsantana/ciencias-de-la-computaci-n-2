@@ -6,23 +6,23 @@ import java.util.List;
 
 public class HashExpTotales {
 
-    private final double EXPAND = 0.75;  // >= 75% expande
-    private final double SHRINK = 0.25;  // <= 25% reduce
+    private final double EXPAND = 0.75;   // recomendación / permiso para expandir
+    private final double SHRINK = 0.25;   // recomendación / permiso para reducir
 
-    private int n; // número de cubetas
-    private int filas; // cantidad de filas por cubeta
+    private int n;       // número de cubetas
+    private int filas;   // filas por cubeta
 
     private final List<Cubeta> cubetas = new ArrayList<>();
     private final List<String> pendientes = new ArrayList<>();
 
     public HashExpTotales(int nInicial, int filas) {
-    if (nInicial < 2) nInicial = 2;
-    if (filas < 2) filas = 2;
+        if (nInicial < 2) nInicial = 2;
+        if (filas < 2) filas = 2;
 
-    this.n = nInicial;
-    this.filas = filas;
-    crearCubetas();
-}
+        this.n = nInicial;
+        this.filas = filas;
+        crearCubetas();
+    }
 
     private void crearCubetas() {
         cubetas.clear();
@@ -62,13 +62,35 @@ public class HashExpTotales {
         return c;
     }
 
-    public double densidadOcupacional() {
+    /**
+     * Densidad para EXPANSIÓN:
+     * ocupados / (cubetas * filas)
+     */
+    public double densidadExpansion() {
         int espacios = n * filas;
-        return espacios == 0 ? 0 : (double) totalOcupados() / espacios;
+        return espacios == 0 ? 0.0 : (double) totalOcupados() / espacios;
+    }
+
+    /**
+     * Densidad para REDUCCIÓN:
+     * ocupados / cubetas
+     */
+    public double densidadReduccion() {
+    return n == 0 ? 0.0 : (double) totalCubetasOcupadas() / n;
+    }
+
+    /**
+     * La dejo por compatibilidad, pero realmente
+     * ahora deberías usar densidadExpansion() o densidadReduccion().
+     */
+    public double densidadOcupacional() {
+        return densidadExpansion();
     }
 
     public boolean contiene(String clave) {
         if (clave == null || clave.isBlank()) return false;
+        clave = clave.trim();
+
         if (pendientes.contains(clave)) return true;
 
         int idx = hash(clave);
@@ -77,27 +99,44 @@ public class HashExpTotales {
         return cubetas.get(idx).filaDe(clave) != -1;
     }
 
-    public void insertar(String clave) {
-        if (clave == null || clave.isBlank()) return;
+    public boolean existeClave(String clave) {
+        return contiene(clave);
+    }
+    
+    public int totalCubetasOcupadas() {
+    int contador = 0;
+
+    for (Cubeta b : cubetas) {
+        if (b.ocupados() > 0) {
+            contador++;
+        }
+    }
+
+    return contador;
+    }
+
+    /**
+     * Inserta SIN expandir automáticamente.
+     * Devuelve false si la clave ya existe o si es inválida.
+     */
+    public boolean insertar(String clave) {
+        if (clave == null || clave.isBlank()) return false;
         clave = clave.trim();
 
-        if (contiene(clave)) return;
+        if (contiene(clave)) {
+            return false;
+        }
 
         int idx = hash(clave);
-        if (idx == -1) return;
+        if (idx == -1) return false;
 
         Cubeta b = cubetas.get(idx);
 
         if (!b.insertar(clave)) {
             pendientes.add(clave);
-            expandirHastaSinPendientes();
-            return;
         }
 
-        if (densidadOcupacional() >= EXPAND) {
-            expandirUnaVez();
-            reubicarPendientesSiSePuede();
-        }
+        return true;
     }
 
     public String buscarInfo(String clave) {
@@ -117,15 +156,14 @@ public class HashExpTotales {
         return "Encontrada en cubeta " + idx + ", fila " + fila + " (h(k)=" + idx + ").";
     }
 
+    /**
+     * Elimina SIN reducir automáticamente.
+     */
     public boolean eliminar(String clave) {
         if (clave == null || clave.isBlank()) return false;
         clave = clave.trim();
 
         if (pendientes.remove(clave)) {
-            if (densidadOcupacional() <= SHRINK && n > 2) {
-                reducirUnaVez();
-                reubicarPendientesSiSePuede();
-            }
             return true;
         }
 
@@ -136,11 +174,42 @@ public class HashExpTotales {
         if (!ok) return false;
 
         reubicarPendientesSiSePuede();
+        return true;
+    }
 
-        if (densidadOcupacional() <= SHRINK && n > 2) {
-            reducirUnaVez();
-            reubicarPendientesSiSePuede();
+    /**
+     * Expande manualmente solo si la densidad de expansión es >= 75%.
+     */
+    public boolean expandir() {
+        if (densidadExpansion() < EXPAND) {
+            return false;
         }
+
+        rehashConNuevoN(n * 2);
+        reubicarPendientesSiSePuede();
+        return true;
+    }
+
+    /**
+     * Reduce manualmente solo si la densidad de reducción es <= 25%
+     * y si no baja de 2 cubetas.
+     */
+    public boolean reducir() {
+        if (n <= 2) {
+            return false;
+        }
+
+        if (densidadReduccion() > SHRINK) {
+            return false;
+        }
+
+        int nuevo = Math.max(2, n / 2);
+        if (nuevo == n) {
+            return false;
+        }
+
+        rehashConNuevoN(nuevo);
+        reubicarPendientesSiSePuede();
         return true;
     }
 
@@ -159,23 +228,6 @@ public class HashExpTotales {
         }
 
         return out;
-    }
-
-    private void expandirHastaSinPendientes() {
-        int seguridad = 20;
-        while (!pendientes.isEmpty() && seguridad-- > 0) {
-            expandirUnaVez();
-            reubicarPendientesSiSePuede();
-        }
-    }
-
-    private void expandirUnaVez() {
-        rehashConNuevoN(n * 2);
-    }
-
-    private void reducirUnaVez() {
-        int nuevo = Math.max(2, n / 2);
-        rehashConNuevoN(nuevo);
     }
 
     private void rehashConNuevoN(int nuevoN) {
