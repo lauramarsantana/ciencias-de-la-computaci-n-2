@@ -31,7 +31,7 @@
                         <Insets left="40.0" right="10.0" />
                      </HBox.margin>
                   </Label>
-                  <TextField fx:id="aristasG1" promptText="ej: 1-2,3-4">
+                  <TextField fx:id="aristasG1" promptText="ej: A-C,D-B">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>
@@ -56,7 +56,7 @@
                         <Insets left="40.0" right="10.0" />
                      </HBox.margin>
                   </Label>
-                  <TextField fx:id="aristasG2" promptText="ej: 1-2,3-4">
+                  <TextField fx:id="aristasG2" promptText="ej: A-B,C-D">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>
@@ -85,16 +85,16 @@
             </HBox>
             <HBox prefHeight="332.0" VBox.vgrow="ALWAYS">
                <children>
-                  <Pane fx:id="paneG1" style="-fx-border-color: blue; -fx-border-radius: 10px; -fx-background-color: white;" HBox.hgrow="ALWAYS">
+                  <Pane fx:id="paneG1" prefWidth="420.0" style="-fx-border-color: blue; -fx-border-radius: 10px; -fx-background-color: white;" HBox.hgrow="ALWAYS">
                      <HBox.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </HBox.margin>
                   </Pane>
-                  <Pane fx:id="paneG2" style="-fx-border-color: blue; -fx-border-radius: 10px; -fx-background-color: white;" HBox.hgrow="ALWAYS">
+                  <Pane fx:id="paneG2" prefWidth="420.0" style="-fx-border-color: blue; -fx-border-radius: 10px; -fx-background-color: white;" HBox.hgrow="ALWAYS">
                      <HBox.margin>
                         <Insets bottom="5.0" top="5.0" />
                      </HBox.margin></Pane>
-                  <Pane fx:id="paneG3" style="-fx-background-color: white; -fx-border-color: blue; -fx-border-radius: 10px;" HBox.hgrow="ALWAYS">
+                  <Pane fx:id="paneG3" prefWidth="420.0" style="-fx-background-color: white; -fx-border-color: blue; -fx-border-radius: 10px;" HBox.hgrow="ALWAYS">
                      <HBox.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </HBox.margin>
