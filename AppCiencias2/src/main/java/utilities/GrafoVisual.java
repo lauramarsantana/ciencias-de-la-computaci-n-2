@@ -48,6 +48,10 @@ public class GrafoVisual {
     public static void reacomodarCircular(Pane panel, List<Vertice> vertices) {
         if (vertices.isEmpty()) return;
 
+        // --- EL TRUCO: Ordenamos la lista por nombre antes de posicionar ---
+        vertices.sort((v1, v2) -> v1.getName().compareTo(v2.getName()));
+        // -------------------------------------------------------------------
+
         double centroX = panel.getWidth() / 2;
         double centroY = panel.getHeight() / 2;
         double radioCirculo = Math.min(centroX, centroY) - 50;
@@ -62,7 +66,5 @@ public class GrafoVisual {
             vertices.get(i).setPositionX(nuevoX);
             vertices.get(i).setPositionY(nuevoY);
         }
-
-        // ¡IMPORTANTE! Al no usar bind, hay que volver a dibujar para ver los cambios
     }
 }

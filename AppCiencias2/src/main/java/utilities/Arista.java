@@ -43,11 +43,13 @@ public class Arista {
         if (o == null || getClass() != o.getClass()) return false;
         Arista arista = (Arista) o;
 
-        // A-B es lo mismo que B-A
-        boolean normal = verticeOrigen.equals(arista.verticeOrigen) && verticeDestino.equals(arista.verticeDestino);
-        boolean invertido = verticeOrigen.equals(arista.verticeDestino) && verticeDestino.equals(arista.verticeOrigen);
-
-        return normal || invertido;
+        // Compara origen con origen Y destino con destino
+        boolean direct = Objects.equals(verticeOrigen, arista.verticeOrigen) &&
+                Objects.equals(verticeDestino, arista.verticeDestino);
+        // O compara origen con destino Y destino con origen
+        boolean reverse = Objects.equals(verticeOrigen, arista.verticeDestino) &&
+                Objects.equals(verticeDestino, arista.verticeOrigen);
+        return direct || reverse;
     }
 //hashCode genera una dirección dentro de su estructura para guardar esta info
     @Override

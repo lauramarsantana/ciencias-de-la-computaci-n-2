@@ -103,4 +103,49 @@ public class Grafo {
         }
         return g3;
     }
+    public static Grafo sumaAnular(Grafo g1, Grafo g2) {
+        Grafo g3 = new Grafo("G1 ⊕ G2");
+
+        // 1. Vértices: Unión de ambos (S1 U S2)
+        for (Vertice v : g1.getVertices().values()) {
+            g3.agregarVertice(new Vertice(v.getName(), v.getPositionX(), v.getPositionY()));
+        }
+        for (Vertice v : g2.getVertices().values()) {
+            g3.agregarVertice(new Vertice(v.getName(), v.getPositionX(), v.getPositionY()));
+        }
+
+        // 2. Aristas de G1 que NO están en G2
+        for (Arista a1 : g1.getAristas()) {
+            boolean existeEnG2 = false;
+            for (Arista a2 : g2.getAristas()) {
+                if (a1.getName().equals(a2.getName())) {
+                    existeEnG2 = true;
+                    break;
+                }
+            }
+            if (!existeEnG2) {
+                Vertice o = g3.getVertices().get(a1.getVerticeOrigen().getName());
+                Vertice d = g3.getVertices().get(a1.getVerticeDestino().getName());
+                g3.agregarArista(new Arista(a1.getName(), o, d));
+            }
+        }
+
+        // 3. Aristas de G2 que NO están en G1
+        for (Arista a2 : g2.getAristas()) {
+            boolean existeEnG1 = false;
+            for (Arista a1 : g1.getAristas()) {
+                if (a2.getName().equals(a1.getName())) {
+                    existeEnG1 = true;
+                    break;
+                }
+            }
+            if (!existeEnG1) {
+                Vertice o = g3.getVertices().get(a2.getVerticeOrigen().getName());
+                Vertice d = g3.getVertices().get(a2.getVerticeDestino().getName());
+                g3.agregarArista(new Arista(a2.getName(), o, d));
+            }
+        }
+
+        return g3;
+    }
 }
