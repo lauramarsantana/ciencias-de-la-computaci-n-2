@@ -90,13 +90,13 @@ public class Grafo {
         // Nota: El nombre de la arista debe ser igual (ej: "A-B")
         for (Arista a1 : g1.getAristas()) {
             for (Arista a2 : g2.getAristas()) {
-                if (a1.getName().equals(a2.getName())) {
+                if (a1.equals(a2)) {
                     // Verificamos que los vértices de esta arista existan en nuestro nuevo G3
                     Vertice origenG3 = g3.getVertices().get(a1.getVerticeOrigen().getName());
                     Vertice destinoG3 = g3.getVertices().get(a1.getVerticeDestino().getName());
 
                     if (origenG3 != null && destinoG3 != null) {
-                        g3.agregarArista(new Arista(a1.getName(), origenG3, destinoG3));
+                        g3.agregarArista(new Arista(origenG3.getName() + "-" + destinoG3.getName(), origenG3, destinoG3));
                     }
                 }
             }
@@ -118,7 +118,7 @@ public class Grafo {
         for (Arista a1 : g1.getAristas()) {
             boolean existeEnG2 = false;
             for (Arista a2 : g2.getAristas()) {
-                if (a1.getName().equals(a2.getName())) {
+                if (a1.equals(a2)) {
                     existeEnG2 = true;
                     break;
                 }
@@ -134,7 +134,7 @@ public class Grafo {
         for (Arista a2 : g2.getAristas()) {
             boolean existeEnG1 = false;
             for (Arista a1 : g1.getAristas()) {
-                if (a2.getName().equals(a1.getName())) {
+                if (a2.equals(a1)) {
                     existeEnG1 = true;
                     break;
                 }
@@ -148,4 +148,45 @@ public class Grafo {
 
         return g3;
     }
+
+    public static Grafo complemento(Grafo g1) {
+        Grafo g3 = new Grafo("Complemento de " + g1.getNombre());
+
+        // 1. Copiamos todos los vértices a G3
+        for (Vertice v : g1.getVertices().values()) {
+            g3.agregarVertice(new Vertice(v.getName(), v.getPositionX(), v.getPositionY()));
+        }
+
+        // 2. Obtenemos una lista de los vértices para iterar por índices
+        java.util.List<Vertice> listaV = new java.util.ArrayList<>(g3.getVertices().values());
+
+        // 3. Comparamos cada vértice con todos los demás (sin repetir pares)
+        for (int i = 0; i < listaV.size(); i++) {
+            for (int j = i + 1; j < listaV.size(); j++) {
+                Vertice vA = listaV.get(i);
+                Vertice vB = listaV.get(j);
+
+                // Creamos una arista temporal para ver si existe en el grafo original
+                // Usamos los vértices originales de g1 para la comprobación
+                Vertice vA_orig = g1.getVertices().get(vA.getName());
+                Vertice vB_orig = g1.getVertices().get(vB.getName());
+                Arista posible = new Arista("temp", vA_orig, vB_orig);
+
+                // SI NO EXISTE en el original, la agregamos al complemento (G3)
+                boolean existe = false;
+                for (Arista aOrig : g1.getAristas()) {
+                    if (aOrig.equals(posible)) {
+                        existe = true;
+                        break;
+                    }
+                }
+
+                if (!existe) {
+                    g3.agregarArista(new Arista(vA.getName() + "-" + vB.getName(), vA, vB));
+                }
+            }
+        }
+        return g3;
+    }
+
 }

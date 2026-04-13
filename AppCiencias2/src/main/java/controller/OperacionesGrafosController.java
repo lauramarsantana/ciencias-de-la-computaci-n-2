@@ -38,6 +38,7 @@ public class OperacionesGrafosController {
         operacion.getItems().addAll("Unión", "Intersección");
         operacion.getSelectionModel().selectFirst();
         operacion.getItems().add("Suma Anular");
+        operacion.getItems().add("Complemento");
     }
 
     private void parsearVertices(String texto, Grafo grafo, Pane panel) {
@@ -132,6 +133,9 @@ public class OperacionesGrafosController {
                 break;
             case "Suma Anular":
                 g3 = Grafo.sumaAnular(g1, g2);
+                break;
+            case "Complemento":
+                g3 = Grafo.complemento(g1);
                 break;
             default:
                 return;
