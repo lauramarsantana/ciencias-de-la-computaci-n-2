@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.net.URL?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
@@ -10,17 +11,17 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="contentPane" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.GrafosController">
+<AnchorPane fx:id="arbolesPane" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ArbolesMenuController">
    <stylesheets>
       <URL value="@styles.css" />
    </stylesheets>
    <children>
-      <HBox alignment="CENTER" prefHeight="600.0" prefWidth="1280.0" spacing="80.0">
+      <HBox alignment="CENTER" prefHeight="600.0" prefWidth="1280.0">
          <children>
 
             <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
                <children>
-                  <ImageView fx:id="btnBusquedas1" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#openOperaciones" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="btnArbolSimple" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#abrirArbolSimple" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@icono-busquedas.png" />
                      </image>
@@ -28,7 +29,7 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </ImageView>
-                  <Label text="OPERACIONES CON GRAFOS" textFill="#000204">
+                  <Label text="ÁRBOL SIMPLE">
                      <font>
                         <Font name="Myanmar Text Bold" size="24.0" />
                      </font>
@@ -41,7 +42,7 @@
 
             <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
                <children>
-                  <ImageView fx:id="btnArboles" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#openArboles" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="btnArbolOpcion2" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#abrirOpcion2" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@icono-busquedas.png" />
                      </image>
@@ -49,7 +50,28 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </ImageView>
-                  <Label text="ÁRBOLES" textFill="#000204">
+                  <Label text="Arbol Generador">
+                     <font>
+                        <Font name="Myanmar Text Bold" size="24.0" />
+                     </font>
+                  </Label>
+               </children>
+               <cursor>
+                  <Cursor fx:constant="DEFAULT" />
+               </cursor>
+            </VBox>
+
+            <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
+               <children>
+                  <ImageView fx:id="btnArbolOpcion3" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#abrirOpcion3" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icono-busquedas.png" />
+                     </image>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </ImageView>
+                  <Label text="OPCIÓN 3">
                      <font>
                         <Font name="Myanmar Text Bold" size="24.0" />
                      </font>
@@ -61,6 +83,9 @@
             </VBox>
 
          </children>
+         <opaqueInsets>
+            <Insets left="40.0" />
+         </opaqueInsets>
       </HBox>
    </children>
 </AnchorPane>

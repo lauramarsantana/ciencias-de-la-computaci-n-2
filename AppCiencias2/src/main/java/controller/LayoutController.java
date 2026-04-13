@@ -123,6 +123,10 @@ public class LayoutController {
             if (controller instanceof GrafosController grafosController){
                 grafosController.setLayoutController(this);
             }
+            if (controller instanceof ArbolesMenuController arbolesMenuController){
+                arbolesMenuController.setLayoutController(this);
+            }
+            
 
             // incrementar contador de cambios
             panelCount++;

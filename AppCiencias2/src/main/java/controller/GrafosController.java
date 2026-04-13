@@ -18,4 +18,9 @@ public class GrafosController {
         layoutController.loadPanel("/operaciones.fxml");
 
     }
+    
+    @FXML
+    private void openArboles(MouseEvent event) {
+        layoutController.loadPanel("/arbolesMenu.fxml");
+    }
 }
