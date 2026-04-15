@@ -36,25 +36,19 @@ public class Arista {
     public void setVerticeDestino(Vertice verticeDestino) {
         this.verticeDestino = verticeDestino;
     }
-// hay alguna arista repetida?
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Arista arista = (Arista) o;
-
-        // Compara origen con origen Y destino con destino
-        boolean direct = Objects.equals(verticeOrigen, arista.verticeOrigen) &&
+        // Solo son iguales si tienen el mismo origen y mismo destino exacto
+        return Objects.equals(verticeOrigen, arista.verticeOrigen) &&
                 Objects.equals(verticeDestino, arista.verticeDestino);
-        // O compara origen con destino Y destino con origen
-        boolean reverse = Objects.equals(verticeOrigen, arista.verticeDestino) &&
-                Objects.equals(verticeDestino, arista.verticeOrigen);
-        return direct || reverse;
     }
-//hashCode genera una dirección dentro de su estructura para guardar esta info
+
     @Override
     public int hashCode() {
-        // Esto es un truco para que el orden de los vértices no afecte el hash
-        return verticeOrigen.hashCode() + verticeDestino.hashCode();
+        return Objects.hash(verticeOrigen, verticeDestino);
     }
 }

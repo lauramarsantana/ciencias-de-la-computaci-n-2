@@ -6,7 +6,7 @@
 
 <AnchorPane xmlns="http://javafx.com/javafx/25"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="controller.ArbolDigitalController"
+            fx:controller="controller.TriesResiduosController"
             prefWidth="1200" prefHeight="800">
 
     <children>
@@ -16,15 +16,13 @@
                 <Insets top="20" left="20" right="20" bottom="20"/>
             </padding>
 
-            <!-- Entrada de mensaje -->
             <HBox spacing="10" alignment="CENTER">
                 <Label text="Mensaje:"/>
                 <TextField fx:id="mensajeField" promptText="Ej: MURCIELAGO"/>
                 <Button text="Procesar" onAction="#procesarMensaje"/>
-                <Button text="Reiniciar" onAction="#initialize"/>
+                <Button text="Reiniciar" onAction="#initializeTree"/>
             </HBox>
 
-            <!-- Buscar letra -->
             <HBox spacing="10" alignment="CENTER">
                 <Label text="Buscar letra:"/>
                 <TextField fx:id="buscarField" promptText="Ej: A"/>
@@ -32,20 +30,6 @@
                 <Button text="Limpiar búsqueda" onAction="#clearSearch"/>
             </HBox>
 
-            <!-- Tabla de códigos binarios -->
             <TableView fx:id="tablaCodigos" prefHeight="200" prefWidth="800">
                 <columns>
-                    <TableColumn fx:id="colLetra" text="Letra" prefWidth="100"/>
-                    <TableColumn fx:id="colPos" text="Posición" prefWidth="100"/>
-                    <TableColumn fx:id="colBinario" text="Código Binario" prefWidth="200"/>
-                </columns>
-            </TableView>
-
-            <!-- Resultado -->
-            <Label fx:id="resultadoLabel" text="Listo." style="-fx-font-size: 14px; -fx-text-fill: #2262C6;"/>
-
-            <!-- Visualización del árbol -->
-            <Pane fx:id="arbolPane" prefHeight="500" prefWidth="1000" style="-fx-background-color: #f4f4f4;"/>
-        </VBox>
-    </children>
-</AnchorPane>
+                    <TableColumn fx:id

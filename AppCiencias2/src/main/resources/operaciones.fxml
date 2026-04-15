@@ -85,20 +85,33 @@
             </HBox>
             <HBox prefHeight="332.0" VBox.vgrow="ALWAYS">
                <children>
-                  <Pane fx:id="paneG1" prefWidth="420.0" style="-fx-border-color: blue; -fx-border-radius: 10px; -fx-background-color: white;" HBox.hgrow="ALWAYS">
+                  <VBox alignment="TOP_CENTER" HBox.hgrow="ALWAYS">
+                     <children>
+                        <Label fx:id="infoG1" text="Label" />
+                        <Pane fx:id="paneG1" prefWidth="406.0" style="-fx-border-color: blue; -fx-border-radius: 10px; -fx-background-color: white;" VBox.vgrow="ALWAYS" />
+                     </children>
                      <HBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                      </HBox.margin>
-                  </Pane>
-                  <Pane fx:id="paneG2" prefWidth="420.0" style="-fx-border-color: blue; -fx-border-radius: 10px; -fx-background-color: white;" HBox.hgrow="ALWAYS">
+                  </VBox>
+                  <VBox alignment="TOP_CENTER" HBox.hgrow="ALWAYS">
+                     <children>
+                        <Label fx:id="infoG2" text="Label" />
+                        <Pane fx:id="paneG2" prefWidth="406.0" style="-fx-border-color: blue; -fx-border-radius: 10px; -fx-background-color: white;" VBox.vgrow="ALWAYS" />
+                     </children>
                      <HBox.margin>
-                        <Insets bottom="5.0" top="5.0" />
-                     </HBox.margin></Pane>
-                  <Pane fx:id="paneG3" prefWidth="420.0" style="-fx-background-color: white; -fx-border-color: blue; -fx-border-radius: 10px;" HBox.hgrow="ALWAYS">
-                     <HBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                      </HBox.margin>
-                  </Pane>
+                  </VBox>
+                  <VBox alignment="TOP_CENTER" HBox.hgrow="ALWAYS">
+                     <children>
+                        <Label fx:id="infoG3" text="Label" />
+                        <Pane fx:id="paneG3" prefWidth="406.0" style="-fx-background-color: white; -fx-border-color: blue; -fx-border-radius: 10px;" VBox.vgrow="ALWAYS" />
+                     </children>
+                     <HBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </HBox.margin>
+                  </VBox>
                </children>
             </HBox>
          </children>
