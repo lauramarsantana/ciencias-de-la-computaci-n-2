@@ -23,6 +23,7 @@ public class ArbolesMenuController {
 
     @FXML
     private void abrirOpcion3(MouseEvent event) {
-        System.out.println("opción 3 próximamente");
+        System.out.println("Abriendo distancia entre 2 arboles");
+        layoutController.loadPanel("/distanciaArboles.fxml");
     }
 }
