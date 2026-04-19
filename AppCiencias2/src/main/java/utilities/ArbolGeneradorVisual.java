@@ -121,13 +121,13 @@ public class ArbolGeneradorVisual {
     double perpX = -dy / longitud;
     double perpY = dx / longitud;
 
-    // Desplazamiento para separar el texto de la línea
-    double offset = 18;
+    // Distancia más corta (ajustada)
+    double offset = 9;
 
     Label peso = new Label(String.valueOf(arista.getPeso()));
     peso.setLayoutX(midX + perpX * offset - 6);
-    peso.setLayoutY(midY + perpY * offset - 10);
-    peso.setStyle("-fx-background-color: white; -fx-padding: 2 4 2 4; -fx-font-weight: bold;");
+    peso.setLayoutY(midY + perpY * offset - 8);
+    peso.setStyle("-fx-background-color: white; -fx-padding: 1 3 1 3; -fx-font-weight: bold;");
 
     return peso;
 }
