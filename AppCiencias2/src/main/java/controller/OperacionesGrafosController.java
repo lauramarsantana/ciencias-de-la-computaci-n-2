@@ -3,6 +3,7 @@ package controller;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import utilities.Arista;
@@ -22,6 +23,9 @@ public class OperacionesGrafosController {
     @FXML private Pane paneG1;
     @FXML private Pane paneG2;
     @FXML private Pane paneG3;
+    @FXML private Label infoG1;
+    @FXML private Label infoG2;
+    @FXML private Label infoG3;
 
     private Grafo g1;
     private Grafo g2;
@@ -39,6 +43,7 @@ public class OperacionesGrafosController {
         operacion.getSelectionModel().selectFirst();
         operacion.getItems().add("Suma Anular");
         operacion.getItems().add("Complemento");
+        operacion.getItems().add("Suma");
     }
 
     private void parsearVertices(String texto, Grafo grafo, Pane panel) {
@@ -134,6 +139,9 @@ public class OperacionesGrafosController {
             case "Suma Anular":
                 g3 = Grafo.sumaAnular(g1, g2);
                 break;
+            case "Suma":
+                g3 = Grafo.sumaNormal(g1, g2);
+                break;
             case "Complemento":
                 g3 = Grafo.complemento(g1);
                 break;
@@ -159,5 +167,39 @@ public class OperacionesGrafosController {
         alert.setHeaderText(null);
         alert.setContentText(mensaje);
         alert.showAndWait();
+    }
+
+    private String generarTextoFormal(Grafo g) {
+        if (g == null) return "";
+
+        // Construir conjunto de Vértices S
+        StringBuilder sbS = new StringBuilder("S = {");
+        List<String> verticesNombres = new ArrayList<>();
+        for (Vertice v : g.getVertices().values()) {
+            verticesNombres.add(formatearNombre(v.getName()));
+        }
+        sbS.append(String.join(", ", verticesNombres)).append("}");
+
+        // Construir conjunto de Aristas A
+        StringBuilder sbA = new StringBuilder("A = {");
+        List<String> aristasNombres = new ArrayList<>();
+        for (Arista a : g.getAristas()) {
+            aristasNombres.add(formatearNombre(a.getVerticeOrigen().getName()) + "-" +
+                    formatearNombre(a.getVerticeDestino().getName()));
+        }
+        sbA.append(String.join(", ", aristasNombres)).append("}");
+
+        return g.getNombre() + ":\n" + sbS.toString() + "\n" + sbA.toString();
+    }
+
+    // Esta función aplica la "rayita" (circumflex) si detecta que es del segundo grafo
+    private String formatearNombre(String nombre) {
+        if (nombre.startsWith("2_")) {
+            // \u0305 es una barra superior (overline) que se nota mucho más
+            return nombre.split("_")[1] + "\u0305";
+        } else if (nombre.startsWith("1_")) {
+            return nombre.split("_")[1];
+        }
+        return nombre;
     }
 }

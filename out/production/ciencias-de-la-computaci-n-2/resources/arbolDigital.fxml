@@ -1,36 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="controller.ArbolDigitalController"
-            prefWidth="800" prefHeight="600" style="-fx-background-color: #f5f9ff;">
+<AnchorPane xmlns="http://javafx.com/javafx/25"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.ArbolDigitalController"
+            prefWidth="1200" prefHeight="800">
 
-    <VBox spacing="20" alignment="TOP_CENTER" AnchorPane.topAnchor="20" AnchorPane.leftAnchor="20" AnchorPane.rightAnchor="20">
+    <children>
+        <VBox spacing="12" alignment="CENTER" AnchorPane.topAnchor="10" AnchorPane.leftAnchor="10"
+              AnchorPane.rightAnchor="10" AnchorPane.bottomAnchor="10">
+            <padding>
+                <Insets top="20" left="20" right="20" bottom="20"/>
+            </padding>
 
-        <!-- Título -->
-        <Label text="Árboles Digitales"
-               style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #003366;" />
+            <!-- Entrada de mensaje -->
+            <HBox spacing="10" alignment="CENTER">
+                <Label text="Mensaje:"/>
+                <TextField fx:id="mensajeField" promptText="Ej: MURCIELAGO"/>
+                <Button text="Procesar" onAction="#procesarMensaje"/>
+                <Button text="Reiniciar" onAction="#initialize"/>
+            </HBox>
 
-        <!-- Panel de visualización -->
-        <Pane fx:id="canvasPane"
-              prefHeight="400" prefWidth="700"
-              style="-fx-background-color: white; -fx-border-color: #003366; -fx-border-width: 2; -fx-border-radius: 5;" />
+            <!-- Buscar letra -->
+            <HBox spacing="10" alignment="CENTER">
+                <Label text="Buscar letra:"/>
+                <TextField fx:id="buscarField" promptText="Ej: A"/>
+                <Button text="Buscar" onAction="#buscarClave"/>
+                <Button text="Limpiar búsqueda" onAction="#clearSearch"/>
+            </HBox>
 
-        <!-- Controles -->
-        <HBox spacing="15" alignment="CENTER">
-            <TextField fx:id="inputClave" promptText="Ingrese clave"
-                       style="-fx-pref-width: 200; -fx-background-color: #eef3fa; -fx-border-color: #003366;" />
+            <!-- Tabla de códigos binarios -->
+            <TableView fx:id="tablaCodigos" prefHeight="200" prefWidth="800">
+                <columns>
+                    <TableColumn fx:id="colLetra" text="Letra" prefWidth="100"/>
+                    <TableColumn fx:id="colPos" text="Posición" prefWidth="100"/>
+                    <TableColumn fx:id="colBinario" text="Código Binario" prefWidth="200"/>
+                </columns>
+            </TableView>
 
-            <Button text="Insertar" onAction="#insertarClave"
-                    style="-fx-background-color: #003366; -fx-text-fill: white; -fx-font-weight: bold;" />
+            <!-- Resultado -->
+            <Label fx:id="resultadoLabel" text="Listo." style="-fx-font-size: 14px; -fx-text-fill: #2262C6;"/>
 
-            <Button text="Buscar" onAction="#buscarClave"
-                    style="-fx-background-color: #2e8b57; -fx-text-fill: white; -fx-font-weight: bold;" />
-
-            <Button text="Eliminar" onAction="#eliminarClave"
-                    style="-fx-background-color: #b22222; -fx-text-fill: white; -fx-font-weight: bold;" />
-        </HBox>
-    </VBox>
+            <!-- Visualización del árbol -->
+            <Pane fx:id="arbolPane" prefHeight="500" prefWidth="1000" style="-fx-background-color: #f4f4f4;"/>
+        </VBox>
+    </children>
 </AnchorPane>

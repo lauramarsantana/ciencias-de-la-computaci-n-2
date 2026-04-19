@@ -1,21 +1,19 @@
 package utilities;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+
 import utilities.Vertice;
 import utilities.Arista;
 
 public class Grafo {
     private String nombre;
     private Map<String, Vertice> vertices; // Usamos la interfaz Map
-    private Set<Arista> aristas;           // Usamos la interfaz Set
+    private List<Arista> aristas;
 
     public Grafo(String nombre) {
         this.nombre = nombre;
         this.vertices = new HashMap<>();
-        this.aristas = new HashSet<>();
+        this.aristas = new ArrayList<>();
     }
 
     // --- MÉTODOS DE ACCESO ---
@@ -25,10 +23,10 @@ public class Grafo {
     public Map<String, Vertice> getVertices() {
         return vertices;
     }
-    public Set<Arista> getAristas() {
+
+    public List<Arista> getAristas() {
         return aristas;
     }
-
     // --- LÓGICA BÁSICA ---
 
     public void agregarVertice(Vertice v) {
@@ -37,8 +35,9 @@ public class Grafo {
     }
 
     public void agregarArista(Arista a) {
-        // El HashSet usa el equals que hicimos en Arista para no repetir A-B y B-A
-        aristas.add(a);
+        // Para que la SUMA funcione y se curve, necesitamos permitir
+        // que entren todas las aristas que enviamos.
+        this.aristas.add(a);
     }
 
     public static Grafo union(Grafo g1, Grafo g2) {
@@ -189,4 +188,43 @@ public class Grafo {
         return g3;
     }
 
+    public static Grafo sumaNormal(Grafo g1, Grafo g2) {
+        Grafo g3 = new Grafo("G1 + G2");
+
+        // 1. Agregar vértices de G1 (con prefijo para asegurar que sean distintos)
+        for (Vertice v : g1.getVertices().values()) {
+            g3.agregarVertice(new Vertice("1_" + v.getName(), v.getPositionX() - 50, v.getPositionY()));
+        }
+
+        // 2. Agregar vértices de G2
+        for (Vertice v : g2.getVertices().values()) {
+            g3.agregarVertice(new Vertice("2_" + v.getName(), v.getPositionX() + 50, v.getPositionY()));
+        }
+
+        // 3. Agregar aristas originales de G1 (re-vinculadas)
+        for (Arista a : g1.getAristas()) {
+            Vertice o = g3.getVertices().get("1_" + a.getVerticeOrigen().getName());
+            Vertice d = g3.getVertices().get("1_" + a.getVerticeDestino().getName());
+            g3.agregarArista(new Arista(o.getName() + "-" + d.getName(), o, d));
+        }
+
+        // 4. Agregar aristas originales de G2 (re-vinculadas)
+        for (Arista a : g2.getAristas()) {
+            Vertice o = g3.getVertices().get("2_" + a.getVerticeOrigen().getName());
+            Vertice d = g3.getVertices().get("2_" + a.getVerticeDestino().getName());
+            g3.agregarArista(new Arista(o.getName() + "-" + d.getName(), o, d));
+        }
+
+        // 5. EL PASO CLAVE: Conectar TODOS los de G1 con TODOS los de G2
+        for (Vertice v1 : g1.getVertices().values()) {
+            for (Vertice v2 : g2.getVertices().values()) {
+                Vertice o = g3.getVertices().get("1_" + v1.getName());
+                Vertice d = g3.getVertices().get("2_" + v2.getName());
+                // Al agregar esta, el Set de G3 ahora sí la aceptará aunque exista la inversa
+                g3.agregarArista(new Arista(o.getName() + "-" + d.getName(), o, d));
+            }
+        }
+
+        return g3;
+    }
 }
