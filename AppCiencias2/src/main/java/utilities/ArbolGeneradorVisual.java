@@ -11,6 +11,44 @@ import javafx.scene.shape.Line;
 
 public class ArbolGeneradorVisual {
 
+    public static void dibujarGrafoCompleto(GrafoPonderado grafo, Pane panel) {
+        panel.getChildren().clear();
+
+        if (grafo == null || grafo.getVertices().isEmpty()) {
+            return;
+        }
+
+        double ancho = panel.getWidth();
+        double alto = panel.getHeight();
+
+        if (ancho <= 0) ancho = panel.getPrefWidth();
+        if (alto <= 0) alto = panel.getPrefHeight();
+        if (ancho <= 0) ancho = 780;
+        if (alto <= 0) alto = 430;
+
+        Map<String, double[]> posiciones = calcularPosiciones(grafo.getVertices(), ancho, alto);
+
+        // Dibujar todas las aristas del grafo
+        for (AristaPonderada arista : grafo.getAristas()) {
+            double[] p1 = posiciones.get(arista.getOrigen());
+            double[] p2 = posiciones.get(arista.getDestino());
+
+            if (p1 == null || p2 == null) {
+                continue;
+            }
+
+            Line linea = new Line(p1[0], p1[1], p2[0], p2[1]);
+            linea.setStroke(Color.GRAY);
+            linea.setStrokeWidth(2);
+
+            Label peso = crearLabelPeso(arista, p1, p2);
+
+            panel.getChildren().addAll(linea, peso);
+        }
+
+        dibujarVertices(grafo, panel, posiciones);
+    }
+
     public static void dibujar(GrafoPonderado grafo, List<AristaPonderada> aristasResultado, Pane panel) {
         panel.getChildren().clear();
 
@@ -28,27 +66,79 @@ public class ArbolGeneradorVisual {
 
         Map<String, double[]> posiciones = calcularPosiciones(grafo.getVertices(), ancho, alto);
 
-        // Dibujar aristas seleccionadas
+        // Primero dibujar todo el grafo en gris claro
+        for (AristaPonderada arista : grafo.getAristas()) {
+        double[] p1 = posiciones.get(arista.getOrigen());
+        double[] p2 = posiciones.get(arista.getDestino());
+
+        if (p1 == null || p2 == null) {
+            continue;
+        }
+
+        Line linea = new Line(p1[0], p1[1], p2[0], p2[1]);
+        linea.setStroke(Color.LIGHTGRAY);
+        linea.setStrokeWidth(1.5);
+
+        // Solo dibuja la línea gris, sin peso
+        panel.getChildren().add(linea);
+    }
+
+        // Luego dibujar las aristas del árbol resaltadas
         for (AristaPonderada arista : aristasResultado) {
             double[] p1 = posiciones.get(arista.getOrigen());
             double[] p2 = posiciones.get(arista.getDestino());
 
+            if (p1 == null || p2 == null) {
+                continue;
+            }
+
             Line linea = new Line(p1[0], p1[1], p2[0], p2[1]);
-            linea.setStrokeWidth(2);
+            linea.setStroke(Color.RED);
+            linea.setStrokeWidth(3);
 
-            double midX = (p1[0] + p2[0]) / 2.0;
-            double midY = (p1[1] + p2[1]) / 2.0;
-
-            Label peso = new Label(String.valueOf(arista.getPeso()));
-            peso.setLayoutX(midX + 5);
-            peso.setLayoutY(midY - 5);
+            Label peso = crearLabelPeso(arista, p1, p2);
+            peso.setStyle("-fx-font-weight: bold; -fx-background-color: white;");
 
             panel.getChildren().addAll(linea, peso);
         }
 
-        // Dibujar nodos
+        dibujarVertices(grafo, panel, posiciones);
+    }
+
+    private static Label crearLabelPeso(AristaPonderada arista, double[] p1, double[] p2) {
+    double midX = (p1[0] + p2[0]) / 2.0;
+    double midY = (p1[1] + p2[1]) / 2.0;
+
+    double dx = p2[0] - p1[0];
+    double dy = p2[1] - p1[1];
+    double longitud = Math.sqrt(dx * dx + dy * dy);
+
+    if (longitud == 0) {
+        longitud = 1;
+    }
+
+    // Vector perpendicular normalizado
+    double perpX = -dy / longitud;
+    double perpY = dx / longitud;
+
+    // Desplazamiento para separar el texto de la línea
+    double offset = 18;
+
+    Label peso = new Label(String.valueOf(arista.getPeso()));
+    peso.setLayoutX(midX + perpX * offset - 6);
+    peso.setLayoutY(midY + perpY * offset - 10);
+    peso.setStyle("-fx-background-color: white; -fx-padding: 2 4 2 4; -fx-font-weight: bold;");
+
+    return peso;
+}
+
+    private static void dibujarVertices(GrafoPonderado grafo, Pane panel, Map<String, double[]> posiciones) {
         for (String v : grafo.getVertices()) {
             double[] p = posiciones.get(v);
+
+            if (p == null) {
+                continue;
+            }
 
             Circle circulo = new Circle(p[0], p[1], 20);
             circulo.setFill(Color.LIGHTBLUE);
@@ -57,6 +147,7 @@ public class ArbolGeneradorVisual {
             Label nombre = new Label(v);
             nombre.setLayoutX(p[0] - 5);
             nombre.setLayoutY(p[1] - 10);
+            nombre.setStyle("-fx-font-weight: bold;");
 
             panel.getChildren().addAll(circulo, nombre);
         }
@@ -82,17 +173,16 @@ public class ArbolGeneradorVisual {
             double centerRightX = centroX + 60;
             double rightX = centroX + 170;
 
-            // Se asignan según el orden en que el usuario escribe los vértices
-            posiciones.put(vertices.get(0), new double[]{centerLeftX, topY});    // arriba izquierda
-            posiciones.put(vertices.get(1), new double[]{leftX, midY});          // medio izquierda
-            posiciones.put(vertices.get(2), new double[]{centerX, bottomY});     // abajo centro
-            posiciones.put(vertices.get(3), new double[]{centerRightX, topY});   // arriba derecha
-            posiciones.put(vertices.get(4), new double[]{rightX, midY});         // medio derecha
+            posiciones.put(vertices.get(0), new double[]{centerLeftX, topY});
+            posiciones.put(vertices.get(1), new double[]{leftX, midY});
+            posiciones.put(vertices.get(2), new double[]{centerX, bottomY});
+            posiciones.put(vertices.get(3), new double[]{centerRightX, topY});
+            posiciones.put(vertices.get(4), new double[]{rightX, midY});
 
             return posiciones;
         }
 
-        // Caso especial: 3 vértices, forma simple
+        // Caso especial: 3 vértices
         if (n == 3) {
             double centroX = ancho / 2.0;
             double centroY = alto / 2.0;
@@ -104,7 +194,7 @@ public class ArbolGeneradorVisual {
             return posiciones;
         }
 
-        // Caso especial: 4 vértices, forma de trapecio simple
+        // Caso especial: 4 vértices
         if (n == 4) {
             double centroX = ancho / 2.0;
             double centroY = alto / 2.0;
@@ -116,13 +206,55 @@ public class ArbolGeneradorVisual {
 
             return posiciones;
         }
+        
+        // Caso especial: 7 vértices, distribución tipo trapecio por niveles
+        if (n == 7) {
+            double centroX = ancho / 2.0;
+            double centroY = alto / 2.0;
 
-        // Caso general: distribución horizontal por niveles visuales simples
-        double separacion = ancho / (n + 1);
-        double y = alto / 2.0;
+            double topY = centroY - 100;
+            double midY = centroY;
+            double bottomY = centroY + 100;
 
-        for (int i = 0; i < n; i++) {
-            posiciones.put(vertices.get(i), new double[]{(i + 1) * separacion, y});
+            posiciones.put(vertices.get(0), new double[]{centroX - 120, topY});
+            posiciones.put(vertices.get(1), new double[]{centroX + 120, topY});
+
+            posiciones.put(vertices.get(2), new double[]{centroX - 220, midY});
+            posiciones.put(vertices.get(3), new double[]{centroX, midY});
+            posiciones.put(vertices.get(4), new double[]{centroX + 220, midY});
+
+            posiciones.put(vertices.get(5), new double[]{centroX - 120, bottomY});
+            posiciones.put(vertices.get(6), new double[]{centroX + 120, bottomY});
+
+            return posiciones;
+        }
+
+        // Caso general: distribución automática por filas
+        int maxPorFila = 3;
+        int filas = (int) Math.ceil((double) n / maxPorFila);
+
+        double margenX = 80;
+        double margenY = 70;
+
+        double espacioVertical = 0;
+        if (filas > 1) {
+            espacioVertical = (alto - 2 * margenY) / (filas - 1);
+        }
+
+        int indice = 0;
+
+        for (int fila = 0; fila < filas; fila++) {
+            int restantes = n - indice;
+            int enEstaFila = Math.min(maxPorFila, restantes);
+
+            double espacioHorizontal = (ancho - 2 * margenX) / (enEstaFila + 1);
+            double y = margenY + fila * espacioVertical;
+
+            for (int col = 0; col < enEstaFila; col++) {
+                double x = margenX + (col + 1) * espacioHorizontal;
+                posiciones.put(vertices.get(indice), new double[]{x, y});
+                indice++;
+            }
         }
 
         return posiciones;

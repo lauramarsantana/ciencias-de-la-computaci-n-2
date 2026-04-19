@@ -25,18 +25,20 @@
 
          <children>
 
-            <HBox spacing="15.0">
+            <HBox spacing="15.0" alignment="CENTER_LEFT">
                <children>
                   <Label text="Vértices:">
                      <font>
                         <Font name="Myanmar Text Bold" size="18.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="verticesField" prefWidth="280.0" promptText="a,b,c,d,e" />
+                  <TextField fx:id="verticesField"
+                             prefWidth="350.0"
+                             promptText="a,b,c,d,e" />
                </children>
             </HBox>
 
-            <HBox spacing="15.0">
+            <HBox spacing="15.0" alignment="CENTER_LEFT">
                <children>
                   <Label text="Aristas:">
                      <font>
@@ -46,8 +48,25 @@
                   <TextField fx:id="aristasField"
                              prefWidth="700.0"
                              promptText="a-b-8, a-c-3, b-c-7, b-d-9, c-d-1, c-e-4, d-e-2" />
-                  <Button text="Generar mínimo" onAction="#generarMinimo" prefWidth="150.0" />
-                  <Button text="Generar máximo" onAction="#generarMaximo" prefWidth="150.0" />
+               </children>
+            </HBox>
+
+            <HBox spacing="15.0" alignment="CENTER_LEFT">
+               <children>
+                  <Button text="Mostrar grafo completo"
+                          onAction="#mostrarGrafoCompleto"
+                          prefWidth="200.0" />
+
+                  <Button text="Generar mínimo"
+                          onAction="#generarMinimo"
+                          prefWidth="150.0" />
+
+                  <Button text="Generar máximo"
+                          onAction="#generarMaximo"
+                          prefWidth="150.0" />
+                  <Button text="Guardar" onAction="#guardarGrafo" />
+                  <Button text="Cargar" onAction="#cargarGrafo" />
+                  <Button text="Limpiar" onAction="#limpiarEstructura" />
                </children>
             </HBox>
 
