@@ -298,4 +298,39 @@ public class Grafo {
                     a.getVerticeDestino().getName().equals(nombre));
         }
     }
+
+    public static Grafo contraerArista(Grafo g, String nombreBusqueda) {
+        // 1. Buscar la arista ignorando el orden (1-3 es igual a 3-1)
+        Arista objetivo = null;
+        for (Arista a : g.getAristas()) {
+            String n1 = a.getVerticeOrigen().getName();
+            String n2 = a.getVerticeDestino().getName();
+            String inversa = n2 + "-" + n1;
+            String normal = n1 + "-" + n2;
+
+            if (normal.equals(nombreBusqueda) || inversa.equals(nombreBusqueda)) {
+                objetivo = a;
+                break;
+            }
+        }
+
+        if (objetivo == null) return null;
+
+        // 2. Identificar extremos
+        String v1 = objetivo.getVerticeOrigen().getName();
+        String v2 = objetivo.getVerticeDestino().getName();
+
+        // 3. Usamos la fusión para mantener las otras conexiones
+        Grafo res = fusionarVertices(g, v1, v2);
+        String nuevoNodo = v1 + "_" + v2;
+
+        // 4. EL TRUCO: Eliminar los bucles que se crearon en el nuevo nodo
+        // Esto quita la arista contraída que "sobra"
+        res.getAristas().removeIf(a ->
+                a.getVerticeOrigen().getName().equals(nuevoNodo) &&
+                        a.getVerticeDestino().getName().equals(nuevoNodo)
+        );
+
+        return res;
+    }
 }

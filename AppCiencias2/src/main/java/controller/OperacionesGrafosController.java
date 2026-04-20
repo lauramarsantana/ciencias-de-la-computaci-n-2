@@ -20,7 +20,11 @@ public class OperacionesGrafosController {
 
     @FXML
     private void initialize() {
-        operacion.getItems().addAll("Unión", "Intersección", "Suma Anular", "Complemento", "Suma", "Fusión de Vértices", "Adición de Vértice", "Eliminación de Vértice");
+        operacion.getItems().addAll("Unión", "Intersección",
+                                    "Suma Anular", "Complemento",
+                                    "Suma", "Fusión de Vértices",
+                                    "Adición de Vértice", "Eliminación de Vértice",
+                                    "Contracción de Arista");
         operacion.getSelectionModel().selectFirst();
 
         // Limpiar el texto inicial para que no se vea la palabra "Label"
@@ -156,6 +160,31 @@ public class OperacionesGrafosController {
                         actualizarPanel(g3, paneG3, infoG3);
                     } else {
                         mostrarAlerta("Error", "El vértice '" + aEliminar + "' no existe.");
+                    }
+                }
+            }
+            return;
+        }
+
+        if (op.equals("Contracción de Arista")) {
+            Grafo seleccionado = elegirGrafo();
+            if (seleccionado != null) {
+                TextInputDialog dialog = new TextInputDialog();
+                dialog.setTitle("Contracción");
+                dialog.setHeaderText("Contraer arista en " + seleccionado.getNombre());
+                dialog.setContentText("Ingrese la arista (ej: 1-3 o 3-1):");
+                Optional<String> result = dialog.showAndWait();
+
+                if (result.isPresent()) {
+                    String nombreA = result.get().trim(); // Quitamos espacios
+
+                    g3 = Grafo.contraerArista(seleccionado, nombreA);
+
+                    if (g3 != null) {
+                        g3.setNombre("Contracción de " + nombreA);
+                        actualizarPanel(g3, paneG3, infoG3);
+                    } else {
+                        mostrarAlerta("Error", "No se encontró la arista '" + nombreA + "'");
                     }
                 }
             }
