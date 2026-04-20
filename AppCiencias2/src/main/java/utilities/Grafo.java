@@ -263,4 +263,28 @@ public class Grafo {
         }
         return res;
     }
+    public void añadirVertice(String nombre) {
+        if (!vertices.containsKey(nombre)) {
+            // Lo creamos en la posición (0,0); reacomodarCircular lo pondrá en su lugar luego
+            vertices.put(nombre, new Vertice(nombre, 0, 0));
+        }
+    }
+
+    public static Grafo copiar(Grafo original) {
+        Grafo copia = new Grafo(original.getNombre() + " (Modificado)");
+
+        // Copiar vértices
+        for (Vertice v : original.getVertices().values()) {
+            copia.agregarVertice(new Vertice(v.getName(), v.getPositionX(), v.getPositionY()));
+        }
+
+        // Copiar aristas re-vinculando a los nuevos vértices
+        for (Arista a : original.getAristas()) {
+            Vertice o = copia.getVertices().get(a.getVerticeOrigen().getName());
+            Vertice d = copia.getVertices().get(a.getVerticeDestino().getName());
+            copia.agregarArista(new Arista(a.getName(), o, d));
+        }
+
+        return copia;
+    }
 }

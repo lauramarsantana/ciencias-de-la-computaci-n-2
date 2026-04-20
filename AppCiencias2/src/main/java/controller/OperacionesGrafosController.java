@@ -20,8 +20,13 @@ public class OperacionesGrafosController {
 
     @FXML
     private void initialize() {
-        operacion.getItems().addAll("Unión", "Intersección", "Suma Anular", "Complemento", "Suma", "Fusión de Vértices");
+        operacion.getItems().addAll("Unión", "Intersección", "Suma Anular", "Complemento", "Suma", "Fusión de Vértices", "Adición de Vértice");
         operacion.getSelectionModel().selectFirst();
+
+        // Limpiar el texto inicial para que no se vea la palabra "Label"
+        infoG1.setText("");
+        infoG2.setText("");
+        infoG3.setText("");
 
         // Configuración para que el texto no desplace los paneles
         configurarLabelInfo(infoG1);
@@ -94,6 +99,34 @@ public class OperacionesGrafosController {
                         actualizarPanel(g3, paneG3, infoG3);
                     } else {
                         mostrarAlerta("Vértice no encontrado", "Uno o ambos vértices no existen en el grafo.");
+                    }
+                }
+            }
+            return;
+        }
+        if (op.equals("Adición de Vértice")) {
+            Grafo seleccionado = elegirGrafo();
+            if (seleccionado != null) {
+                TextInputDialog dialog = new TextInputDialog();
+                dialog.setTitle("Adición");
+                dialog.setHeaderText("Añadir vértice a " + seleccionado.getNombre());
+                dialog.setContentText("Nombre del nuevo vértice:");
+                Optional<String> result = dialog.showAndWait();
+
+                if (result.isPresent() && !result.get().trim().isEmpty()) {
+                    String nuevo = result.get().trim();
+
+                    // CLAVE: Creamos una copia para no alterar el panel 1 o 2
+                    g3 = Grafo.copiar(seleccionado);
+
+                    if (!g3.getVertices().containsKey(nuevo)) {
+                        g3.añadirVertice(nuevo);
+                        g3.setNombre("Adición en " + seleccionado.getNombre());
+
+                        // Mostramos el resultado SOLO en el Panel 3
+                        actualizarPanel(g3, paneG3, infoG3);
+                    } else {
+                        mostrarAlerta("Error", "El vértice '" + nuevo + "' ya existe.");
                     }
                 }
             }
