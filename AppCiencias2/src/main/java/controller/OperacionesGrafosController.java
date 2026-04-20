@@ -24,7 +24,7 @@ public class OperacionesGrafosController {
                                     "Suma Anular", "Complemento",
                                     "Suma", "Fusión de Vértices",
                                     "Adición de Vértice", "Eliminación de Vértice",
-                                    "Contracción de Arista");
+                                    "Contracción de Arista", "Adición de Arista");
         operacion.getSelectionModel().selectFirst();
 
         // Limpiar el texto inicial para que no se vea la palabra "Label"
@@ -185,6 +185,33 @@ public class OperacionesGrafosController {
                         actualizarPanel(g3, paneG3, infoG3);
                     } else {
                         mostrarAlerta("Error", "No se encontró la arista '" + nombreA + "'");
+                    }
+                }
+            }
+            return;
+        }
+
+        if (op.equals("Adición de Arista")) {
+            Grafo seleccionado = elegirGrafo();
+            if (seleccionado != null) {
+                TextInputDialog dialog = new TextInputDialog();
+                dialog.setTitle("Nueva Arista");
+                dialog.setHeaderText("Añadir arista en " + seleccionado.getNombre());
+                dialog.setContentText("Ingrese los vértices a conectar (ej: 1,3):");
+                Optional<String> result = dialog.showAndWait();
+
+                if (result.isPresent() && result.get().contains(",")) {
+                    String[] v = result.get().split(",");
+                    String n1 = v[0].trim();
+                    String n2 = v[1].trim();
+
+                    g3 = Grafo.adicionarArista(seleccionado, n1, n2);
+
+                    if (g3 != null) {
+                        g3.setNombre("Arista añadida (" + n1 + "-" + n2 + ")");
+                        actualizarPanel(g3, paneG3, infoG3);
+                    } else {
+                        mostrarAlerta("Error", "Uno o ambos vértices no existen en el grafo.");
                     }
                 }
             }

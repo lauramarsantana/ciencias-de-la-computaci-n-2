@@ -333,4 +333,21 @@ public class Grafo {
 
         return res;
     }
+    public static Grafo adicionarArista(Grafo g, String v1Nombre, String v2Nombre) {
+        // 1. Creamos la copia para el Panel 3
+        Grafo res = copiar(g);
+
+        // 2. Buscamos los vértices en la copia
+        Vertice origen = res.getVertices().get(v1Nombre);
+        Vertice destino = res.getVertices().get(v2Nombre);
+
+        if (origen != null && destino != null) {
+            // 3. Creamos la arista (ej: "1-3")
+            String nombreArista = v1Nombre + "-" + v2Nombre;
+            res.agregarArista(new Arista(nombreArista, origen, destino));
+            return res;
+        }
+
+        return null; // Si uno de los vértices no existe
+    }
 }
