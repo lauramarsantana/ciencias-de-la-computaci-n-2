@@ -24,7 +24,8 @@ public class OperacionesGrafosController {
                                     "Suma Anular", "Complemento",
                                     "Suma", "Fusión de Vértices",
                                     "Adición de Vértice", "Eliminación de Vértice",
-                                    "Contracción de Arista", "Adición de Arista");
+                                    "Contracción de Arista", "Adición de Arista",
+                                    "Eliminación de Arista");
         operacion.getSelectionModel().selectFirst();
 
         // Limpiar el texto inicial para que no se vea la palabra "Label"
@@ -213,6 +214,29 @@ public class OperacionesGrafosController {
                     } else {
                         mostrarAlerta("Error", "Uno o ambos vértices no existen en el grafo.");
                     }
+                }
+            }
+            return;
+        }
+
+        if (op.equals("Eliminación de Arista")) {
+            Grafo seleccionado = elegirGrafo();
+            if (seleccionado != null) {
+                TextInputDialog dialog = new TextInputDialog();
+                dialog.setTitle("Eliminar Arista");
+                dialog.setHeaderText("Eliminar arista en " + seleccionado.getNombre());
+                dialog.setContentText("Ingrese la arista a eliminar (ej: 1-2):");
+                Optional<String> result = dialog.showAndWait();
+
+                if (result.isPresent() && !result.get().trim().isEmpty()) {
+                    String nombreA = result.get().trim();
+
+                    // Realizamos la operación
+                    g3 = Grafo.eliminarArista(seleccionado, nombreA);
+
+                    // En esta operación siempre mostramos el resultado en el Panel 3
+                    g3.setNombre("Arista " + nombreA + " eliminada");
+                    actualizarPanel(g3, paneG3, infoG3);
                 }
             }
             return;

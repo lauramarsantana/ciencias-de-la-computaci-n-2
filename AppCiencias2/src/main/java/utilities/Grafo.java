@@ -350,4 +350,22 @@ public class Grafo {
 
         return null; // Si uno de los vértices no existe
     }
+
+    public static Grafo eliminarArista(Grafo g, String nombreBusqueda) {
+        // 1. Creamos la copia para el Panel 3
+        Grafo res = copiar(g);
+
+        // 2. Buscamos y eliminamos la arista ignorando el orden
+        // Si el usuario escribe "1-2", borramos tanto "1-2" como "2-1"
+        res.getAristas().removeIf(a -> {
+            String n1 = a.getVerticeOrigen().getName();
+            String n2 = a.getVerticeDestino().getName();
+            String normal = n1 + "-" + n2;
+            String inversa = n2 + "-" + n1;
+
+            return normal.equals(nombreBusqueda) || inversa.equals(nombreBusqueda);
+        });
+
+        return res;
+    }
 }
