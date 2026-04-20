@@ -27,6 +27,10 @@ public class Grafo {
     public List<Arista> getAristas() {
         return aristas;
     }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
     // --- LÓGICA BÁSICA ---
 
     public void agregarVertice(Vertice v) {
@@ -151,36 +155,33 @@ public class Grafo {
     public static Grafo complemento(Grafo g1) {
         Grafo g3 = new Grafo("Complemento de " + g1.getNombre());
 
-        // 1. Copiamos todos los vértices a G3
+        // 1. Copiamos todos los vértices
         for (Vertice v : g1.getVertices().values()) {
             g3.agregarVertice(new Vertice(v.getName(), v.getPositionX(), v.getPositionY()));
         }
 
-        // 2. Obtenemos una lista de los vértices para iterar por índices
-        java.util.List<Vertice> listaV = new java.util.ArrayList<>(g3.getVertices().values());
+        List<Vertice> listaV = new ArrayList<>(g3.getVertices().values());
 
-        // 3. Comparamos cada vértice con todos los demás (sin repetir pares)
+        // 2. Generamos todos los pares posibles (i, j) una sola vez
         for (int i = 0; i < listaV.size(); i++) {
             for (int j = i + 1; j < listaV.size(); j++) {
                 Vertice vA = listaV.get(i);
                 Vertice vB = listaV.get(j);
 
-                // Creamos una arista temporal para ver si existe en el grafo original
-                // Usamos los vértices originales de g1 para la comprobación
-                Vertice vA_orig = g1.getVertices().get(vA.getName());
-                Vertice vB_orig = g1.getVertices().get(vB.getName());
-                Arista posible = new Arista("temp", vA_orig, vB_orig);
+                // Creamos una arista temporal para comparar
+                Arista posible = new Arista("temp", vA, vB);
 
-                // SI NO EXISTE en el original, la agregamos al complemento (G3)
-                boolean existe = false;
+                // Revisamos si esa arista existe en el grafo original
+                boolean existeEnOriginal = false;
                 for (Arista aOrig : g1.getAristas()) {
-                    if (aOrig.equals(posible)) {
-                        existe = true;
+                    if (aOrig.equals(posible)) { // Aquí entra nuestro nuevo equals flexible
+                        existeEnOriginal = true;
                         break;
                     }
                 }
 
-                if (!existe) {
+                // Si NO existe en el original, es parte del complemento
+                if (!existeEnOriginal) {
                     g3.agregarArista(new Arista(vA.getName() + "-" + vB.getName(), vA, vB));
                 }
             }
@@ -226,5 +227,40 @@ public class Grafo {
         }
 
         return g3;
+    }
+
+    public static Grafo fusionarVertices(Grafo g, String nombreV1, String nombreV2) {
+        if (!g.getVertices().containsKey(nombreV1) || !g.getVertices().containsKey(nombreV2)) {
+            return g;
+        }
+
+        Grafo res = new Grafo("Fusión de " + nombreV1 + " y " + nombreV2);
+        String nuevoNombre = nombreV1 + "_" + nombreV2;
+
+        // 1. Copiar vértices
+        for (Vertice v : g.getVertices().values()) {
+            if (!v.getName().equals(nombreV1) && !v.getName().equals(nombreV2)) {
+                res.agregarVertice(new Vertice(v.getName(), 0, 0));
+            }
+        }
+        res.agregarVertice(new Vertice(nuevoNombre, 0, 0));
+
+        // 2. RECONECTAR ARISTAS CON IDENTIFICADOR ÚNICO
+        int contador = 0;
+        for (Arista a : g.getAristas()) {
+            String or = a.getVerticeOrigen().getName();
+            String des = a.getVerticeDestino().getName();
+
+            if (or.equals(nombreV1) || or.equals(nombreV2)) or = nuevoNombre;
+            if (des.equals(nombreV1) || des.equals(nombreV2)) des = nuevoNombre;
+
+            Vertice vOr = res.getVertices().get(or);
+            Vertice vDes = res.getVertices().get(des);
+
+            // El secreto: Le ponemos un ID único al nombre para que no se pisen
+            String idUnico = or + "-" + des + "-id" + (contador++);
+            res.agregarArista(new Arista(idUnico, vOr, vDes));
+        }
+        return res;
     }
 }
