@@ -121,7 +121,7 @@ public class DistanciaArbolesController {
             arbol1 = construirArbol(verticesField1.getText(), aristasField1.getText());
             arbol2 = construirArbol(verticesField2.getText(), aristasField2.getText());
 
-            validarMismosVertices(arbol1, arbol2);
+            
 
             // Mostrar cada árbol si aún no se ha dibujado
             ArbolGeneradorVisual.dibujarGrafoCompleto(arbol1, panelArbol1);
@@ -348,46 +348,46 @@ public class DistanciaArbolesController {
         return g;
     }
 
-    private void validarMismosVertices(GrafoPonderado a1, GrafoPonderado a2) {
-        List<String> v1 = new ArrayList<>(a1.getVertices());
-        List<String> v2 = new ArrayList<>(a2.getVertices());
-
-        v1.sort(String::compareTo);
-        v2.sort(String::compareTo);
-
-        if (!v1.equals(v2)) {
-            throw new IllegalArgumentException("Ambos árboles deben tener el mismo conjunto de vértices.");
-        }
-    }
+    
 
     private GrafoPonderado construirGrafoUnion(GrafoPonderado a1, GrafoPonderado a2) {
-        GrafoPonderado g = new GrafoPonderado();
+    GrafoPonderado g = new GrafoPonderado();
 
-        for (String v : a1.getVertices()) {
+    // Agregar vértices del árbol 1
+    for (String v : a1.getVertices()) {
+        g.agregarVertice(v);
+    }
+
+    // Agregar vértices del árbol 2
+    for (String v : a2.getVertices()) {
+        if (!g.getVertices().contains(v)) {
             g.agregarVertice(v);
         }
+    }
 
-        for (AristaPonderada a : a1.getAristas()) {
+    // Agregar aristas del árbol 1
+    for (AristaPonderada a : a1.getAristas()) {
+        g.agregarArista(a.getOrigen(), a.getDestino(), a.getPeso());
+    }
+
+    // Agregar aristas del árbol 2 si no existe ya una con el mismo ID
+    for (AristaPonderada a : a2.getAristas()) {
+        boolean existe = false;
+
+        for (AristaPonderada b : g.getAristas()) {
+            if (b.getPeso() == a.getPeso()) {
+                existe = true;
+                break;
+            }
+        }
+
+        if (!existe) {
             g.agregarArista(a.getOrigen(), a.getDestino(), a.getPeso());
         }
-
-        for (AristaPonderada a : a2.getAristas()) {
-            boolean existe = false;
-
-            for (AristaPonderada b : g.getAristas()) {
-                if (b.getPeso() == a.getPeso()) {
-                    existe = true;
-                    break;
-                }
-            }
-
-            if (!existe) {
-                g.agregarArista(a.getOrigen(), a.getDestino(), a.getPeso());
-            }
-        }
-
-        return g;
     }
+
+    return g;
+}
 
     private void mostrarAlerta(String titulo, String mensaje) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
