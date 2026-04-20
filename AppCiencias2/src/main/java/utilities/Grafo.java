@@ -27,6 +27,10 @@ public class Grafo {
     public List<Arista> getAristas() {
         return aristas;
     }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
     // --- LÓGICA BÁSICA ---
 
     public void agregarVertice(Vertice v) {
@@ -151,36 +155,33 @@ public class Grafo {
     public static Grafo complemento(Grafo g1) {
         Grafo g3 = new Grafo("Complemento de " + g1.getNombre());
 
-        // 1. Copiamos todos los vértices a G3
+        // 1. Copiamos todos los vértices
         for (Vertice v : g1.getVertices().values()) {
             g3.agregarVertice(new Vertice(v.getName(), v.getPositionX(), v.getPositionY()));
         }
 
-        // 2. Obtenemos una lista de los vértices para iterar por índices
-        java.util.List<Vertice> listaV = new java.util.ArrayList<>(g3.getVertices().values());
+        List<Vertice> listaV = new ArrayList<>(g3.getVertices().values());
 
-        // 3. Comparamos cada vértice con todos los demás (sin repetir pares)
+        // 2. Generamos todos los pares posibles (i, j) una sola vez
         for (int i = 0; i < listaV.size(); i++) {
             for (int j = i + 1; j < listaV.size(); j++) {
                 Vertice vA = listaV.get(i);
                 Vertice vB = listaV.get(j);
 
-                // Creamos una arista temporal para ver si existe en el grafo original
-                // Usamos los vértices originales de g1 para la comprobación
-                Vertice vA_orig = g1.getVertices().get(vA.getName());
-                Vertice vB_orig = g1.getVertices().get(vB.getName());
-                Arista posible = new Arista("temp", vA_orig, vB_orig);
+                // Creamos una arista temporal para comparar
+                Arista posible = new Arista("temp", vA, vB);
 
-                // SI NO EXISTE en el original, la agregamos al complemento (G3)
-                boolean existe = false;
+                // Revisamos si esa arista existe en el grafo original
+                boolean existeEnOriginal = false;
                 for (Arista aOrig : g1.getAristas()) {
-                    if (aOrig.equals(posible)) {
-                        existe = true;
+                    if (aOrig.equals(posible)) { // Aquí entra nuestro nuevo equals flexible
+                        existeEnOriginal = true;
                         break;
                     }
                 }
 
-                if (!existe) {
+                // Si NO existe en el original, es parte del complemento
+                if (!existeEnOriginal) {
                     g3.agregarArista(new Arista(vA.getName() + "-" + vB.getName(), vA, vB));
                 }
             }
@@ -226,5 +227,145 @@ public class Grafo {
         }
 
         return g3;
+    }
+
+    public static Grafo fusionarVertices(Grafo g, String nombreV1, String nombreV2) {
+        if (!g.getVertices().containsKey(nombreV1) || !g.getVertices().containsKey(nombreV2)) {
+            return g;
+        }
+
+        Grafo res = new Grafo("Fusión de " + nombreV1 + " y " + nombreV2);
+        String nuevoNombre = nombreV1 + "_" + nombreV2;
+
+        // 1. Copiar vértices
+        for (Vertice v : g.getVertices().values()) {
+            if (!v.getName().equals(nombreV1) && !v.getName().equals(nombreV2)) {
+                res.agregarVertice(new Vertice(v.getName(), 0, 0));
+            }
+        }
+        res.agregarVertice(new Vertice(nuevoNombre, 0, 0));
+
+        // 2. RECONECTAR ARISTAS CON IDENTIFICADOR ÚNICO
+        int contador = 0;
+        for (Arista a : g.getAristas()) {
+            String or = a.getVerticeOrigen().getName();
+            String des = a.getVerticeDestino().getName();
+
+            if (or.equals(nombreV1) || or.equals(nombreV2)) or = nuevoNombre;
+            if (des.equals(nombreV1) || des.equals(nombreV2)) des = nuevoNombre;
+
+            Vertice vOr = res.getVertices().get(or);
+            Vertice vDes = res.getVertices().get(des);
+
+            // El secreto: Le ponemos un ID único al nombre para que no se pisen
+            String idUnico = or + "-" + des + "-id" + (contador++);
+            res.agregarArista(new Arista(idUnico, vOr, vDes));
+        }
+        return res;
+    }
+    public void añadirVertice(String nombre) {
+        if (!vertices.containsKey(nombre)) {
+            // Lo creamos en la posición (0,0); reacomodarCircular lo pondrá en su lugar luego
+            vertices.put(nombre, new Vertice(nombre, 0, 0));
+        }
+    }
+
+    public static Grafo copiar(Grafo original) {
+        Grafo copia = new Grafo(original.getNombre() + " (Modificado)");
+
+        // Copiar vértices
+        for (Vertice v : original.getVertices().values()) {
+            copia.agregarVertice(new Vertice(v.getName(), v.getPositionX(), v.getPositionY()));
+        }
+
+        // Copiar aristas re-vinculando a los nuevos vértices
+        for (Arista a : original.getAristas()) {
+            Vertice o = copia.getVertices().get(a.getVerticeOrigen().getName());
+            Vertice d = copia.getVertices().get(a.getVerticeDestino().getName());
+            copia.agregarArista(new Arista(a.getName(), o, d));
+        }
+
+        return copia;
+    }
+    public void eliminarVertice(String nombre) {
+        if (vertices.containsKey(nombre)) {
+            // 1. Eliminar el vértice del mapa
+            vertices.remove(nombre);
+
+            // 2. Eliminar todas las aristas que incidían en él
+            // Usamos removeIf que es muy eficiente en Java
+            aristas.removeIf(a -> a.getVerticeOrigen().getName().equals(nombre) ||
+                    a.getVerticeDestino().getName().equals(nombre));
+        }
+    }
+
+    public static Grafo contraerArista(Grafo g, String nombreBusqueda) {
+        // 1. Buscar la arista ignorando el orden (1-3 es igual a 3-1)
+        Arista objetivo = null;
+        for (Arista a : g.getAristas()) {
+            String n1 = a.getVerticeOrigen().getName();
+            String n2 = a.getVerticeDestino().getName();
+            String inversa = n2 + "-" + n1;
+            String normal = n1 + "-" + n2;
+
+            if (normal.equals(nombreBusqueda) || inversa.equals(nombreBusqueda)) {
+                objetivo = a;
+                break;
+            }
+        }
+
+        if (objetivo == null) return null;
+
+        // 2. Identificar extremos
+        String v1 = objetivo.getVerticeOrigen().getName();
+        String v2 = objetivo.getVerticeDestino().getName();
+
+        // 3. Usamos la fusión para mantener las otras conexiones
+        Grafo res = fusionarVertices(g, v1, v2);
+        String nuevoNodo = v1 + "_" + v2;
+
+        // 4. EL TRUCO: Eliminar los bucles que se crearon en el nuevo nodo
+        // Esto quita la arista contraída que "sobra"
+        res.getAristas().removeIf(a ->
+                a.getVerticeOrigen().getName().equals(nuevoNodo) &&
+                        a.getVerticeDestino().getName().equals(nuevoNodo)
+        );
+
+        return res;
+    }
+    public static Grafo adicionarArista(Grafo g, String v1Nombre, String v2Nombre) {
+        // 1. Creamos la copia para el Panel 3
+        Grafo res = copiar(g);
+
+        // 2. Buscamos los vértices en la copia
+        Vertice origen = res.getVertices().get(v1Nombre);
+        Vertice destino = res.getVertices().get(v2Nombre);
+
+        if (origen != null && destino != null) {
+            // 3. Creamos la arista (ej: "1-3")
+            String nombreArista = v1Nombre + "-" + v2Nombre;
+            res.agregarArista(new Arista(nombreArista, origen, destino));
+            return res;
+        }
+
+        return null; // Si uno de los vértices no existe
+    }
+
+    public static Grafo eliminarArista(Grafo g, String nombreBusqueda) {
+        // 1. Creamos la copia para el Panel 3
+        Grafo res = copiar(g);
+
+        // 2. Buscamos y eliminamos la arista ignorando el orden
+        // Si el usuario escribe "1-2", borramos tanto "1-2" como "2-1"
+        res.getAristas().removeIf(a -> {
+            String n1 = a.getVerticeOrigen().getName();
+            String n2 = a.getVerticeDestino().getName();
+            String normal = n1 + "-" + n2;
+            String inversa = n2 + "-" + n1;
+
+            return normal.equals(nombreBusqueda) || inversa.equals(nombreBusqueda);
+        });
+
+        return res;
     }
 }

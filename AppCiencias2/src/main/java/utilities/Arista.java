@@ -42,13 +42,16 @@ public class Arista {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Arista arista = (Arista) o;
-        // Solo son iguales si tienen el mismo origen y mismo destino exacto
-        return Objects.equals(verticeOrigen, arista.verticeOrigen) &&
-                Objects.equals(verticeDestino, arista.verticeDestino);
+
+        // Es igual si (Origen=Origen y Destino=Destino)
+        // O si están invertidos (Origen=Destino y Destino=Origen)
+        return (Objects.equals(verticeOrigen, arista.verticeOrigen) && Objects.equals(verticeDestino, arista.verticeDestino)) ||
+                (Objects.equals(verticeOrigen, arista.verticeDestino) && Objects.equals(verticeDestino, arista.verticeOrigen));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(verticeOrigen, verticeDestino);
+        // Usamos la suma de los hashCodes de los vértices para que el orden no importe
+        return Objects.hashCode(verticeOrigen) + Objects.hashCode(verticeDestino);
     }
 }
