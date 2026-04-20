@@ -287,4 +287,15 @@ public class Grafo {
 
         return copia;
     }
+    public void eliminarVertice(String nombre) {
+        if (vertices.containsKey(nombre)) {
+            // 1. Eliminar el vértice del mapa
+            vertices.remove(nombre);
+
+            // 2. Eliminar todas las aristas que incidían en él
+            // Usamos removeIf que es muy eficiente en Java
+            aristas.removeIf(a -> a.getVerticeOrigen().getName().equals(nombre) ||
+                    a.getVerticeDestino().getName().equals(nombre));
+        }
+    }
 }

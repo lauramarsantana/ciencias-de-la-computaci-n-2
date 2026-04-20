@@ -20,7 +20,7 @@ public class OperacionesGrafosController {
 
     @FXML
     private void initialize() {
-        operacion.getItems().addAll("Unión", "Intersección", "Suma Anular", "Complemento", "Suma", "Fusión de Vértices", "Adición de Vértice");
+        operacion.getItems().addAll("Unión", "Intersección", "Suma Anular", "Complemento", "Suma", "Fusión de Vértices", "Adición de Vértice", "Eliminación de Vértice");
         operacion.getSelectionModel().selectFirst();
 
         // Limpiar el texto inicial para que no se vea la palabra "Label"
@@ -127,6 +127,35 @@ public class OperacionesGrafosController {
                         actualizarPanel(g3, paneG3, infoG3);
                     } else {
                         mostrarAlerta("Error", "El vértice '" + nuevo + "' ya existe.");
+                    }
+                }
+            }
+            return;
+        }
+        if (op.equals("Eliminación de Vértice")) {
+            Grafo seleccionado = elegirGrafo();
+            if (seleccionado != null) {
+                TextInputDialog dialog = new TextInputDialog();
+                dialog.setTitle("Eliminación");
+                dialog.setHeaderText("Eliminar vértice de " + seleccionado.getNombre());
+                dialog.setContentText("Nombre del vértice a eliminar:");
+                Optional<String> result = dialog.showAndWait();
+
+                if (result.isPresent() && !result.get().trim().isEmpty()) {
+                    String aEliminar = result.get().trim();
+
+                    if (seleccionado.getVertices().containsKey(aEliminar)) {
+                        // Creamos la copia para el Panel 3
+                        g3 = Grafo.copiar(seleccionado);
+
+                        // Ejecutamos la eliminación en la copia
+                        g3.eliminarVertice(aEliminar);
+                        g3.setNombre("Eliminación en " + seleccionado.getNombre());
+
+                        // Refrescamos el Panel 3
+                        actualizarPanel(g3, paneG3, infoG3);
+                    } else {
+                        mostrarAlerta("Error", "El vértice '" + aEliminar + "' no existe.");
                     }
                 }
             }
