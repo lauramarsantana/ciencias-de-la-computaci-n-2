@@ -59,6 +59,27 @@
                   <Cursor fx:constant="DEFAULT" />
                </cursor>
             </VBox>
+            
+            <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
+               <children>
+                  <ImageView fx:id="btnFuncionOrdinal" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#openFuncionOrdinal" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icono-busquedas.png" />
+                     </image>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </ImageView>
+                  <Label text="FUNCION ORDINAL" textFill="#000204">
+                     <font>
+                        <Font name="Myanmar Text Bold" size="24.0" />
+                     </font>
+                  </Label>
+               </children>
+               <cursor>
+                  <Cursor fx:constant="DEFAULT" />
+               </cursor>
+            </VBox>
 
          </children>
       </HBox>
