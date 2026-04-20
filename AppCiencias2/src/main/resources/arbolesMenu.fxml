@@ -50,7 +50,7 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </ImageView>
-                  <Label text="Arbol Generador">
+                  <Label text="ARBOL GENERADOR">
                      <font>
                         <Font name="Myanmar Text Bold" size="24.0" />
                      </font>
@@ -71,7 +71,7 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </ImageView>
-                  <Label text="OPCIÓN 3">
+                  <Label text="DISTANCIA ENTRE 2 ARBOLES">
                      <font>
                         <Font name="Myanmar Text Bold" size="24.0" />
                      </font>

@@ -26,16 +26,54 @@ public class Arbol {
     }
 
     public NodoArbol obtenerOCrearNodo(String nombre) {
+        if (nombre == null || nombre.trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre del nodo no puede estar vacío.");
+        }
+
         nombre = nombre.trim();
+
         if (!nodos.containsKey(nombre)) {
             nodos.put(nombre, new NodoArbol(nombre));
         }
+
         return nodos.get(nombre);
     }
 
+    public void agregarRaiz(String nombreRaiz) {
+        if (nombreRaiz == null || nombreRaiz.trim().isEmpty()) {
+            throw new IllegalArgumentException("Debes ingresar un valor para la raíz.");
+        }
+
+        if (raiz != null) {
+            throw new IllegalArgumentException("La raíz ya fue definida.");
+        }
+
+        raiz = obtenerOCrearNodo(nombreRaiz);
+    }
+
     public void agregarRelacion(String padreNombre, String hijoNombre) {
+        if (padreNombre == null || padreNombre.trim().isEmpty()
+                || hijoNombre == null || hijoNombre.trim().isEmpty()) {
+            throw new IllegalArgumentException("Padre e hijo deben tener un valor.");
+        }
+
+        padreNombre = padreNombre.trim();
+        hijoNombre = hijoNombre.trim();
+
+        if (padreNombre.equals(hijoNombre)) {
+            throw new IllegalArgumentException(
+                "Un nodo no puede ser padre de sí mismo."
+            );
+        }
+
         NodoArbol padre = obtenerOCrearNodo(padreNombre);
         NodoArbol hijo = obtenerOCrearNodo(hijoNombre);
+
+        if (raiz != null && hijo == raiz) {
+            throw new IllegalArgumentException(
+                "La raíz no puede tener padre."
+            );
+        }
 
         if (hijo.getPadre() != null) {
             throw new IllegalArgumentException(
@@ -43,8 +81,29 @@ public class Arbol {
             );
         }
 
+        if (padre.getHijos().contains(hijo)) {
+            throw new IllegalArgumentException(
+                "La relación " + padreNombre + " - " + hijoNombre + " ya existe."
+            );
+        }
+
         padre.agregarHijo(hijo);
         hijo.setPadre(padre);
+    }
+
+    public void prepararArbol() {
+        if (nodos.isEmpty()) {
+            throw new IllegalArgumentException("Debes crear al menos un nodo.");
+        }
+
+        if (raiz == null) {
+            determinarRaiz();
+        } else {
+            validarRaizUnica();
+        }
+
+        validarSinCiclosYConexo();
+        asignarNiveles();
     }
 
     public void construirDesdeTexto(String textoRelaciones) {
@@ -87,6 +146,20 @@ public class Arbol {
         determinarRaiz();
         validarSinCiclosYConexo();
         asignarNiveles();
+    }
+
+    private void validarRaizUnica() {
+        for (NodoArbol nodo : nodos.values()) {
+            if (nodo != raiz && nodo.getPadre() == null) {
+                throw new IllegalArgumentException(
+                    "Hay más de una raíz. El árbol no es conexo."
+                );
+            }
+        }
+
+        if (raiz.getPadre() != null) {
+            throw new IllegalArgumentException("La raíz no puede tener padre.");
+        }
     }
 
     private void determinarRaiz() {

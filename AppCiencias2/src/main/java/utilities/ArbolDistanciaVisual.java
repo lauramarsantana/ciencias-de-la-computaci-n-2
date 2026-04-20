@@ -1,20 +1,27 @@
 package utilities;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 
-public class ArbolGeneradorVisual {
+public class ArbolDistanciaVisual {
 
-    public static void dibujarGrafoCompleto(GrafoPonderado grafo, Pane panel) {
+    public static void dibujarComparacion(
+            GrafoPonderado grafoBase,
+            List<AristaPonderada> arbol1,
+            List<AristaPonderada> arbol2,
+            Pane panel) {
+
         panel.getChildren().clear();
 
-        if (grafo == null || grafo.getVertices().isEmpty()) {
+        if (grafoBase == null || grafoBase.getVertices().isEmpty()) {
             return;
         }
 
@@ -26,10 +33,16 @@ public class ArbolGeneradorVisual {
         if (ancho <= 0) ancho = 780;
         if (alto <= 0) alto = 430;
 
-        Map<String, double[]> posiciones = calcularPosiciones(grafo.getVertices(), ancho, alto);
+        Map<String, double[]> posiciones = calcularPosiciones(grafoBase.getVertices(), ancho, alto);
 
-        // Dibujar todas las aristas del grafo
-        for (AristaPonderada arista : grafo.getAristas()) {
+        Set<Integer> idsArbol1 = extraerIds(arbol1);
+        Set<Integer> idsArbol2 = extraerIds(arbol2);
+
+        Set<Integer> comunes = new HashSet<>(idsArbol1);
+        comunes.retainAll(idsArbol2);
+
+        // 1. Dibujar primero todo el grafo base en gris claro, sin labels
+        for (AristaPonderada arista : grafoBase.getAristas()) {
             double[] p1 = posiciones.get(arista.getOrigen());
             double[] p2 = posiciones.get(arista.getDestino());
 
@@ -38,99 +51,108 @@ public class ArbolGeneradorVisual {
             }
 
             Line linea = new Line(p1[0], p1[1], p2[0], p2[1]);
-            linea.setStroke(Color.GRAY);
-            linea.setStrokeWidth(2);
+            linea.setStroke(Color.LIGHTGRAY);
+            linea.setStrokeWidth(1.5);
 
-            Label peso = crearLabelPeso(arista, p1, p2);
-
-            panel.getChildren().addAll(linea, peso);
+            panel.getChildren().add(linea);
         }
 
-        dibujarVertices(grafo, panel, posiciones);
+        // 2. Resaltar las aristas según su pertenencia
+        for (AristaPonderada arista : grafoBase.getAristas()) {
+            int id = arista.getPeso();
+
+            double[] p1 = posiciones.get(arista.getOrigen());
+            double[] p2 = posiciones.get(arista.getDestino());
+
+            if (p1 == null || p2 == null) {
+                continue;
+            }
+
+            if (comunes.contains(id)) {
+                dibujarAristaResaltada(panel, arista, p1, p2, Color.PURPLE, 4,
+                        "-fx-font-weight: bold; -fx-background-color: white; -fx-text-fill: purple;");
+            } else if (idsArbol1.contains(id)) {
+                dibujarAristaResaltada(panel, arista, p1, p2, Color.BLUE, 3,
+                        "-fx-font-weight: bold; -fx-background-color: white; -fx-text-fill: blue;");
+            } else if (idsArbol2.contains(id)) {
+                dibujarAristaResaltada(panel, arista, p1, p2, Color.GREEN, 3,
+                        "-fx-font-weight: bold; -fx-background-color: white; -fx-text-fill: green;");
+            }
+        }
+
+        dibujarVertices(grafoBase, panel, posiciones);
     }
 
-    public static void dibujar(GrafoPonderado grafo, List<AristaPonderada> aristasResultado, Pane panel) {
-        panel.getChildren().clear();
+    public static int calcularDistancia(List<AristaPonderada> arbol1, List<AristaPonderada> arbol2) {
+        Set<Integer> ids1 = extraerIds(arbol1);
+        Set<Integer> ids2 = extraerIds(arbol2);
 
-        if (grafo == null || grafo.getVertices().isEmpty()) {
-            return;
-        }
+        Set<Integer> union = new HashSet<>(ids1);
+        union.addAll(ids2);
 
-        double ancho = panel.getWidth();
-        double alto = panel.getHeight();
+        Set<Integer> interseccion = new HashSet<>(ids1);
+        interseccion.retainAll(ids2);
 
-        if (ancho <= 0) ancho = panel.getPrefWidth();
-        if (alto <= 0) alto = panel.getPrefHeight();
-        if (ancho <= 0) ancho = 780;
-        if (alto <= 0) alto = 430;
+        return union.size() - interseccion.size();
+    }
 
-        Map<String, double[]> posiciones = calcularPosiciones(grafo.getVertices(), ancho, alto);
-
-        // Primero dibujar todo el grafo en gris claro
-        for (AristaPonderada arista : grafo.getAristas()) {
-        double[] p1 = posiciones.get(arista.getOrigen());
-        double[] p2 = posiciones.get(arista.getDestino());
-
-        if (p1 == null || p2 == null) {
-            continue;
-        }
+    private static void dibujarAristaResaltada(
+            Pane panel,
+            AristaPonderada arista,
+            double[] p1,
+            double[] p2,
+            Color color,
+            double grosor,
+            String estiloEtiqueta) {
 
         Line linea = new Line(p1[0], p1[1], p2[0], p2[1]);
-        linea.setStroke(Color.LIGHTGRAY);
-        linea.setStrokeWidth(1.5);
+        linea.setStroke(color);
+        linea.setStrokeWidth(grosor);
 
-        // Solo dibuja la línea gris, sin peso
-        panel.getChildren().add(linea);
+        Label etiqueta = crearLabelArista(arista, p1, p2);
+        etiqueta.setStyle(estiloEtiqueta);
+
+        panel.getChildren().addAll(linea, etiqueta);
     }
 
-        // Luego dibujar las aristas del árbol resaltadas
-        for (AristaPonderada arista : aristasResultado) {
-            double[] p1 = posiciones.get(arista.getOrigen());
-            double[] p2 = posiciones.get(arista.getDestino());
+    private static Set<Integer> extraerIds(List<AristaPonderada> aristas) {
+        Set<Integer> ids = new HashSet<>();
 
-            if (p1 == null || p2 == null) {
-                continue;
-            }
-
-            Line linea = new Line(p1[0], p1[1], p2[0], p2[1]);
-            linea.setStroke(Color.RED);
-            linea.setStrokeWidth(3);
-
-            Label peso = crearLabelPeso(arista, p1, p2);
-            peso.setStyle("-fx-font-weight: bold; -fx-background-color: white;");
-
-            panel.getChildren().addAll(linea, peso);
+        if (aristas == null) {
+            return ids;
         }
 
-        dibujarVertices(grafo, panel, posiciones);
+        for (AristaPonderada a : aristas) {
+            ids.add(a.getPeso());
+        }
+
+        return ids;
     }
 
-    private static Label crearLabelPeso(AristaPonderada arista, double[] p1, double[] p2) {
-    double midX = (p1[0] + p2[0]) / 2.0;
-    double midY = (p1[1] + p2[1]) / 2.0;
+    private static Label crearLabelArista(AristaPonderada arista, double[] p1, double[] p2) {
+        double midX = (p1[0] + p2[0]) / 2.0;
+        double midY = (p1[1] + p2[1]) / 2.0;
 
-    double dx = p2[0] - p1[0];
-    double dy = p2[1] - p1[1];
-    double longitud = Math.sqrt(dx * dx + dy * dy);
+        double dx = p2[0] - p1[0];
+        double dy = p2[1] - p1[1];
+        double longitud = Math.sqrt(dx * dx + dy * dy);
 
-    if (longitud == 0) {
-        longitud = 1;
+        if (longitud == 0) {
+            longitud = 1;
+        }
+
+        double perpX = -dy / longitud;
+        double perpY = dx / longitud;
+
+        double offset = 9;
+
+        Label etiqueta = new Label(String.valueOf(arista.getPeso()));
+        etiqueta.setLayoutX(midX + perpX * offset - 6);
+        etiqueta.setLayoutY(midY + perpY * offset - 8);
+        etiqueta.setStyle("-fx-background-color: white; -fx-padding: 1 3 1 3; -fx-font-weight: bold;");
+
+        return etiqueta;
     }
-
-    // Vector perpendicular normalizado
-    double perpX = -dy / longitud;
-    double perpY = dx / longitud;
-
-    // Distancia más corta (ajustada)
-    double offset = 9;
-
-    Label peso = new Label(String.valueOf(arista.getPeso()));
-    peso.setLayoutX(midX + perpX * offset - 6);
-    peso.setLayoutY(midY + perpY * offset - 8);
-    peso.setStyle("-fx-background-color: white; -fx-padding: 1 3 1 3; -fx-font-weight: bold;");
-
-    return peso;
-}
 
     private static void dibujarVertices(GrafoPonderado grafo, Pane panel, Map<String, double[]> posiciones) {
         for (String v : grafo.getVertices()) {
@@ -158,7 +180,7 @@ public class ArbolGeneradorVisual {
 
         int n = vertices.size();
 
-        // Caso especial: 5 vértices en forma de trapecio/camino como en el cuaderno
+        // Caso especial: 5 vértices en forma de trapecio/camino
         if (n == 5) {
             double centroX = ancho / 2.0;
             double centroY = alto / 2.0;
@@ -206,8 +228,8 @@ public class ArbolGeneradorVisual {
 
             return posiciones;
         }
-        
-        // Caso especial: 7 vértices, distribución tipo trapecio por niveles
+
+        // Caso especial: 7 vértices
         if (n == 7) {
             double centroX = ancho / 2.0;
             double centroY = alto / 2.0;
