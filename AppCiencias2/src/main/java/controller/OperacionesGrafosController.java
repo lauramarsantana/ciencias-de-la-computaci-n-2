@@ -25,7 +25,7 @@ public class OperacionesGrafosController {
                                     "Suma", "Fusión de Vértices",
                                     "Adición de Vértice", "Eliminación de Vértice",
                                     "Contracción de Arista", "Adición de Arista",
-                                    "Eliminación de Arista");
+                                    "Eliminación de Arista", "Producto Cartesiano");
         operacion.getSelectionModel().selectFirst();
 
         // Limpiar el texto inicial para que no se vea la palabra "Label"
@@ -249,10 +249,22 @@ public class OperacionesGrafosController {
         }
 
         switch (op) {
-            case "Unión": g3 = Grafo.union(g1, g2); break;
-            case "Suma": g3 = Grafo.sumaNormal(g1, g2); break;
-            case "Suma Anular": g3 = Grafo.sumaAnular(g1, g2); break;
-            case "Intersección": g3 = Grafo.interseccion(g1, g2); break;
+            case "Unión":
+                g3 = Grafo.union(g1, g2);
+                break;
+            case "Suma":
+                g3 = Grafo.sumaNormal(g1, g2);
+            break;
+            case "Suma Anular":
+                g3 = Grafo.sumaAnular(g1, g2);
+                break;
+            case "Intersección":
+                g3 = Grafo.interseccion(g1, g2);
+                break;
+            case "Producto Cartesiano":
+                g3 = Grafo.productoCartesiano(g1, g2);
+                actualizarPanelProducto(g3, paneG3, infoG3, g1.getVertices().size(), g2.getVertices().size());
+                return;
             default: return;
         }
 
@@ -270,6 +282,13 @@ public class OperacionesGrafosController {
         GrafoVisual.reacomodarCircular(pane, lista);
         GrafoVisual.dibujar(g, pane);
         infoLabel.setText(generarInfoTexto(g));
+    }
+
+    private void actualizarPanelProducto(Grafo g, Pane pane, Label info, int n, int m) {
+        pane.getChildren().clear();
+        GrafoVisual.reacomodarMatriz(pane, g, n, m); // Aquí está la magia
+        GrafoVisual.dibujar(g, pane);
+        info.setText(generarInfoTexto(g));
     }
 
     private String generarInfoTexto(Grafo g) {

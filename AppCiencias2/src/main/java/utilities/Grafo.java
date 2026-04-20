@@ -368,4 +368,59 @@ public class Grafo {
 
         return res;
     }
+
+    public static Grafo productoCartesiano(Grafo g1, Grafo g2) {
+        // Usamos un nombre que identifique la operación
+        Grafo res = new Grafo("Producto Cartesiano");
+
+        // 1. Crear vértices: Nombre simple (u + v) para que quepa en el círculo
+        for (Vertice u : g1.getVertices().values()) {
+            for (Vertice v : g2.getVertices().values()) {
+                String nombreLimpio = u.getName() + v.getName();
+                res.agregarVertice(new Vertice(nombreLimpio, 0, 0));
+            }
+        }
+
+        // 2. Crear aristas: Solo una dirección para evitar duplicados visuales
+        for (Vertice u1 : g1.getVertices().values()) {
+            for (Vertice v1 : g2.getVertices().values()) {
+                for (Vertice u2 : g1.getVertices().values()) {
+                    for (Vertice v2 : g2.getVertices().values()) {
+
+                        String n1 = u1.getName() + v1.getName();
+                        String n2 = u2.getName() + v2.getName();
+
+                        // Evitar duplicados y el mismo nodo
+                        if (n1.compareTo(n2) >= 0) continue;
+
+                        boolean conectar = false;
+                        // Misma u, arista en G2
+                        if (u1.getName().equals(u2.getName()) && g2.existeArista(v1.getName(), v2.getName())) {
+                            conectar = true;
+                        }
+                        // Misma v, arista en G1
+                        else if (v1.getName().equals(v2.getName()) && g1.existeArista(u1.getName(), u2.getName())) {
+                            conectar = true;
+                        }
+
+                        if (conectar) {
+                            res.agregarArista(new Arista(n1 + "-" + n2, res.getVertices().get(n1), res.getVertices().get(n2)));
+                        }
+                    }
+                }
+            }
+        }
+        return res;
+    }
+
+    // Asegúrate de tener este método en Grafo.java para las validaciones
+    public boolean existeArista(String v1, String v2) {
+        for (Arista a : aristas) {
+            String n1 = a.getVerticeOrigen().getName();
+            String n2 = a.getVerticeDestino().getName();
+            if ((n1.equals(v1) && n2.equals(v2)) || (n1.equals(v2) && n2.equals(v1))) return true;
+        }
+        return false;
+    }
+
 }
