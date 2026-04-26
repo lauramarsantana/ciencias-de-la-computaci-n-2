@@ -12,7 +12,8 @@ public class Grafo {
 
     public Grafo(String nombre) {
         this.nombre = nombre;
-        this.vertices = new HashMap<>();
+        // CAMBIO AQUÍ: LinkedHashMap en lugar de HashMap
+        this.vertices = new LinkedHashMap<>();
         this.aristas = new ArrayList<>();
     }
 
@@ -373,11 +374,18 @@ public class Grafo {
         // Usamos un nombre que identifique la operación
         Grafo res = new Grafo("Producto Cartesiano");
 
-        // 1. Crear vértices: Nombre simple (u + v) para que quepa en el círculo
-        for (Vertice u : g1.getVertices().values()) {
-            for (Vertice v : g2.getVertices().values()) {
-                String nombreLimpio = u.getName() + v.getName();
-                res.agregarVertice(new Vertice(nombreLimpio, 0, 0));
+        // Ordenar las listas para asegurar consistencia (a antes que b, c antes que d)
+        List<Vertice> listaG1 = new ArrayList<>(g1.getVertices().values());
+        listaG1.sort((v1, v2) -> v1.getName().compareTo(v2.getName()));
+
+        List<Vertice> listaG2 = new ArrayList<>(g2.getVertices().values());
+        listaG2.sort((v1, v2) -> v1.getName().compareTo(v2.getName()));
+
+        // CREACIÓN DE VÉRTICES: G1 controla las filas, G2 las columnas
+        for (Vertice u : listaG1) {
+            for (Vertice v : listaG2) {
+                String nombre = u.getName() + v.getName();
+                res.agregarVertice(new Vertice(nombre, 0, 0));
             }
         }
 

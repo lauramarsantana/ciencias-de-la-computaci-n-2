@@ -37,6 +37,11 @@ public class OperacionesGrafosController {
         configurarLabelInfo(infoG1);
         configurarLabelInfo(infoG2);
         configurarLabelInfo(infoG3);
+
+        operacion.setOnAction(e -> {
+            if (g1 != null) dibujarG1();
+            if (g2 != null) dibujarG2();
+        });
     }
 
     private void configurarLabelInfo(Label label) {
@@ -51,7 +56,9 @@ public class OperacionesGrafosController {
             g1 = new Grafo("Grafo 1");
             parsearVertices(verticesG1.getText(), g1, paneG1);
             parsearAristas(aristasG1.getText(), g1);
-            actualizarPanel(g1, paneG1, infoG1);
+            // Solo es vertical si la operación seleccionada es Producto Cartesiano
+            boolean modoVertical = "Producto Cartesiano".equals(operacion.getValue());
+            actualizarPanel(g1, paneG1, infoG1, modoVertical);
         } catch (Exception e) {
             mostrarAlerta("Error", "Error al procesar el Grafo 1");
         }
@@ -63,7 +70,8 @@ public class OperacionesGrafosController {
             g2 = new Grafo("Grafo 2");
             parsearVertices(verticesG2.getText(), g2, paneG2);
             parsearAristas(aristasG2.getText(), g2);
-            actualizarPanel(g2, paneG2, infoG2);
+            boolean modoVertical = "Producto Cartesiano".equals(operacion.getValue());
+            actualizarPanel(g2, paneG2, infoG2, modoVertical);
         } catch (Exception e) {
             mostrarAlerta("Error", "Error al procesar el Grafo 2");
         }
@@ -263,6 +271,7 @@ public class OperacionesGrafosController {
                 break;
             case "Producto Cartesiano":
                 g3 = Grafo.productoCartesiano(g1, g2);
+                // n = filas (G1), m = columnas (G2)
                 actualizarPanelProducto(g3, paneG3, infoG3, g1.getVertices().size(), g2.getVertices().size());
                 return;
             default: return;
@@ -271,15 +280,26 @@ public class OperacionesGrafosController {
         actualizarPanel(g3, paneG3, infoG3);
     }
 
+    // Versión 1: La que ya usabas (por defecto es circular)
+// Esto arreglará automáticamente los 8 errores.
     private void actualizarPanel(Grafo g, Pane pane, Label infoLabel) {
+        actualizarPanel(g, pane, infoLabel, false); // 'false' significa circular
+    }
+
+    // Versión 2: La que tiene la opción de ser vertical
+    private void actualizarPanel(Grafo g, Pane pane, Label infoLabel, boolean esVertical) {
         if (g == null) return;
         pane.getChildren().clear();
         List<Vertice> lista = new ArrayList<>(g.getVertices().values());
 
-        // Ordenamos para que el círculo sea consistente
         lista.sort((v1, v2) -> v1.getName().compareTo(v2.getName()));
 
-        GrafoVisual.reacomodarCircular(pane, lista);
+        if (esVertical) {
+            GrafoVisual.reacomodarVertical(pane, lista);
+        } else {
+            GrafoVisual.reacomodarCircular(pane, lista);
+        }
+
         GrafoVisual.dibujar(g, pane);
         infoLabel.setText(generarInfoTexto(g));
     }

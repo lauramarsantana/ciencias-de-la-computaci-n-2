@@ -113,25 +113,35 @@ public class GrafoVisual {
         }
     }
 
-    public static void reacomodarMatriz(Pane pane, Grafo g, int columnas, int filas) {
-        if (g.getVertices().isEmpty()) return;
-
+    public static void reacomodarMatriz(Pane pane, Grafo g, int numFilas, int numCols) {
         double ancho = pane.getWidth();
         double alto = pane.getHeight();
-        double espaciadoX = ancho / (columnas + 1);
-        double espaciadoY = alto / (filas + 1);
+        double margenX = ancho / (numCols + 1);
+        double margenY = alto / (numFilas + 1);
 
         List<Vertice> lista = new ArrayList<>(g.getVertices().values());
-        // Ordenamos para que queden en orden (ac, ad, ae...)
-        lista.sort((v1, v2) -> v1.getName().compareTo(v2.getName()));
+        // No ordenes aquí, usa el orden en que fueron agregados al Grafo
 
-        int index = 0;
-        for (Vertice v : lista) {
-            int col = index / filas;
-            int fila = index % filas;
-            v.setPositionX(espaciadoX * (col + 1));
-            v.setPositionY(espaciadoY * (fila + 1));
-            index++;
+        int k = 0;
+        for (int i = 0; i < numFilas; i++) {
+            for (int j = 0; j < numCols; j++) {
+                if (k < lista.size()) {
+                    Vertice v = lista.get(k++);
+                    v.setPositionX(margenX * (j + 1)); // Columnas (c, d, e)
+                    v.setPositionY(margenY * (i + 1)); // Filas (a, b)
+                }
+            }
+        }
+    }
+
+    public static void reacomodarVertical(Pane panel, List<Vertice> vertices) {
+        if (vertices.isEmpty()) return;
+        double centroX = panel.getWidth() / 2;
+        double espaciadoY = panel.getHeight() / (vertices.size() + 1);
+
+        for (int i = 0; i < vertices.size(); i++) {
+            vertices.get(i).setPositionX(centroX);
+            vertices.get(i).setPositionY(espaciadoY * (i + 1));
         }
     }
 }
