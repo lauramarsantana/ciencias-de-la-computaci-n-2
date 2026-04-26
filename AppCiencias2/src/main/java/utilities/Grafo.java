@@ -12,7 +12,8 @@ public class Grafo {
 
     public Grafo(String nombre) {
         this.nombre = nombre;
-        this.vertices = new HashMap<>();
+        // CAMBIO AQUÍ: LinkedHashMap en lugar de HashMap
+        this.vertices = new LinkedHashMap<>();
         this.aristas = new ArrayList<>();
     }
 
@@ -366,6 +367,157 @@ public class Grafo {
             return normal.equals(nombreBusqueda) || inversa.equals(nombreBusqueda);
         });
 
+        return res;
+    }
+
+    public static Grafo productoCartesiano(Grafo g1, Grafo g2) {
+        // Usamos un nombre que identifique la operación
+        Grafo res = new Grafo("Producto Cartesiano");
+
+        // Ordenar las listas para asegurar consistencia (a antes que b, c antes que d)
+        List<Vertice> listaG1 = new ArrayList<>(g1.getVertices().values());
+        listaG1.sort((v1, v2) -> v1.getName().compareTo(v2.getName()));
+
+        List<Vertice> listaG2 = new ArrayList<>(g2.getVertices().values());
+        listaG2.sort((v1, v2) -> v1.getName().compareTo(v2.getName()));
+
+        // CREACIÓN DE VÉRTICES: G1 controla las filas, G2 las columnas
+        for (Vertice u : listaG1) {
+            for (Vertice v : listaG2) {
+                String nombre = u.getName() + v.getName();
+                res.agregarVertice(new Vertice(nombre, 0, 0));
+            }
+        }
+
+        // 2. Crear aristas: Solo una dirección para evitar duplicados visuales
+        for (Vertice u1 : g1.getVertices().values()) {
+            for (Vertice v1 : g2.getVertices().values()) {
+                for (Vertice u2 : g1.getVertices().values()) {
+                    for (Vertice v2 : g2.getVertices().values()) {
+
+                        String n1 = u1.getName() + v1.getName();
+                        String n2 = u2.getName() + v2.getName();
+
+                        // Evitar duplicados y el mismo nodo
+                        if (n1.compareTo(n2) >= 0) continue;
+
+                        boolean conectar = false;
+                        // Misma u, arista en G2
+                        if (u1.getName().equals(u2.getName()) && g2.existeArista(v1.getName(), v2.getName())) {
+                            conectar = true;
+                        }
+                        // Misma v, arista en G1
+                        else if (v1.getName().equals(v2.getName()) && g1.existeArista(u1.getName(), u2.getName())) {
+                            conectar = true;
+                        }
+
+                        if (conectar) {
+                            res.agregarArista(new Arista(n1 + "-" + n2, res.getVertices().get(n1), res.getVertices().get(n2)));
+                        }
+                    }
+                }
+            }
+        }
+        return res;
+    }
+
+    // Asegúrate de tener este método en Grafo.java para las validaciones
+    public boolean existeArista(String v1, String v2) {
+        for (Arista a : aristas) {
+            String n1 = a.getVerticeOrigen().getName();
+            String n2 = a.getVerticeDestino().getName();
+            if ((n1.equals(v1) && n2.equals(v2)) || (n1.equals(v2) && n2.equals(v1))) return true;
+        }
+        return false;
+    }
+
+    public static Grafo productoTensorial(Grafo g1, Grafo g2) {
+        Grafo res = new Grafo("Producto Tensorial");
+
+        // 1. Listas ordenadas para la rejilla (Igual que el Cartesiano)
+        List<Vertice> listaG1 = new ArrayList<>(g1.getVertices().values());
+        listaG1.sort((v1, v2) -> v1.getName().compareTo(v2.getName()));
+
+        List<Vertice> listaG2 = new ArrayList<>(g2.getVertices().values());
+        listaG2.sort((v1, v2) -> v1.getName().compareTo(v2.getName()));
+
+        // 2. Crear vértices en orden de LinkedHashMap
+        for (Vertice u : listaG1) {
+            for (Vertice v : listaG2) {
+                res.agregarVertice(new Vertice(u.getName() + v.getName(), 0, 0));
+            }
+        }
+
+        // 3. Lógica de Aristas TENSORIAL: (u,v) ~ (u',v') si u ~ u' Y v ~ v'
+        for (Arista a1 : g1.getAristas()) {
+            for (Arista a2 : g2.getAristas()) {
+                // Combinación 1: (u -> u') y (v -> v')
+                String n1 = a1.getVerticeOrigen().getName() + a2.getVerticeOrigen().getName();
+                String n2 = a1.getVerticeDestino().getName() + a2.getVerticeDestino().getName();
+
+                // Combinación 2: (u -> u') y (v' -> v) - Las "diagonales"
+                String n3 = a1.getVerticeOrigen().getName() + a2.getVerticeDestino().getName();
+                String n4 = a1.getVerticeDestino().getName() + a2.getVerticeOrigen().getName();
+
+                conectarSiExisten(res, n1, n2);
+                conectarSiExisten(res, n3, n4);
+            }
+        }
+        return res;
+    }
+    // Método auxiliar para evitar código repetido y aristas duplicadas
+    private static void conectarSiExisten(Grafo g, String nombreA, String nombreB) {
+        Vertice vA = g.getVertices().get(nombreA);
+        Vertice vB = g.getVertices().get(nombreB);
+        if (vA != null && vB != null) {
+            Arista nueva = new Arista(nombreA + "-" + nombreB, vA, vB);
+            if (!g.getAristas().contains(nueva)) {
+                g.agregarArista(nueva);
+            }
+        }
+    }
+
+    public static Grafo composicion(Grafo g1, Grafo g2) {
+        Grafo res = new Grafo("Composición");
+
+        List<Vertice> listaG1 = new ArrayList<>(g1.getVertices().values());
+        listaG1.sort((v1, v2) -> v1.getName().compareTo(v2.getName()));
+
+        List<Vertice> listaG2 = new ArrayList<>(g2.getVertices().values());
+        listaG2.sort((v1, v2) -> v1.getName().compareTo(v2.getName()));
+
+        // 1. Crear los vértices en la rejilla
+        for (Vertice u : listaG1) {
+            for (Vertice v : listaG2) {
+                res.agregarVertice(new Vertice(u.getName() + v.getName(), 0, 0));
+            }
+        }
+
+        // 2. Aplicar las condiciones de tus apuntes
+        for (Vertice u : listaG1) {
+            for (Vertice uP : listaG1) {
+                for (Vertice v : listaG2) {
+                    for (Vertice vP : listaG2) {
+
+                        String id1 = u.getName() + v.getName();
+                        String id2 = uP.getName() + vP.getName();
+
+                        if (id1.equals(id2)) continue;
+
+                        // Condición 1: u1 R v1 en G1 (u conecta con uP)
+                        boolean r1 = g1.existeArista(u.getName(), uP.getName());
+
+                        // Condición 2: u1 = v1 Y u2 R v2 en G2
+                        boolean r2 = u.getName().equals(uP.getName()) &&
+                                g2.existeArista(v.getName(), vP.getName());
+
+                        if (r1 || r2) {
+                            conectarSiExisten(res, id1, id2);
+                        }
+                    }
+                }
+            }
+        }
         return res;
     }
 }

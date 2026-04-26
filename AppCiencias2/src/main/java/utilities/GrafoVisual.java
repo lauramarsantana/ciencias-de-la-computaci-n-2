@@ -112,4 +112,36 @@ public class GrafoVisual {
             vertices.get(i).setPositionY(centroY + radio * Math.sin(angulo));
         }
     }
+
+    public static void reacomodarMatriz(Pane pane, Grafo g, int numFilas, int numCols) {
+        double ancho = pane.getWidth();
+        double alto = pane.getHeight();
+        double margenX = ancho / (numCols + 1);
+        double margenY = alto / (numFilas + 1);
+
+        List<Vertice> lista = new ArrayList<>(g.getVertices().values());
+        // No ordenes aquí, usa el orden en que fueron agregados al Grafo
+
+        int k = 0;
+        for (int i = 0; i < numFilas; i++) {
+            for (int j = 0; j < numCols; j++) {
+                if (k < lista.size()) {
+                    Vertice v = lista.get(k++);
+                    v.setPositionX(margenX * (j + 1)); // Columnas (c, d, e)
+                    v.setPositionY(margenY * (i + 1)); // Filas (a, b)
+                }
+            }
+        }
+    }
+
+    public static void reacomodarVertical(Pane panel, List<Vertice> vertices) {
+        if (vertices.isEmpty()) return;
+        double centroX = panel.getWidth() / 2;
+        double espaciadoY = panel.getHeight() / (vertices.size() + 1);
+
+        for (int i = 0; i < vertices.size(); i++) {
+            vertices.get(i).setPositionX(centroX);
+            vertices.get(i).setPositionY(espaciadoY * (i + 1));
+        }
+    }
 }
