@@ -81,6 +81,21 @@
                         <Insets left="40.0" />
                      </HBox.margin>
                   </Button>
+                  <Button mnemonicParsing="false" onMouseClicked="#handleGuardar" text="Guardar">
+                     <HBox.margin>
+                        <Insets left="40.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button mnemonicParsing="false" onMouseClicked="#handleCargar" text="Cargar">
+                     <HBox.margin>
+                        <Insets left="40.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button mnemonicParsing="false" onMouseClicked="#handleLimpiar" text="Limpiar">
+                     <HBox.margin>
+                        <Insets left="40.0" />
+                     </HBox.margin>
+                  </Button>
                </children>
             </HBox>
             <HBox prefHeight="332.0" VBox.vgrow="ALWAYS">
