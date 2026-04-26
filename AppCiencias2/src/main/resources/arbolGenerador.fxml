@@ -53,7 +53,7 @@
 
             <HBox spacing="15.0" alignment="CENTER_LEFT">
                <children>
-                  <Button text="Mostrar grafo completo"
+                  <Button text="Mostrar grafo original"
                           onAction="#mostrarGrafoCompleto"
                           prefWidth="200.0" />
 

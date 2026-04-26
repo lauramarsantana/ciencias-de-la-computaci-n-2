@@ -79,28 +79,27 @@ public class ArbolGeneradorVisual {
         linea.setStroke(Color.LIGHTGRAY);
         linea.setStrokeWidth(1.5);
 
-        // Solo dibuja la línea gris, sin peso
         panel.getChildren().add(linea);
     }
 
         // Luego dibujar las aristas del árbol resaltadas
         for (AristaPonderada arista : aristasResultado) {
-            double[] p1 = posiciones.get(arista.getOrigen());
-            double[] p2 = posiciones.get(arista.getDestino());
+        double[] p1 = posiciones.get(arista.getOrigen());
+        double[] p2 = posiciones.get(arista.getDestino());
 
-            if (p1 == null || p2 == null) {
-                continue;
-            }
-
-            Line linea = new Line(p1[0], p1[1], p2[0], p2[1]);
-            linea.setStroke(Color.RED);
-            linea.setStrokeWidth(3);
-
-            Label peso = crearLabelPeso(arista, p1, p2);
-            peso.setStyle("-fx-font-weight: bold; -fx-background-color: white;");
-
-            panel.getChildren().addAll(linea, peso);
+        if (p1 == null || p2 == null) {
+            continue;
         }
+
+        Line linea = new Line(p1[0], p1[1], p2[0], p2[1]);
+        linea.setStroke(Color.RED);
+        linea.setStrokeWidth(3);
+
+        Label peso = crearLabelPeso(arista, p1, p2);
+        peso.setStyle("-fx-font-weight: bold; -fx-background-color: white; -fx-padding: 1 3 1 3;");
+
+        panel.getChildren().addAll(linea, peso);
+    }
 
         dibujarVertices(grafo, panel, posiciones);
     }

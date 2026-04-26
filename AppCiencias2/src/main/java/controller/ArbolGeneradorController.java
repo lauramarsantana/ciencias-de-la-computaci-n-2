@@ -13,6 +13,7 @@ import utilities.GrafoPonderado;
 import javafx.stage.FileChooser;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import utilities.ResultadoKruskal;
 
 public class ArbolGeneradorController {
 
@@ -44,7 +45,7 @@ public class ArbolGeneradorController {
             ArbolGeneradorVisual.dibujarGrafoCompleto(grafo, panelResultado);
 
             StringBuilder sb = new StringBuilder();
-            sb.append("Grafo completo ingresado\n\n");
+            sb.append("Grafo original ingresado\n\n");
             sb.append("Vértices:\n");
 
             for (String v : grafo.getVertices()) {
@@ -74,35 +75,44 @@ public class ArbolGeneradorController {
     }
 
     private void generar(boolean maximo) {
-        try {
-            if (grafo == null || grafo.getVertices().isEmpty()) {
-                throw new IllegalArgumentException("Primero debes mostrar el grafo completo.");
-            }
+    try {
+        grafo = construirGrafo();
 
-            List<AristaPonderada> resultado = ArbolGeneradorService.kruskal(grafo, maximo);
+        ResultadoKruskal resultadoKruskal = ArbolGeneradorService.kruskalConDetalle(grafo, maximo);
+        List<AristaPonderada> resultado = resultadoKruskal.getSeleccionadas();
 
-            if (resultado.size() != grafo.getVertices().size() - 1) {
-                throw new IllegalArgumentException("El grafo no es conexo. No se puede formar un árbol generador completo.");
-            }
-
-            ArbolGeneradorVisual.dibujar(grafo, resultado, panelResultado);
-
-            StringBuilder sb = new StringBuilder();
-            sb.append(maximo ? "Árbol Generador Máximo\n\n" : "Árbol Generador Mínimo\n\n");
-
-            for (AristaPonderada a : resultado) {
-                sb.append(a).append("\n");
-            }
-
-            sb.append("\nPeso total: ")
-              .append(ArbolGeneradorService.calcularPesoTotal(resultado));
-
-            infoArea.setText(sb.toString());
-
-        } catch (Exception e) {
-            mostrarAlerta("Error", e.getMessage());
+        if (resultado.size() != grafo.getVertices().size() - 1) {
+            throw new IllegalArgumentException("El grafo no es conexo. No se puede formar un árbol generador completo.");
         }
+
+        ArbolGeneradorVisual.dibujar(grafo, resultado, panelResultado);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(maximo ? "Árbol Generador Máximo\n\n" : "Árbol Generador Mínimo\n\n");
+
+        sb.append("Aristas seleccionadas:\n");
+        for (AristaPonderada a : resultado) {
+            sb.append(a).append("\n");
+        }
+
+        if (!resultadoKruskal.getDescartadasPorCiclo().isEmpty()) {
+            sb.append("\nAdvertencia:\n");
+            sb.append("Las siguientes aristas no se incluyeron porque formarían ciclos:\n");
+
+            for (AristaPonderada a : resultadoKruskal.getDescartadasPorCiclo()) {
+                sb.append("- ").append(a).append("\n");
+            }
+        }
+
+        sb.append("\nPeso total: ")
+          .append(ArbolGeneradorService.calcularPesoTotal(resultado));
+
+        infoArea.setText(sb.toString());
+
+    } catch (Exception e) {
+        mostrarAlerta("Error", e.getMessage());
     }
+}
     
     @FXML
     private void guardarGrafo() {
