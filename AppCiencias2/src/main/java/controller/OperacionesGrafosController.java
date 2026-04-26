@@ -25,7 +25,8 @@ public class OperacionesGrafosController {
                                     "Suma", "Fusión de Vértices",
                                     "Adición de Vértice", "Eliminación de Vértice",
                                     "Contracción de Arista", "Adición de Arista",
-                                    "Eliminación de Arista", "Producto Cartesiano");
+                                    "Eliminación de Arista", "Producto Cartesiano",
+                                    "Producto Tensorial");
         operacion.getSelectionModel().selectFirst();
 
         // Limpiar el texto inicial para que no se vea la palabra "Label"
@@ -56,8 +57,10 @@ public class OperacionesGrafosController {
             g1 = new Grafo("Grafo 1");
             parsearVertices(verticesG1.getText(), g1, paneG1);
             parsearAristas(aristasG1.getText(), g1);
-            // Solo es vertical si la operación seleccionada es Producto Cartesiano
-            boolean modoVertical = "Producto Cartesiano".equals(operacion.getValue());
+            // Obtenemos el valor directamente del ComboBox para que no de error
+            String opSeleccionada = operacion.getSelectionModel().getSelectedItem();
+            boolean modoVertical = "Producto Cartesiano".equals(opSeleccionada) ||
+                    "Producto Tensorial".equals(opSeleccionada);
             actualizarPanel(g1, paneG1, infoG1, modoVertical);
         } catch (Exception e) {
             mostrarAlerta("Error", "Error al procesar el Grafo 1");
@@ -70,7 +73,10 @@ public class OperacionesGrafosController {
             g2 = new Grafo("Grafo 2");
             parsearVertices(verticesG2.getText(), g2, paneG2);
             parsearAristas(aristasG2.getText(), g2);
-            boolean modoVertical = "Producto Cartesiano".equals(operacion.getValue());
+            // Obtenemos el valor directamente del ComboBox para que no de error
+            String opSeleccionada = operacion.getSelectionModel().getSelectedItem();
+            boolean modoVertical = "Producto Cartesiano".equals(opSeleccionada) ||
+                    "Producto Tensorial".equals(opSeleccionada);
             actualizarPanel(g2, paneG2, infoG2, modoVertical);
         } catch (Exception e) {
             mostrarAlerta("Error", "Error al procesar el Grafo 2");
@@ -272,6 +278,10 @@ public class OperacionesGrafosController {
             case "Producto Cartesiano":
                 g3 = Grafo.productoCartesiano(g1, g2);
                 // n = filas (G1), m = columnas (G2)
+                actualizarPanelProducto(g3, paneG3, infoG3, g1.getVertices().size(), g2.getVertices().size());
+                return;
+            case "Producto Tensorial":
+                g3 = Grafo.productoTensorial(g1, g2);
                 actualizarPanelProducto(g3, paneG3, infoG3, g1.getVertices().size(), g2.getVertices().size());
                 return;
             default: return;

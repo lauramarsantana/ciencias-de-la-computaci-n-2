@@ -431,4 +431,49 @@ public class Grafo {
         return false;
     }
 
+    public static Grafo productoTensorial(Grafo g1, Grafo g2) {
+        Grafo res = new Grafo("Producto Tensorial");
+
+        // 1. Listas ordenadas para la rejilla (Igual que el Cartesiano)
+        List<Vertice> listaG1 = new ArrayList<>(g1.getVertices().values());
+        listaG1.sort((v1, v2) -> v1.getName().compareTo(v2.getName()));
+
+        List<Vertice> listaG2 = new ArrayList<>(g2.getVertices().values());
+        listaG2.sort((v1, v2) -> v1.getName().compareTo(v2.getName()));
+
+        // 2. Crear vértices en orden de LinkedHashMap
+        for (Vertice u : listaG1) {
+            for (Vertice v : listaG2) {
+                res.agregarVertice(new Vertice(u.getName() + v.getName(), 0, 0));
+            }
+        }
+
+        // 3. Lógica de Aristas TENSORIAL: (u,v) ~ (u',v') si u ~ u' Y v ~ v'
+        for (Arista a1 : g1.getAristas()) {
+            for (Arista a2 : g2.getAristas()) {
+                // Combinación 1: (u -> u') y (v -> v')
+                String n1 = a1.getVerticeOrigen().getName() + a2.getVerticeOrigen().getName();
+                String n2 = a1.getVerticeDestino().getName() + a2.getVerticeDestino().getName();
+
+                // Combinación 2: (u -> u') y (v' -> v) - Las "diagonales"
+                String n3 = a1.getVerticeOrigen().getName() + a2.getVerticeDestino().getName();
+                String n4 = a1.getVerticeDestino().getName() + a2.getVerticeOrigen().getName();
+
+                conectarSiExisten(res, n1, n2);
+                conectarSiExisten(res, n3, n4);
+            }
+        }
+        return res;
+    }
+    // Método auxiliar para evitar código repetido y aristas duplicadas
+    private static void conectarSiExisten(Grafo g, String nombreA, String nombreB) {
+        Vertice vA = g.getVertices().get(nombreA);
+        Vertice vB = g.getVertices().get(nombreB);
+        if (vA != null && vB != null) {
+            Arista nueva = new Arista(nombreA + "-" + nombreB, vA, vB);
+            if (!g.getAristas().contains(nueva)) {
+                g.agregarArista(nueva);
+            }
+        }
+    }
 }
