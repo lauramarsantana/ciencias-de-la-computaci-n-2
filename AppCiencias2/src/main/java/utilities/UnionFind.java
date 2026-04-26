@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class UnionFind {
+
     private Map<String, String> padre;
 
     public UnionFind() {
@@ -15,9 +16,14 @@ public class UnionFind {
     }
 
     public String find(String x) {
+        if (!padre.containsKey(x)) {
+            throw new IllegalArgumentException("El vértice no existe en UnionFind: " + x);
+        }
+
         if (!padre.get(x).equals(x)) {
             padre.put(x, find(padre.get(x)));
         }
+
         return padre.get(x);
     }
 
