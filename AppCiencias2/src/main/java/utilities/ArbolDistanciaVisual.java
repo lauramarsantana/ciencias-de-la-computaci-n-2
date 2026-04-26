@@ -69,8 +69,7 @@ public class ArbolDistanciaVisual {
             }
 
             if (comunes.contains(id)) {
-                dibujarAristaResaltada(panel, arista, p1, p2, Color.PURPLE, 4,
-                        "-fx-font-weight: bold; -fx-background-color: white; -fx-text-fill: purple;");
+                continue;
             } else if (idsArbol1.contains(id)) {
                 dibujarAristaResaltada(panel, arista, p1, p2, Color.BLUE, 3,
                         "-fx-font-weight: bold; -fx-background-color: white; -fx-text-fill: blue;");
@@ -84,17 +83,30 @@ public class ArbolDistanciaVisual {
     }
 
     public static int calcularDistancia(List<AristaPonderada> arbol1, List<AristaPonderada> arbol2) {
-        Set<Integer> ids1 = extraerIds(arbol1);
-        Set<Integer> ids2 = extraerIds(arbol2);
+    Set<Integer> ids1 = extraerIds(arbol1);
+    Set<Integer> ids2 = extraerIds(arbol2);
 
-        Set<Integer> union = new HashSet<>(ids1);
-        union.addAll(ids2);
+    Set<Integer> union = new HashSet<>(ids1);
+    union.addAll(ids2);
 
-        Set<Integer> interseccion = new HashSet<>(ids1);
-        interseccion.retainAll(ids2);
+    Set<Integer> interseccion = new HashSet<>(ids1);
+    interseccion.retainAll(ids2);
 
-        return union.size() - interseccion.size();
+    int sumaUnion = sumar(union);
+    int sumaInterseccion = sumar(interseccion);
+
+    return (sumaUnion - sumaInterseccion) / 2;
+}
+
+private static int sumar(Set<Integer> valores) {
+    int suma = 0;
+
+    for (Integer valor : valores) {
+        suma += valor;
     }
+
+    return suma;
+}
 
     private static void dibujarAristaResaltada(
             Pane panel,
