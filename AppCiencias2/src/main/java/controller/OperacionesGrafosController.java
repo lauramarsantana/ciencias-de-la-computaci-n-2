@@ -26,7 +26,7 @@ public class OperacionesGrafosController {
                                     "Adición de Vértice", "Eliminación de Vértice",
                                     "Contracción de Arista", "Adición de Arista",
                                     "Eliminación de Arista", "Producto Cartesiano",
-                                    "Producto Tensorial");
+                                    "Producto Tensorial", "Composición");
         operacion.getSelectionModel().selectFirst();
 
         // Limpiar el texto inicial para que no se vea la palabra "Label"
@@ -60,7 +60,8 @@ public class OperacionesGrafosController {
             // Obtenemos el valor directamente del ComboBox para que no de error
             String opSeleccionada = operacion.getSelectionModel().getSelectedItem();
             boolean modoVertical = "Producto Cartesiano".equals(opSeleccionada) ||
-                    "Producto Tensorial".equals(opSeleccionada);
+                    "Producto Tensorial".equals(opSeleccionada) ||
+                    "Composición".equals(opSeleccionada);
             actualizarPanel(g1, paneG1, infoG1, modoVertical);
         } catch (Exception e) {
             mostrarAlerta("Error", "Error al procesar el Grafo 1");
@@ -76,7 +77,8 @@ public class OperacionesGrafosController {
             // Obtenemos el valor directamente del ComboBox para que no de error
             String opSeleccionada = operacion.getSelectionModel().getSelectedItem();
             boolean modoVertical = "Producto Cartesiano".equals(opSeleccionada) ||
-                    "Producto Tensorial".equals(opSeleccionada);
+                    "Producto Tensorial".equals(opSeleccionada) ||
+                    "Composición".equals(opSeleccionada);
             actualizarPanel(g2, paneG2, infoG2, modoVertical);
         } catch (Exception e) {
             mostrarAlerta("Error", "Error al procesar el Grafo 2");
@@ -284,6 +286,9 @@ public class OperacionesGrafosController {
                 g3 = Grafo.productoTensorial(g1, g2);
                 actualizarPanelProducto(g3, paneG3, infoG3, g1.getVertices().size(), g2.getVertices().size());
                 return;
+            case "Composición":
+                g3 =Grafo.composicion(g1,g2);
+                actualizarPanelProducto(g3, paneG3, infoG3, g1.getVertices().size(), g2.getVertices().size());
             default: return;
         }
 

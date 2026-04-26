@@ -476,4 +476,48 @@ public class Grafo {
             }
         }
     }
+
+    public static Grafo composicion(Grafo g1, Grafo g2) {
+        Grafo res = new Grafo("Composición");
+
+        List<Vertice> listaG1 = new ArrayList<>(g1.getVertices().values());
+        listaG1.sort((v1, v2) -> v1.getName().compareTo(v2.getName()));
+
+        List<Vertice> listaG2 = new ArrayList<>(g2.getVertices().values());
+        listaG2.sort((v1, v2) -> v1.getName().compareTo(v2.getName()));
+
+        // 1. Crear los vértices en la rejilla
+        for (Vertice u : listaG1) {
+            for (Vertice v : listaG2) {
+                res.agregarVertice(new Vertice(u.getName() + v.getName(), 0, 0));
+            }
+        }
+
+        // 2. Aplicar las condiciones de tus apuntes
+        for (Vertice u : listaG1) {
+            for (Vertice uP : listaG1) {
+                for (Vertice v : listaG2) {
+                    for (Vertice vP : listaG2) {
+
+                        String id1 = u.getName() + v.getName();
+                        String id2 = uP.getName() + vP.getName();
+
+                        if (id1.equals(id2)) continue;
+
+                        // Condición 1: u1 R v1 en G1 (u conecta con uP)
+                        boolean r1 = g1.existeArista(u.getName(), uP.getName());
+
+                        // Condición 2: u1 = v1 Y u2 R v2 en G2
+                        boolean r2 = u.getName().equals(uP.getName()) &&
+                                g2.existeArista(v.getName(), vP.getName());
+
+                        if (r1 || r2) {
+                            conectarSiExisten(res, id1, id2);
+                        }
+                    }
+                }
+            }
+        }
+        return res;
+    }
 }
