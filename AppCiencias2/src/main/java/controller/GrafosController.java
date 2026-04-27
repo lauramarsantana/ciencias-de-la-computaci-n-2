@@ -28,4 +28,9 @@ public class GrafosController {
     private void openFuncionOrdinal(MouseEvent event) {
         layoutController.loadPanel("/funcionOrdinal.fxml");
     }
+
+    @FXML
+    private void openTeoriaColoracion(MouseEvent event){
+        layoutController.loadPanel("/teoriaColor.fxml");
+    }
 }

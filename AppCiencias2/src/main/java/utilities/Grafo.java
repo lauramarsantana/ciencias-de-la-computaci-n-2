@@ -520,4 +520,28 @@ public class Grafo {
         }
         return res;
     }
+
+    public Map<String, Integer> colorearGreedy() {
+        Map<String, Integer> resultado = new HashMap<>();
+        List<String> nodos = new ArrayList<>(this.vertices.keySet());
+
+        for (String nodo : nodos) {
+            Set<Integer> coloresUsados = new HashSet<>();
+            // Revisar colores de vecinos
+            for (Arista a : this.aristas) {
+                if (a.getVerticeOrigen().getName().equals(nodo)) {
+                    if (resultado.containsKey(a.getVerticeDestino().getName()))
+                        coloresUsados.add(resultado.get(a.getVerticeDestino().getName()));
+                } else if (a.getVerticeDestino().getName().equals(nodo)) {
+                    if (resultado.containsKey(a.getVerticeOrigen().getName()))
+                        coloresUsados.add(resultado.get(a.getVerticeOrigen().getName()));
+                }
+            }
+            // Asignar el primer color disponible
+            int color = 0;
+            while (coloresUsados.contains(color)) color++;
+            resultado.put(nodo, color);
+        }
+        return resultado;
+    }
 }

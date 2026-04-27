@@ -15,7 +15,7 @@
       <URL value="@styles.css" />
    </stylesheets>
    <children>
-      <HBox alignment="CENTER" prefHeight="600.0" prefWidth="1280.0" spacing="80.0">
+      <HBox alignment="CENTER" prefHeight="600.0" prefWidth="1280.0">
          <children>
 
             <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
@@ -71,6 +71,26 @@
                      </cursor>
                   </ImageView>
                   <Label text="FUNCION ORDINAL" textFill="#000204">
+                     <font>
+                        <Font name="Myanmar Text Bold" size="24.0" />
+                     </font>
+                  </Label>
+               </children>
+               <cursor>
+                  <Cursor fx:constant="DEFAULT" />
+               </cursor>
+            </VBox>
+            <VBox alignment="CENTER" layoutX="927.0" layoutY="10.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <ImageView fx:id="btnFuncionOrdinal1" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#openTeoriaColoracion" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@icono-coloreadoGrafos.png" />
+                     </image>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </ImageView>
+                  <Label text="TEORÍA DE COLORACIÓN" textFill="#000204">
                      <font>
                         <Font name="Myanmar Text Bold" size="24.0" />
                      </font>

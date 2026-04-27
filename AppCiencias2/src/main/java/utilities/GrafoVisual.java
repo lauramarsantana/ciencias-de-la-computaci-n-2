@@ -144,4 +144,20 @@ public class GrafoVisual {
             vertices.get(i).setPositionY(espaciadoY * (i + 1));
         }
     }
+
+    public static void dibujarNodoColoreado(Pane pane, Vertice v, Color color) {
+        // Buscamos si el círculo ya existe en el panel para cambiarle el color
+        // o simplemente dibujamos uno nuevo encima en la posición del vértice
+        double radio = 15;
+        javafx.scene.shape.Circle circulo = new javafx.scene.shape.Circle(v.getPositionX(), v.getPositionY(), radio);
+        circulo.setFill(color);
+        circulo.setStroke(Color.BLACK);
+        circulo.setStrokeWidth(2);
+
+        javafx.scene.text.Text texto = new javafx.scene.text.Text(v.getName());
+        texto.setX(v.getPositionX() - 5);
+        texto.setY(v.getPositionY() + 5);
+
+        pane.getChildren().addAll(circulo, texto);
+    }
 }
