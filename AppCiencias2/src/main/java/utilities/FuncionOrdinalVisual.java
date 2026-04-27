@@ -1,5 +1,6 @@
 package utilities;
 
+import java.util.function.Consumer;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -10,13 +11,29 @@ import javafx.scene.shape.Polygon;
 public class FuncionOrdinalVisual {
 
     public static void dibujar(GrafoOrdinal grafo, Pane panel) {
+        dibujar(grafo, panel, false, null);
+    }
+
+    public static void dibujarSinNombres(
+            GrafoOrdinal grafo,
+            Pane panel,
+            Consumer<String> manejadorClick
+    ) {
+        dibujar(grafo, panel, true, manejadorClick);
+    }
+
+    private static void dibujar(
+            GrafoOrdinal grafo,
+            Pane panel,
+            boolean ocultarNombres,
+            Consumer<String> manejadorClick
+    ) {
         panel.getChildren().clear();
 
         if (grafo == null || grafo.getVertices().isEmpty()) {
             return;
         }
 
-        // Primero dibujar las aristas dirigidas
         for (AristaDirigida arista : grafo.getAristas()) {
             VerticeOrdinal origen = grafo.buscarVertice(arista.getOrigen());
             VerticeOrdinal destino = grafo.buscarVertice(arista.getDestino());
@@ -28,29 +45,47 @@ public class FuncionOrdinalVisual {
             dibujarFlecha(panel, origen.getX(), origen.getY(), destino.getX(), destino.getY());
         }
 
-        // Luego dibujar los vértices
-        dibujarVertices(grafo, panel);
+        dibujarVertices(grafo, panel, ocultarNombres, manejadorClick);
     }
 
-    private static void dibujarVertices(GrafoOrdinal grafo, Pane panel) {
+    private static void dibujarVertices(
+            GrafoOrdinal grafo,
+            Pane panel,
+            boolean ocultarNombres,
+            Consumer<String> manejadorClick
+    ) {
         for (VerticeOrdinal v : grafo.getVertices()) {
             Circle circulo = new Circle(v.getX(), v.getY(), 20);
             circulo.setFill(Color.LIGHTBLUE);
             circulo.setStroke(Color.BLACK);
 
-            Label nombre = new Label(v.getNombre());
-            nombre.setLayoutX(v.getX() - 6);
-            nombre.setLayoutY(v.getY() - 10);
-            nombre.setStyle("-fx-font-weight: bold;");
+            if (manejadorClick != null) {
+                circulo.setOnMouseClicked(e -> manejadorClick.accept(v.getNombre()));
+                circulo.setStyle("-fx-cursor: hand;");
+            }
+
+            panel.getChildren().add(circulo);
+
+            if (!ocultarNombres) {
+                Label nombre = new Label(v.getNombre());
+                nombre.setLayoutX(v.getX() - 6);
+                nombre.setLayoutY(v.getY() - 10);
+                nombre.setStyle("-fx-font-weight: bold;");
+                panel.getChildren().add(nombre);
+            }
 
             Label ordinal = new Label(
                     v.getEtiquetaOrdinal() > 0 ? String.valueOf(v.getEtiquetaOrdinal()) : ""
             );
             ordinal.setLayoutX(v.getX() - 4);
             ordinal.setLayoutY(v.getY() - 36);
-            ordinal.setStyle("-fx-font-weight: bold; -fx-background-color: white; -fx-padding: 1 4 1 4;");
+            ordinal.setStyle(
+                    "-fx-font-weight: bold; " +
+                    "-fx-background-color: white; " +
+                    "-fx-padding: 1 4 1 4;"
+            );
 
-            panel.getChildren().addAll(circulo, nombre, ordinal);
+            panel.getChildren().add(ordinal);
         }
     }
 
@@ -78,7 +113,6 @@ public class FuncionOrdinalVisual {
         linea.setStrokeWidth(2);
 
         double tamFlecha = 10;
-
         double angulo = Math.atan2(dy, dx);
 
         double xArrow1 = finX - tamFlecha * Math.cos(angulo - Math.PI / 6);

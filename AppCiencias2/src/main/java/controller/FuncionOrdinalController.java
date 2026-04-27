@@ -13,7 +13,6 @@ import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
@@ -28,13 +27,7 @@ import utilities.VerticeOrdinal;
 public class FuncionOrdinalController {
 
     @FXML
-    private TextField nombreVerticeField;
-
-    @FXML
-    private ComboBox<String> origenCombo;
-
-    @FXML
-    private ComboBox<String> destinoCombo;
+    private TextField cantidadVerticesField;
 
     @FXML
     private TextArea infoArea;
@@ -52,79 +45,110 @@ public class FuncionOrdinalController {
 
     private final List<String> nombresVertices = new ArrayList<>();
 
+    private boolean modoEliminarArista = false;
+    private String verticeOrigenSeleccionado = null;
+    
     @FXML
-    private void agregarVertice() {
+    private void generarVertices() {
         try {
-            String nombre = nombreVerticeField.getText().trim();
+            String texto = cantidadVerticesField.getText().trim();
 
-            if (nombre.isEmpty()) {
-                mostrarAlerta("Error", "Debes ingresar el nombre del vértice.");
+            if (texto.isEmpty()) {
+                mostrarAlerta("Error", "Debes ingresar la cantidad de vértices.");
                 return;
             }
 
-            if (nombresVertices.contains(nombre)) {
-                mostrarAlerta("Error", "Ese vértice ya existe.");
+            int cantidad = Integer.parseInt(texto);
+
+            if (cantidad <= 0) {
+                mostrarAlerta("Error", "La cantidad de vértices debe ser mayor que cero.");
                 return;
             }
 
-            double[] posicion = calcularSiguientePosicion();
-            int x = (int) posicion[0];
-            int y = (int) posicion[1];
+            grafo = null;
+            verticesTemporales.clear();
+            aristasTemporales.clear();
+            nombresVertices.clear();
+            panelGrafo.getChildren().clear();
+            infoArea.clear();
 
-            verticesTemporales.add(new String[]{nombre, String.valueOf(x), String.valueOf(y)});
-            nombresVertices.add(nombre);
+            for (int i = 0; i < cantidad; i++) {
+                String nombreInterno = "V" + (i + 1);
 
-            actualizarCombos();
-            nombreVerticeField.clear();
+                double[] posicion = calcularPosicionCircular(i, cantidad);
+                int x = (int) posicion[0];
+                int y = (int) posicion[1];
 
-            mostrarInformacionTemporal("Se agregó el vértice: " + nombre + " (" + x + ", " + y + ")");
+                verticesTemporales.add(new String[]{
+                    nombreInterno,
+                    String.valueOf(x),
+                    String.valueOf(y)
+                });
 
+                nombresVertices.add(nombreInterno);
+            }
+
+            grafo = construirGrafoActual();
+            FuncionOrdinalVisual.dibujarSinNombres(grafo, panelGrafo, this::seleccionarVerticeVisual);
+
+            mostrarInformacionTemporal(
+                "Se generaron " + cantidad + " vértices.\n" +
+                "Haz clic en un vértice origen y luego en un vértice destino para crear una arista."
+            );
+
+        } catch (NumberFormatException e) {
+            mostrarAlerta("Error", "La cantidad de vértices debe ser un número entero.");
         } catch (Exception e) {
             mostrarAlerta("Error", e.getMessage());
         }
     }
+    
+    private void seleccionarVerticeVisual(String nombreVertice) {
+    try {
+        if (verticesTemporales.isEmpty()) {
+            mostrarAlerta("Error", "Primero debes generar los vértices.");
+            return;
+        }
 
-    @FXML
-    private void agregarArista() {
-        try {
-            if (verticesTemporales.isEmpty()) {
-                mostrarAlerta("Error", "Primero debes agregar vértices.");
-                return;
+        if (verticeOrigenSeleccionado == null) {
+            verticeOrigenSeleccionado = nombreVertice;
+
+            if (modoEliminarArista) {
+                mostrarInformacionTemporal(
+                        "Origen seleccionado para eliminar.\n" +
+                        "Ahora haz clic en el vértice destino."
+                );
+            } else {
+                mostrarInformacionTemporal(
+                        "Origen seleccionado.\n" +
+                        "Ahora haz clic en el vértice destino."
+                );
             }
 
-            String origen = origenCombo.getValue();
-            String destino = destinoCombo.getValue();
+            return;
+        }
 
-            if (origen == null || origen.isEmpty()) {
-                mostrarAlerta("Error", "Debes seleccionar el vértice origen.");
-                return;
-            }
+        String origen = verticeOrigenSeleccionado;
+        String destino = nombreVertice;
 
-            if (destino == null || destino.isEmpty()) {
-                mostrarAlerta("Error", "Debes seleccionar el vértice destino.");
-                return;
-            }
+        verticeOrigenSeleccionado = null;
 
-            if (origen.equals(destino)) {
-                mostrarAlerta("Error", "Un vértice no puede apuntarse a sí mismo.");
-                return;
-            }
+        if (origen.equals(destino)) {
+            modoEliminarArista = false;
+            mostrarAlerta("Error", "Un vértice no puede apuntarse a sí mismo.");
+            return;
+        }
 
-            for (String[] arista : aristasTemporales) {
-                if (arista[0].equals(origen) && arista[1].equals(destino)) {
-                    mostrarAlerta("Error", "Esa arista ya existe.");
-                    return;
-                }
-            }
-
-            aristasTemporales.add(new String[]{origen, destino});
-
-            origenCombo.setValue(origen);
-            destinoCombo.setValue(destino);
-
-            mostrarInformacionTemporal("Se agregó la arista: " + origen + " -> " + destino);
+        if (modoEliminarArista) {
+            eliminarAristaEntre(origen, destino);
+            modoEliminarArista = false;
+        } else {
+            agregarAristaEntre(origen, destino);
+        }
 
         } catch (Exception e) {
+            modoEliminarArista = false;
+            verticeOrigenSeleccionado = null;
             mostrarAlerta("Error", e.getMessage());
         }
     }
@@ -145,7 +169,11 @@ public class FuncionOrdinalController {
                     grafo.getAristas()
             );
 
-            FuncionOrdinalVisual.dibujar(grafo, panelGrafo);
+            FuncionOrdinalVisual.dibujarSinNombres(
+                    grafo,
+                    panelGrafo,
+                    this::seleccionarVerticeVisual
+            );
             mostrarInformacion(resultado);
 
         } catch (Exception e) {
@@ -260,6 +288,7 @@ public class FuncionOrdinalController {
 
                 if (leyendoVertices) {
                     String[] parts = line.split("\\|", -1);
+
                     if (parts.length == 3) {
                         String nombre = parts[0].trim();
                         String x = parts[1].trim();
@@ -273,6 +302,7 @@ public class FuncionOrdinalController {
 
                 if (leyendoAristas) {
                     String[] parts = line.split("\\|", -1);
+
                     if (parts.length == 2) {
                         String origen = parts[0].trim();
                         String destino = parts[1].trim();
@@ -290,9 +320,12 @@ public class FuncionOrdinalController {
             }
 
             grafo = null;
+            verticeOrigenSeleccionado = null;
+
             verticesTemporales.clear();
             aristasTemporales.clear();
             nombresVertices.clear();
+
             panelGrafo.getChildren().clear();
             infoArea.clear();
 
@@ -303,27 +336,18 @@ public class FuncionOrdinalController {
                 nombresVertices.add(vertice[0]);
             }
 
-            actualizarCombos();
-            nombreVerticeField.clear();
-
-            if (!nombresVertices.isEmpty()) {
-                origenCombo.setValue(nombresVertices.get(0));
-                destinoCombo.setValue(nombresVertices.get(0));
-            }
-
             grafo = construirGrafoActual();
 
-            FuncionOrdinalService service = new FuncionOrdinalService();
-            ResultadoOrdinal resultado = service.calcularFuncionOrdinal(
-                    grafo.getVertices(),
-                    grafo.getAristas()
+            FuncionOrdinalVisual.dibujarSinNombres(
+                    grafo,
+                    panelGrafo,
+                    this::seleccionarVerticeVisual
             );
 
-            FuncionOrdinalVisual.dibujar(grafo, panelGrafo);
-            mostrarInformacion(resultado);
-
-            mostrarInformacionTemporal("Grafo cargado: " + file.getName());
-            mostrarInformacion(resultado);
+            mostrarInformacionTemporal(
+                    "Grafo cargado: " + file.getName() + "\n" +
+                    "Puedes seguir agregando aristas haciendo clic en un vértice origen y luego en un destino."
+            );
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -333,72 +357,89 @@ public class FuncionOrdinalController {
     
     @FXML
     private void eliminarArista() {
-        try {
-            if (aristasTemporales.isEmpty()) {
-                mostrarAlerta("Error", "No hay aristas para eliminar.");
-                return;
-            }
+        if (aristasTemporales.isEmpty()) {
+            mostrarAlerta("Error", "No hay aristas para eliminar.");
+            return;
+        }
 
-            String origen = origenCombo.getValue();
-            String destino = destinoCombo.getValue();
+        modoEliminarArista = true;
+        verticeOrigenSeleccionado = null;
 
-            if (origen == null || origen.isEmpty()) {
-                mostrarAlerta("Error", "Debes seleccionar el vértice origen.");
-                return;
-            }
-
-            if (destino == null || destino.isEmpty()) {
-                mostrarAlerta("Error", "Debes seleccionar el vértice destino.");
-                return;
-            }
-
-            boolean eliminada = false;
-
-            for (int i = 0; i < aristasTemporales.size(); i++) {
-                String[] arista = aristasTemporales.get(i);
-
-                if (arista[0].equals(origen) && arista[1].equals(destino)) {
-                    aristasTemporales.remove(i);
-                    eliminada = true;
-                    break;
-                }
-            }
-
-            if (!eliminada) {
-                mostrarAlerta("Error", "Esa arista no existe.");
-                return;
-            }
-
-            mostrarInformacionTemporal("Se eliminó la arista: " + origen + " -> " + destino);
-
-            if (!verticesTemporales.isEmpty()) {
-                grafo = construirGrafoActual();
-                FuncionOrdinalVisual.dibujar(grafo, panelGrafo);
-            } else {
-                panelGrafo.getChildren().clear();
-            }
-
-        } catch (Exception e) {
-            mostrarAlerta("Error", e.getMessage());
+        mostrarInformacionTemporal(
+                "Modo eliminar arista activado.\n" +
+                "Haz clic en el vértice origen y luego en el vértice destino de la arista que deseas eliminar."
+        );
+    }
+    
+    private void agregarAristaEntre(String origen, String destino) {
+    for (String[] arista : aristasTemporales) {
+        if (arista[0].equals(origen) && arista[1].equals(destino)) {
+            mostrarAlerta("Error", "Esa arista ya existe.");
+            return;
         }
     }
+
+    aristasTemporales.add(new String[]{origen, destino});
+
+    grafo = construirGrafoActual();
+
+    FuncionOrdinalVisual.dibujarSinNombres(
+            grafo,
+            panelGrafo,
+            this::seleccionarVerticeVisual
+    );
+
+    mostrarInformacionTemporal("Se agregó una arista.");
+}
+    
+    private void eliminarAristaEntre(String origen, String destino) {
+    boolean eliminada = false;
+
+    for (int i = 0; i < aristasTemporales.size(); i++) {
+        String[] arista = aristasTemporales.get(i);
+
+        if (arista[0].equals(origen) && arista[1].equals(destino)) {
+            aristasTemporales.remove(i);
+            eliminada = true;
+            break;
+        }
+    }
+
+    if (!eliminada) {
+        mostrarAlerta("Error", "Esa arista no existe.");
+        return;
+    }
+
+    grafo = construirGrafoActual();
+
+    FuncionOrdinalVisual.dibujarSinNombres(
+            grafo,
+            panelGrafo,
+            this::seleccionarVerticeVisual
+    );
+
+    mostrarInformacionTemporal("Se eliminó una arista.");
+}
 
     @FXML
     private void limpiar() {
         grafo = null;
 
+        // Reset de selección
+        verticeOrigenSeleccionado = null;
+        modoEliminarArista = false;
+
+        // Limpiar estructuras
         verticesTemporales.clear();
         aristasTemporales.clear();
         nombresVertices.clear();
 
-        nombreVerticeField.clear();
+        // Limpiar interfaz
         infoArea.clear();
 
-        origenCombo.setItems(FXCollections.observableArrayList());
-        destinoCombo.setItems(FXCollections.observableArrayList());
-
-        origenCombo.setValue(null);
-        destinoCombo.setValue(null);
+        if (cantidadVerticesField != null) {
+            cantidadVerticesField.clear();
+        }
 
         panelGrafo.getChildren().clear();
     }
@@ -420,27 +461,23 @@ public class FuncionOrdinalController {
 
         return nuevoGrafo;
     }
-
-    private void actualizarCombos() {
-        origenCombo.setItems(FXCollections.observableArrayList(nombresVertices));
-        destinoCombo.setItems(FXCollections.observableArrayList(nombresVertices));
-    }
-
-    private double[] calcularSiguientePosicion() {
-    int cantidad = verticesTemporales.size();
-
+    
+    private double[] calcularPosicionCircular(int indice, int total) {
     double ancho = panelGrafo.getWidth();
     double alto = panelGrafo.getHeight();
 
     if (ancho <= 0) {
         ancho = panelGrafo.getPrefWidth();
     }
+
     if (alto <= 0) {
         alto = panelGrafo.getPrefHeight();
     }
+
     if (ancho <= 0) {
         ancho = 780;
     }
+
     if (alto <= 0) {
         alto = 450;
     }
@@ -448,107 +485,49 @@ public class FuncionOrdinalController {
     double centroX = ancho / 2.0;
     double centroY = alto / 2.0;
 
-    // Caso 1
-    if (cantidad == 0) {
-        return new double[]{centroX, 90};
-    }
+    double radio = Math.min(ancho, alto) * 0.35;
 
-    // Caso 2
-    if (cantidad == 1) {
-        return new double[]{centroX - 120, 220};
-    }
+    double angulo = 2 * Math.PI * indice / total - Math.PI / 2;
 
-    // Caso 3
-    if (cantidad == 2) {
-        return new double[]{centroX + 120, 220};
-    }
-
-    // Caso 4
-    if (cantidad == 3) {
-        return new double[]{centroX - 160, 90};
-    }
-
-    // Caso 5
-    if (cantidad == 4) {
-        return new double[]{centroX + 160, 90};
-    }
-
-    // Caso 6
-    if (cantidad == 5) {
-        return new double[]{centroX, 340};
-    }
-
-    // Para 7 o más: distribución por filas
-    int indice = cantidad - 6;
-    int maxPorFila = 3;
-
-    int fila = indice / maxPorFila;
-    int columna = indice % maxPorFila;
-
-    double margenX = 120;
-    double inicioY = 430;
-    double espacioHorizontal = 180;
-    double espacioVertical = 110;
-
-    double x = margenX + columna * espacioHorizontal;
-    double y = inicioY + fila * espacioVertical;
+    double x = centroX + radio * Math.cos(angulo);
+    double y = centroY + radio * Math.sin(angulo);
 
     return new double[]{x, y};
-}
-    private void mostrarInformacion(ResultadoOrdinal resultado) {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append("Cantidad de vértices: ").append(grafo.contarVertices()).append("\n");
-        sb.append("Cantidad de aristas: ").append(grafo.contarAristas()).append("\n\n");
-
-        sb.append("Vértices:\n");
-        for (VerticeOrdinal v : grafo.getVertices()) {
-            sb.append(v.getNombre())
-              .append(" (")
-              .append((int) v.getX())
-              .append(", ")
-              .append((int) v.getY())
-              .append(")\n");
-        }
-
-        sb.append("\nAristas:\n");
-        for (AristaDirigida arista : grafo.getAristas()) {
-            sb.append(arista.toString()).append("\n");
-        }
-
-        sb.append("\nEtiquetas ordinales:\n");
-        for (VerticeOrdinal v : grafo.getVertices()) {
-            int etiqueta = resultado.getEtiquetas().get(v.getNombre());
-            if (etiqueta > 0) {
-                sb.append(v.getNombre()).append(" -> ").append(etiqueta).append("\n");
-            } else {
-                sb.append(v.getNombre()).append(" -> sin etiquetar\n");
-            }
-        }
-
-        sb.append("\nOrden de etiquetado:\n");
-        if (resultado.getOrdenEtiquetado().isEmpty()) {
-            sb.append("No se pudo etiquetar ningún vértice.\n");
-        } else {
-            for (String nombre : resultado.getOrdenEtiquetado()) {
-                sb.append(nombre).append("\n");
-            }
-        }
-
-        sb.append("\nPasos:\n");
-        for (String paso : resultado.getPasos()) {
-            sb.append(paso).append("\n");
-        }
-
-        sb.append("\nResultado final:\n");
-        if (resultado.isHayCiclo()) {
-            sb.append("Se encontró un ciclo. La función ordinal se detuvo.");
-        } else {
-            sb.append("La función ordinal se completó correctamente.");
-        }
-
-        infoArea.setText(sb.toString());
     }
+
+    private void mostrarInformacion(ResultadoOrdinal resultado) {
+    StringBuilder sb = new StringBuilder();
+
+    sb.append("Cantidad de vértices: ").append(grafo.contarVertices()).append("\n");
+    sb.append("Cantidad de aristas: ").append(grafo.contarAristas()).append("\n\n");
+
+    sb.append("Aristas creadas: ").append(grafo.contarAristas()).append("\n\n");
+
+    sb.append("Etiquetas ordinales:\n");
+    for (VerticeOrdinal v : grafo.getVertices()) {
+        int etiqueta = resultado.getEtiquetas().get(v.getNombre());
+
+        if (etiqueta > 0) {
+            sb.append("Vértice etiquetado con: ").append(etiqueta).append("\n");
+        } else {
+            sb.append("Vértice sin etiquetar\n");
+        }
+    }
+
+    sb.append("\nPasos:\n");
+    for (String paso : resultado.getPasos()) {
+        sb.append(paso).append("\n");
+    }
+
+    sb.append("\nResultado final:\n");
+    if (resultado.isHayCiclo()) {
+        sb.append("Se encontró un ciclo. La función ordinal se detuvo.");
+    } else {
+        sb.append("La función ordinal se completó correctamente.");
+    }
+
+    infoArea.setText(sb.toString());
+}
 
     private void mostrarInformacionTemporal(String mensaje) {
         infoArea.setText(mensaje);
