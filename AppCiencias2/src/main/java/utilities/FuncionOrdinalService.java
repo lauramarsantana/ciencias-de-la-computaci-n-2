@@ -12,7 +12,6 @@ public class FuncionOrdinalService {
                                                    List<AristaDirigida> aristas) {
 
         Map<String, Integer> gradosEntrada = new HashMap<>();
-        Map<String, VerticeOrdinal> mapaVertices = new HashMap<>();
         Map<String, Integer> etiquetas = new HashMap<>();
 
         List<String> ordenEtiquetado = new ArrayList<>();
@@ -20,8 +19,8 @@ public class FuncionOrdinalService {
 
         for (VerticeOrdinal v : vertices) {
             gradosEntrada.put(v.getNombre(), 0);
-            mapaVertices.put(v.getNombre(), v);
             etiquetas.put(v.getNombre(), 0);
+            v.setEtiquetaOrdinal(0);
         }
 
         for (AristaDirigida arista : aristas) {
@@ -29,15 +28,15 @@ public class FuncionOrdinalService {
             gradosEntrada.put(destino, gradosEntrada.get(destino) + 1);
         }
 
-        List<AristaDirigida> aristasRestantes = new ArrayList<>(aristas);
-
         int etiquetaActual = 1;
 
         while (ordenEtiquetado.size() < vertices.size()) {
+
             List<VerticeOrdinal> candidatos = new ArrayList<>();
 
             for (VerticeOrdinal v : vertices) {
-                if (etiquetas.get(v.getNombre()) == 0 && gradosEntrada.get(v.getNombre()) == 0) {
+                if (etiquetas.get(v.getNombre()) == 0
+                        && gradosEntrada.get(v.getNombre()) == 0) {
                     candidatos.add(v);
                 }
             }
@@ -48,25 +47,29 @@ public class FuncionOrdinalService {
             }
 
             candidatos.sort(
-                Comparator.comparingInt(VerticeOrdinal::getX)
-                          .thenComparingInt(VerticeOrdinal::getY)
+                    Comparator.comparingInt(VerticeOrdinal::getY)
+                              .thenComparingInt(VerticeOrdinal::getX)
             );
 
-            VerticeOrdinal elegido = candidatos.get(0);
-            etiquetas.put(elegido.getNombre(), etiquetaActual);
-            elegido.setEtiquetaOrdinal(etiquetaActual);
-            ordenEtiquetado.add(elegido.getNombre());
+            List<VerticeOrdinal> rondaActual = new ArrayList<>(candidatos);
 
-            pasos.add("Etiqueta " + etiquetaActual + ": " + elegido.getNombre());
+            for (VerticeOrdinal elegido : rondaActual) {
+                etiquetas.put(elegido.getNombre(), etiquetaActual);
+                elegido.setEtiquetaOrdinal(etiquetaActual);
+                ordenEtiquetado.add(elegido.getNombre());
 
-            for (AristaDirigida arista : aristasRestantes) {
-                if (arista.getOrigen().equals(elegido.getNombre())) {
-                    String destino = arista.getDestino();
-                    gradosEntrada.put(destino, gradosEntrada.get(destino) - 1);
-                }
+                pasos.add("Etiqueta " + etiquetaActual + ": vértice seleccionado.");
+                etiquetaActual++;
             }
 
-            etiquetaActual++;
+            for (VerticeOrdinal elegido : rondaActual) {
+                for (AristaDirigida arista : aristas) {
+                    if (arista.getOrigen().equals(elegido.getNombre())) {
+                        String destino = arista.getDestino();
+                        gradosEntrada.put(destino, gradosEntrada.get(destino) - 1);
+                    }
+                }
+            }
         }
 
         pasos.add("La función ordinal se completó correctamente.");
