@@ -544,4 +544,37 @@ public class Grafo {
         }
         return resultado;
     }
+
+    public Map<Arista, Integer> colorearAristasGreedy() {
+        Map<Arista, Integer> resultado = new HashMap<>();
+
+        for (Arista arista : this.aristas) {
+            Set<Integer> coloresProhibidos = new HashSet<>();
+
+            // Revisar colores de aristas adyacentes (que comparten un vértice)
+            for (Arista otra : this.aristas) {
+                if (otra != arista && resultado.containsKey(otra)) {
+                    if (otra.comparteVertice(arista)) {
+                        coloresProhibidos.add(resultado.get(otra));
+                    }
+                }
+            }
+
+            int color = 0;
+            while (coloresProhibidos.contains(color)) color++;
+            resultado.put(arista, color);
+        }
+        return resultado;
+    }
+
+    public List<Set<String>> obtenerConjuntosIndependientes() {
+        Map<String, Integer> coloreado = this.colorearGreedy();
+        Map<Integer, Set<String>> grupos = new HashMap<>();
+
+        coloreado.forEach((vertice, color) -> {
+            grupos.computeIfAbsent(color, k -> new HashSet<>()).add(vertice);
+        });
+
+        return new ArrayList<>(grupos.values());
+    }
 }

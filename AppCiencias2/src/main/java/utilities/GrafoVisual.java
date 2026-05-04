@@ -160,4 +160,14 @@ public class GrafoVisual {
 
         pane.getChildren().addAll(circulo, texto);
     }
+
+    public static void dibujarAristaColoreada(Pane pane, Arista a, Color color) {
+        Line linea = new Line(
+                a.getVerticeOrigen().getPositionX(), a.getVerticeOrigen().getPositionY(),
+                a.getVerticeDestino().getPositionX(), a.getVerticeDestino().getPositionY()
+        );
+        linea.setStroke(color);
+        linea.setStrokeWidth(3);
+        pane.getChildren().add(linea);
+    }
 }

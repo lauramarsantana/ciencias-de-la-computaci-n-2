@@ -54,4 +54,12 @@ public class Arista {
         // Usamos la suma de los hashCodes de los vértices para que el orden no importe
         return Objects.hashCode(verticeOrigen) + Objects.hashCode(verticeDestino);
     }
+
+    public boolean comparteVertice(Arista otra) {
+        // Usamos verticeOrigen y verticeDestino que son tus variables reales
+        return this.verticeOrigen.getName().equals(otra.verticeOrigen.getName()) ||
+                this.verticeOrigen.getName().equals(otra.verticeDestino.getName()) ||
+                this.verticeDestino.getName().equals(otra.verticeOrigen.getName()) ||
+                this.verticeDestino.getName().equals(otra.verticeDestino.getName());
+    }
 }
