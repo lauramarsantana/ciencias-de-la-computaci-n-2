@@ -138,20 +138,20 @@
 
                 infoResultado.setText("Resultado / Comparación");
 
-                int distancia = DistanciaArbolesService.calcularDistancia(
+                double distancia = DistanciaArbolesService.calcularDistancia(
                         arbol1.getAristas(),
                         arbol2.getAristas()
                 );
 
-                Set<Integer> comunes = DistanciaArbolesService.obtenerComunes(
+                List<Integer> comunes = DistanciaArbolesService.obtenerComunes(
                         arbol1.getAristas(), arbol2.getAristas()
                 );
 
-                Set<Integer> solo1 = DistanciaArbolesService.obtenerSoloArbol1(
+                List<Integer> solo1 = DistanciaArbolesService.obtenerSoloArbol1(
                         arbol1.getAristas(), arbol2.getAristas()
                 );
 
-                Set<Integer> solo2 = DistanciaArbolesService.obtenerSoloArbol2(
+                List<Integer> solo2 = DistanciaArbolesService.obtenerSoloArbol2(
                         arbol1.getAristas(), arbol2.getAristas()
                 );
 

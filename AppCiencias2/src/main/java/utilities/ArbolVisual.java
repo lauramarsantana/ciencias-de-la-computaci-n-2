@@ -18,6 +18,18 @@ public class ArbolVisual {
 
     private static double siguienteX;
 
+    private static class AristaVisual {
+        NodoArbol padre;
+        NodoArbol hijo;
+        Line linea;
+
+        AristaVisual(NodoArbol padre, NodoArbol hijo, Line linea) {
+            this.padre = padre;
+            this.hijo = hijo;
+            this.linea = linea;
+        }
+    }
+
     public static void dibujar(Arbol arbol, Pane panel) {
         panel.getChildren().clear();
 
@@ -27,23 +39,15 @@ public class ArbolVisual {
 
         siguienteX = MARGEN_X;
 
-        // 1. Asignar posiciones según estructura del árbol
         asignarPosiciones(arbol.getRaiz());
-
-        // 2. Ajustar todo al centro del panel si sobra espacio
         centrarArbol(arbol, panel);
 
-        // 3. Dibujar primero las aristas
-        dibujarAristas(arbol, panel);
+        List<AristaVisual> aristasVisuales = new ArrayList<>();
 
-        // 4. Dibujar nodos
-        dibujarNodos(arbol, panel);
+        dibujarAristas(arbol, panel, aristasVisuales);
+        dibujarNodos(arbol, panel, aristasVisuales);
     }
 
-    /**
-     * Ubica las hojas de izquierda a derecha.
-     * Los nodos internos quedan centrados respecto a sus hijos.
-     */
     private static void asignarPosiciones(NodoArbol nodo) {
         double y = MARGEN_Y + nodo.getNivel() * ESPACIO_VERTICAL;
         nodo.setY(y);
@@ -65,19 +69,19 @@ public class ArbolVisual {
         nodo.setX((minX + maxX) / 2.0);
     }
 
-    /**
-     * Centra horizontalmente el árbol dentro del panel.
-     */
     private static void centrarArbol(Arbol arbol, Pane panel) {
         double anchoPanel = panel.getWidth();
+
         if (anchoPanel <= 0) {
             anchoPanel = panel.getPrefWidth();
         }
+
         if (anchoPanel <= 0) {
             anchoPanel = 800;
         }
 
         List<NodoArbol> nodos = new ArrayList<>(arbol.getNodos().values());
+
         if (nodos.isEmpty()) {
             return;
         }
@@ -86,12 +90,8 @@ public class ArbolVisual {
         double maxX = Double.MIN_VALUE;
 
         for (NodoArbol nodo : nodos) {
-            if (nodo.getX() < minX) {
-                minX = nodo.getX();
-            }
-            if (nodo.getX() > maxX) {
-                maxX = nodo.getX();
-            }
+            minX = Math.min(minX, nodo.getX());
+            maxX = Math.max(maxX, nodo.getX());
         }
 
         double anchoArbol = maxX - minX;
@@ -102,20 +102,31 @@ public class ArbolVisual {
         }
     }
 
-    private static void dibujarAristas(Arbol arbol, Pane panel) {
+    private static void dibujarAristas(
+            Arbol arbol,
+            Pane panel,
+            List<AristaVisual> aristasVisuales
+    ) {
         for (NodoArbol nodo : arbol.getNodos().values()) {
             for (NodoArbol hijo : nodo.getHijos()) {
                 Line linea = new Line(
                         nodo.getX(), nodo.getY(),
                         hijo.getX(), hijo.getY()
                 );
+
                 linea.setStrokeWidth(2);
+
+                aristasVisuales.add(new AristaVisual(nodo, hijo, linea));
                 panel.getChildren().add(linea);
             }
         }
     }
 
-    private static void dibujarNodos(Arbol arbol, Pane panel) {
+    private static void dibujarNodos(
+            Arbol arbol,
+            Pane panel,
+            List<AristaVisual> aristasVisuales
+    ) {
         List<NodoArbol> centros = arbol.hallarCentroOBicentro();
 
         for (NodoArbol nodo : arbol.getNodos().values()) {
@@ -131,8 +142,57 @@ public class ArbolVisual {
             Label texto = new Label(nodo.getNombre());
             texto.setLayoutX(nodo.getX() - 6);
             texto.setLayoutY(nodo.getY() - 10);
+            texto.setMouseTransparent(true);
+
+            habilitarMovimiento(nodo, circulo, texto, aristasVisuales, panel);
 
             panel.getChildren().addAll(circulo, texto);
+        }
+    }
+
+    private static void habilitarMovimiento(
+        NodoArbol nodo,
+        Circle circulo,
+        Label texto,
+        List<AristaVisual> aristasVisuales,
+        Pane panel
+) {
+    final double[] offset = new double[2];
+
+    circulo.setOnMousePressed(e -> {
+        offset[0] = e.getSceneX() - circulo.getCenterX();
+        offset[1] = e.getSceneY() - circulo.getCenterY();
+        e.consume();
+    });
+
+    circulo.setOnMouseDragged(e -> {
+        double nuevoX = e.getSceneX() - offset[0];
+        double nuevoY = e.getSceneY() - offset[1];
+
+        nuevoX = Math.max(RADIO_NODO, Math.min(nuevoX, panel.getWidth() - RADIO_NODO));
+        nuevoY = Math.max(RADIO_NODO, Math.min(nuevoY, panel.getHeight() - RADIO_NODO));
+
+        circulo.setCenterX(nuevoX);
+        circulo.setCenterY(nuevoY);
+
+        texto.setLayoutX(nuevoX - 6);
+        texto.setLayoutY(nuevoY - 10);
+
+        nodo.setX(nuevoX);
+        nodo.setY(nuevoY);
+
+        actualizarAristas(aristasVisuales);
+
+        e.consume();
+    });
+}
+
+    private static void actualizarAristas(List<AristaVisual> aristasVisuales) {
+        for (AristaVisual av : aristasVisuales) {
+            av.linea.setStartX(av.padre.getX());
+            av.linea.setStartY(av.padre.getY());
+            av.linea.setEndX(av.hijo.getX());
+            av.linea.setEndY(av.hijo.getY());
         }
     }
 }
