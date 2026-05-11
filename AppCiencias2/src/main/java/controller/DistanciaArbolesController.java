@@ -17,6 +17,10 @@
     import javafx.stage.FileChooser;
     import java.io.*;
     import java.nio.charset.StandardCharsets;
+    import utilities.ArchivoEstructuraService;  
+    import utilities.DatosArchivo;
+    import java.util.LinkedHashSet;
+    import java.util.Set;
 
     public class DistanciaArbolesController {
 
@@ -143,16 +147,23 @@
                         arbol2.getAristas()
                 );
 
-                List<Integer> comunes = DistanciaArbolesService.obtenerComunes(
+                Set<String> comunes = DistanciaArbolesService.obtenerComunes(
                         arbol1.getAristas(), arbol2.getAristas()
                 );
 
-                List<Integer> solo1 = DistanciaArbolesService.obtenerSoloArbol1(
+                Set<String> solo1 = DistanciaArbolesService.obtenerSoloArbol1(
                         arbol1.getAristas(), arbol2.getAristas()
                 );
 
-                List<Integer> solo2 = DistanciaArbolesService.obtenerSoloArbol2(
+                Set<String> solo2 = DistanciaArbolesService.obtenerSoloArbol2(
                         arbol1.getAristas(), arbol2.getAristas()
+                );
+                
+                int rango = DistanciaArbolesService.calcularRango(arbol2.getVertices());
+
+                int nulidad = DistanciaArbolesService.calcularNulidad(
+                        arbol2.getVertices(),
+                        arbol2.getAristas()
                 );
 
                 StringBuilder sb = new StringBuilder();
@@ -171,6 +182,8 @@
                 sb.append("\nAristas comunes (IDs): ").append(comunes).append("\n");
                 sb.append("Solo en Árbol 1 (IDs): ").append(solo1).append("\n");
                 sb.append("Solo en Árbol 2 (IDs): ").append(solo2).append("\n");
+                sb.append("\nRango = ").append(rango);
+                sb.append("\nNulidad = ").append(nulidad);
                 sb.append("\nDistancia = ").append(distancia);
 
                 infoArea.setText(sb.toString());
@@ -181,104 +194,126 @@
         }
 
         @FXML
-        private void guardarEstructura() {
-            try {
-                FileChooser fc = new FileChooser();
-                fc.setTitle("Guardar distancia entre árboles");
-                fc.getExtensionFilters().add(
-                        new FileChooser.ExtensionFilter("Distancia entre Árboles (*.arb)", "*.arb")
-                );
+private void guardarEstructura() {
+    try {
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Guardar distancia entre árboles");
+        fc.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Distancia entre Árboles (*.arb)", "*.arb")
+        );
 
-                File file = fc.showSaveDialog(panelResultado.getScene().getWindow());
-                if (file == null) return;
+        File file = fc.showSaveDialog(panelResultado.getScene().getWindow());
+        if (file == null) return;
 
-                try (BufferedWriter bw = new BufferedWriter(
-                        new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
+        ArchivoEstructuraService.guardarDistanciaArboles(
+                file,
+                verticesField1.getText().trim(),
+                aristasField1.getText().trim(),
+                verticesField2.getText().trim(),
+                aristasField2.getText().trim()
+        );
 
-                    bw.write("TIPO=DISTANCIA_ARBOLES");
-                    bw.newLine();
+        infoArea.setText("Estructura guardada correctamente: " + file.getName());
 
-                    bw.write("VERTICES1=" + verticesField1.getText().trim());
-                    bw.newLine();
-
-                    bw.write("ARISTAS1=" + aristasField1.getText().trim());
-                    bw.newLine();
-
-                    bw.write("VERTICES2=" + verticesField2.getText().trim());
-                    bw.newLine();
-
-                    bw.write("ARISTAS2=" + aristasField2.getText().trim());
-                    bw.newLine();
-
-                    bw.write("END");
-                    bw.newLine();
-                }
-
-                infoArea.setText("Estructura guardada correctamente: " + file.getName());
-
-            } catch (Exception e) {
-                mostrarAlerta("Error", "Error guardando: " + e.getMessage());
-            }
-        }
+    } catch (Exception e) {
+        mostrarAlerta("Error", "Error guardando: " + e.getMessage());
+    }
+}
 
         @FXML
-        private void cargarEstructura() {
-            FileChooser fc = new FileChooser();
-            fc.setTitle("Cargar distancia entre árboles");
-            fc.getExtensionFilters().add(
-                    new FileChooser.ExtensionFilter("Distancia entre Árboles (*.arb)", "*.arb")
-            );
+private void cargarEstructura() {
+    FileChooser fc = new FileChooser();
+    fc.setTitle("Cargar distancia entre árboles");
+    fc.getExtensionFilters().add(
+            new FileChooser.ExtensionFilter("Estructuras (*.arb, *.gra)", "*.arb", "*.gra")
+    );
 
-            File file = fc.showOpenDialog(panelResultado.getScene().getWindow());
-            if (file == null) return;
+    File file = fc.showOpenDialog(panelResultado.getScene().getWindow());
+    if (file == null) return;
 
-            try (BufferedReader br = new BufferedReader(
-                    new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
+    try {
+        DatosArchivo datos = ArchivoEstructuraService.cargarArchivo(file);
 
-                String line;
-                String vertices1 = "";
-                String aristas1 = "";
-                String vertices2 = "";
-                String aristas2 = "";
+        if ("DISTANCIA_ARBOLES".equals(datos.getTipo())) {
 
-                while ((line = br.readLine()) != null) {
-                    line = line.trim();
+            verticesField1.setText(datos.getVertices1());
+            aristasField1.setText(datos.getAristas1());
+            verticesField2.setText(datos.getVertices2());
+            aristasField2.setText(datos.getAristas2());
 
-                    if (line.startsWith("VERTICES1=")) {
-                        vertices1 = line.substring("VERTICES1=".length()).trim();
-                    } else if (line.startsWith("ARISTAS1=")) {
-                        aristas1 = line.substring("ARISTAS1=".length()).trim();
-                    } else if (line.startsWith("VERTICES2=")) {
-                        vertices2 = line.substring("VERTICES2=".length()).trim();
-                    } else if (line.startsWith("ARISTAS2=")) {
-                        aristas2 = line.substring("ARISTAS2=".length()).trim();
-                    } else if (line.equals("END")) {
-                        break;
-                    }
+        } else if ("ARBOL".equals(datos.getTipo())) {
+
+            Set<String> vertices = new LinkedHashSet<>();
+            StringBuilder aristas = new StringBuilder();
+
+            if (datos.getRaiz() != null && !datos.getRaiz().isEmpty()) {
+                vertices.add(datos.getRaiz());
+            }
+
+            for (String[] relacion : datos.getRelaciones()) {
+                String padre = relacion[0].trim();
+                String hijo = relacion[1].trim();
+
+                vertices.add(padre);
+                vertices.add(hijo);
+
+                if (aristas.length() > 0) {
+                    aristas.append(", ");
                 }
 
-                verticesField1.setText(vertices1);
-                aristasField1.setText(aristas1);
-                verticesField2.setText(vertices2);
-                aristasField2.setText(aristas2);
-
-                arbol1 = null;
-                arbol2 = null;
-
-                panelArbol1.getChildren().clear();
-                panelArbol2.getChildren().clear();
-                panelResultado.getChildren().clear();
-
-                infoArbol1.setText("Árbol 1");
-                infoArbol2.setText("Árbol 2");
-                infoResultado.setText("Resultado / Comparación");
-
-                infoArea.setText("Estructura cargada correctamente: " + file.getName());
-
-            } catch (Exception e) {
-                mostrarAlerta("Error", "Error cargando: " + e.getMessage());
+                aristas.append(padre)
+                        .append("-")
+                        .append(hijo);
             }
+
+            verticesField1.setText(String.join(",", vertices));
+            aristasField1.setText(aristas.toString());
+
+            verticesField2.clear();
+            aristasField2.clear();
+
+        } else if ("GRAFO_GENERADOR".equals(datos.getTipo())) {
+
+            StringBuilder aristas = new StringBuilder();
+
+            for (AristaPonderada a : datos.getAristas()) {
+                if (aristas.length() > 0) {
+                    aristas.append(", ");
+                }
+
+                aristas.append(a.getOrigen())
+                        .append("-")
+                        .append(a.getDestino());
+            }
+
+            verticesField1.setText(String.join(",", datos.getVertices()));
+            aristasField1.setText(aristas.toString());
+
+            verticesField2.clear();
+            aristasField2.clear();
+
+        } else {
+            mostrarAlerta("Error", "Este archivo no se puede cargar en distancia entre árboles.");
+            return;
         }
+
+        arbol1 = null;
+        arbol2 = null;
+
+        panelArbol1.getChildren().clear();
+        panelArbol2.getChildren().clear();
+        panelResultado.getChildren().clear();
+
+        infoArbol1.setText("Árbol 1");
+        infoArbol2.setText("Árbol 2");
+        infoResultado.setText("Resultado / Comparación");
+
+        infoArea.setText("Estructura cargada correctamente: " + file.getName());
+
+    } catch (Exception e) {
+        mostrarAlerta("Error", "Error cargando: " + e.getMessage());
+    }
+}
 
         @FXML
         private void limpiarEstructura() {
@@ -396,4 +431,6 @@
             alert.setContentText(mensaje);
             alert.showAndWait();
         }
+        
+        
     }

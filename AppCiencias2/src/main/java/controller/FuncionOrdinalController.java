@@ -496,32 +496,39 @@ public class FuncionOrdinalController {
     }
 
     private void mostrarInformacion(ResultadoOrdinal resultado) {
+
     StringBuilder sb = new StringBuilder();
 
-    sb.append("Cantidad de vértices: ").append(grafo.contarVertices()).append("\n");
-    sb.append("Cantidad de aristas: ").append(grafo.contarAristas()).append("\n\n");
+    sb.append("Cantidad de vértices: ")
+      .append(grafo.contarVertices())
+      .append("\n");
 
-    sb.append("Aristas creadas: ").append(grafo.contarAristas()).append("\n\n");
+    sb.append("Cantidad de aristas: ")
+      .append(grafo.contarAristas())
+      .append("\n\n");
 
-    sb.append("Etiquetas ordinales:\n");
-    for (VerticeOrdinal v : grafo.getVertices()) {
-        int etiqueta = resultado.getEtiquetas().get(v.getNombre());
+    sb.append("Descripción:\n");
+    sb.append("La función ordinal etiqueta los vértices ")
+      .append("siguiendo el orden de dependencia del grafo.\n");
 
-        if (etiqueta > 0) {
-            sb.append("Vértice etiquetado con: ").append(etiqueta).append("\n");
-        } else {
-            sb.append("Vértice sin etiquetar\n");
-        }
-    }
+    sb.append("En cada paso se selecciona un vértice ")
+      .append("sin predecesores pendientes.\n");
 
-    sb.append("\nPasos:\n");
+    sb.append("Si existen varios candidatos, se elige ")
+      .append("el vértice más arriba y luego el más ")
+      .append("a la izquierda.\n\n");
+
+    sb.append("Pasos del algoritmo:\n");
+
     for (String paso : resultado.getPasos()) {
-        sb.append(paso).append("\n");
+        sb.append("- ").append(paso).append("\n");
     }
 
     sb.append("\nResultado final:\n");
+
     if (resultado.isHayCiclo()) {
-        sb.append("Se encontró un ciclo. La función ordinal se detuvo.");
+        sb.append("Se detectó un ciclo en el grafo.\n");
+        sb.append("La función ordinal no pudo completarse.");
     } else {
         sb.append("La función ordinal se completó correctamente.");
     }

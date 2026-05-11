@@ -14,6 +14,10 @@ import javafx.stage.FileChooser;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import utilities.ResultadoKruskal;
+import utilities.ArchivoEstructuraService;
+import utilities.DatosArchivo;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 public class ArbolGeneradorController {
 
@@ -115,136 +119,126 @@ public class ArbolGeneradorController {
 }
     
     @FXML
-    private void guardarGrafo() {
-        try {
-            GrafoPonderado grafoAGuardar = construirGrafo();
+private void guardarGrafo() {
+    try {
+        GrafoPonderado grafoAGuardar = construirGrafo();
 
-            FileChooser fc = new FileChooser();
-            fc.setTitle("Guardar grafo ponderado");
-            fc.getExtensionFilters().add(
-                    new FileChooser.ExtensionFilter("Grafo Ponderado (*.gra)", "*.gra")
-            );
-
-            File file = fc.showSaveDialog(panelResultado.getScene().getWindow());
-            if (file == null) return;
-
-            try (BufferedWriter bw = new BufferedWriter(
-                    new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
-
-                bw.write("TIPO=GRAFO_GENERADOR");
-                bw.newLine();
-
-                bw.write("VERTICES=");
-                bw.write(String.join(",", grafoAGuardar.getVertices()));
-                bw.newLine();
-
-                bw.write("ARISTAS");
-                bw.newLine();
-
-                for (AristaPonderada a : grafoAGuardar.getAristas()) {
-                    bw.write(a.getOrigen() + "|" + a.getDestino() + "|" + a.getPeso());
-                    bw.newLine();
-                }
-
-                bw.write("END");
-                bw.newLine();
-            }
-
-            this.grafo = grafoAGuardar;
-            infoArea.setText("Grafo guardado correctamente: " + file.getName());
-
-        } catch (Exception e) {
-            mostrarAlerta("Error", "Error guardando: " + e.getMessage());
-        }
-    }
-
-    @FXML
-    private void cargarGrafo() {
         FileChooser fc = new FileChooser();
-        fc.setTitle("Cargar grafo ponderado");
+        fc.setTitle("Guardar grafo ponderado");
         fc.getExtensionFilters().add(
                 new FileChooser.ExtensionFilter("Grafo Ponderado (*.gra)", "*.gra")
         );
 
-        File file = fc.showOpenDialog(panelResultado.getScene().getWindow());
+        File file = fc.showSaveDialog(panelResultado.getScene().getWindow());
         if (file == null) return;
 
-        try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
+        ArchivoEstructuraService.guardarGrafoGenerador(file, grafoAGuardar);
 
-            String line;
-            String verticesTexto = null;
-            StringBuilder aristasTexto = new StringBuilder();
+        this.grafo = grafoAGuardar;
+        infoArea.setText("Grafo guardado correctamente: " + file.getName());
 
-            while ((line = br.readLine()) != null) {
-                line = line.trim();
-
-                if (line.equals("ARISTAS")) {
-                    break;
-                }
-
-                if (line.startsWith("VERTICES=")) {
-                    verticesTexto = line.substring(9).trim();
-                }
-            }
-
-            if (verticesTexto == null || verticesTexto.isEmpty()) {
-                throw new IllegalArgumentException("Archivo inválido: no contiene vértices.");
-            }
-
-            while ((line = br.readLine()) != null) {
-                line = line.trim();
-
-                if (line.equals("END")) {
-                    break;
-                }
-
-                if (line.isEmpty()) continue;
-
-                String[] partes = line.split("\\|", -1);
-                if (partes.length != 3) continue;
-
-                String origen = partes[0].trim();
-                String destino = partes[1].trim();
-                String peso = partes[2].trim();
-
-                if (!origen.isEmpty() && !destino.isEmpty() && !peso.isEmpty()) {
-                    if (aristasTexto.length() > 0) {
-                        aristasTexto.append(", ");
-                    }
-                    aristasTexto.append(origen)
-                               .append("-")
-                               .append(destino)
-                               .append("-")
-                               .append(peso);
-                }
-            }
-
-            verticesField.setText(verticesTexto);
-            aristasField.setText(aristasTexto.toString());
-
-            grafo = construirGrafo();
-            ArbolGeneradorVisual.dibujarGrafoCompleto(grafo, panelResultado);
-
-            StringBuilder sb = new StringBuilder();
-            sb.append("Grafo cargado\n\n");
-            sb.append("Vértices:\n");
-
-            for (String v : grafo.getVertices()) {
-                sb.append("- ").append(v).append("\n");
-            }
-
-            sb.append("\nAristas:\n");
-            for (AristaPonderada a : grafo.getAristas()) {
-                sb.append(a).append("\n");
-            }
-
-            infoArea.setText(sb.toString());
-
-        } catch (Exception e) {
-            mostrarAlerta("Error", "Error cargando: " + e.getMessage());
-        }
+    } catch (Exception e) {
+        mostrarAlerta("Error", "Error guardando: " + e.getMessage());
     }
+}
+
+    @FXML
+private void cargarGrafo() {
+    FileChooser fc = new FileChooser();
+    fc.setTitle("Cargar grafo ponderado");
+    fc.getExtensionFilters().add(
+            new FileChooser.ExtensionFilter("Estructuras (*.gra, *.arb)", "*.gra", "*.arb")
+    );
+
+    File file = fc.showOpenDialog(panelResultado.getScene().getWindow());
+    if (file == null) return;
+
+    try {
+        DatosArchivo datos = ArchivoEstructuraService.cargarArchivo(file);
+
+        String verticesTexto;
+        StringBuilder aristasTexto = new StringBuilder();
+
+        if ("GRAFO_GENERADOR".equals(datos.getTipo())) {
+
+            verticesTexto = String.join(",", datos.getVertices());
+
+            for (AristaPonderada a : datos.getAristas()) {
+                if (aristasTexto.length() > 0) {
+                    aristasTexto.append(", ");
+                }
+
+                aristasTexto.append(a.getOrigen())
+                        .append("-")
+                        .append(a.getDestino())
+                        .append("-")
+                        .append(a.getPeso());
+            }
+
+        } else if ("ARBOL".equals(datos.getTipo())) {
+
+            Set<String> vertices = new LinkedHashSet<>();
+
+            if (datos.getRaiz() != null && !datos.getRaiz().isEmpty()) {
+                vertices.add(datos.getRaiz());
+            }
+
+            for (String[] relacion : datos.getRelaciones()) {
+                String padre = relacion[0].trim();
+                String hijo = relacion[1].trim();
+
+                vertices.add(padre);
+                vertices.add(hijo);
+
+                if (aristasTexto.length() > 0) {
+                    aristasTexto.append(", ");
+                }
+
+                aristasTexto.append(padre)
+                        .append("-")
+                        .append(hijo)
+                        .append("-")
+                        .append(1);
+            }
+
+            verticesTexto = String.join(",", vertices);
+
+        } else {
+            mostrarAlerta("Error", "Este archivo no se puede cargar como grafo generador.");
+            return;
+        }
+
+        if (verticesTexto == null || verticesTexto.isEmpty()) {
+            mostrarAlerta("Error", "Archivo inválido: no contiene vértices.");
+            return;
+        }
+
+        verticesField.setText(verticesTexto);
+        aristasField.setText(aristasTexto.toString());
+
+        grafo = construirGrafo();
+        ArbolGeneradorVisual.dibujarGrafoCompleto(grafo, panelResultado);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Grafo cargado\n\n");
+        sb.append("Vértices:\n");
+
+        for (String v : grafo.getVertices()) {
+            sb.append("- ").append(v).append("\n");
+        }
+
+        sb.append("\nAristas:\n");
+
+        for (AristaPonderada a : grafo.getAristas()) {
+            sb.append(a).append("\n");
+        }
+
+        infoArea.setText(sb.toString());
+
+    } catch (Exception e) {
+        mostrarAlerta("Error", "Error cargando: " + e.getMessage());
+    }
+}
     
     @FXML
     private void limpiarEstructura() {

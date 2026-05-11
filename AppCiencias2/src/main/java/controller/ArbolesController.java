@@ -14,6 +14,11 @@ import utilities.ArbolVisual;
 import javafx.stage.FileChooser;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import utilities.ArchivoEstructuraService;
+import utilities.DatosArchivo;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import utilities.AristaPonderada;
 
 public class ArbolesController {
 
@@ -178,136 +183,108 @@ public class ArbolesController {
     }
     
     @FXML
-    private void guardarArbol() {
-        if (nombreRaiz == null) {
-            mostrarAlerta("Error", "Primero debes crear un árbol.");
-            return;
-        }
-
-        FileChooser fc = new FileChooser();
-        fc.setTitle("Guardar árbol");
-        fc.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Árbol (*.arb)", "*.arb")
-        );
-
-        File file = fc.showSaveDialog(panelArbol.getScene().getWindow());
-        if (file == null) return;
-
-        try (BufferedWriter bw = new BufferedWriter(
-                new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))) {
-
-            bw.write("TIPO=ARBOL");
-            bw.newLine();
-
-            bw.write("RAIZ=" + nombreRaiz);
-            bw.newLine();
-
-            bw.write("RELACIONES");
-            bw.newLine();
-
-            for (String[] relacion : relaciones) {
-                bw.write(relacion[0] + "|" + relacion[1]);
-                bw.newLine();
-            }
-
-            bw.write("END");
-            bw.newLine();
-
-            mostrarInformacionTemporal("Árbol guardado: " + file.getName());
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            mostrarAlerta("Error", "Error guardando: " + e.getMessage());
-        }
+private void guardarArbol() {
+    if (nombreRaiz == null) {
+        mostrarAlerta("Error", "Primero debes crear un árbol.");
+        return;
     }
 
+    FileChooser fc = new FileChooser();
+    fc.setTitle("Guardar árbol");
+    fc.getExtensionFilters().add(
+            new FileChooser.ExtensionFilter("Árbol (*.arb)", "*.arb")
+    );
+
+    File file = fc.showSaveDialog(panelArbol.getScene().getWindow());
+    if (file == null) return;
+
+    try {
+        ArchivoEstructuraService.guardarArbolSimple(file, nombreRaiz, relaciones);
+
+        mostrarInformacionTemporal("Árbol guardado: " + file.getName());
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        mostrarAlerta("Error", "Error guardando: " + e.getMessage());
+    }
+}
+
     @FXML
-    private void cargarArbol() {
-        FileChooser fc = new FileChooser();
-        fc.setTitle("Cargar árbol");
-        fc.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Árbol (*.arb)", "*.arb")
-        );
+private void cargarArbol() {
+    FileChooser fc = new FileChooser();
+    fc.setTitle("Cargar árbol");
+    fc.getExtensionFilters().add(
+            new FileChooser.ExtensionFilter("Estructuras (*.arb, *.gra)", "*.arb", "*.gra")
+    );
 
-        File file = fc.showOpenDialog(panelArbol.getScene().getWindow());
-        if (file == null) return;
+    File file = fc.showOpenDialog(panelArbol.getScene().getWindow());
+    if (file == null) return;
 
-        try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
+    try {
+        DatosArchivo datos = ArchivoEstructuraService.cargarArchivo(file);
 
-            String line;
-            String nuevaRaiz = null;
-            List<String[]> nuevasRelaciones = new ArrayList<>();
+        String nuevaRaiz = null;
+        List<String[]> nuevasRelaciones = new ArrayList<>();
 
-            while ((line = br.readLine()) != null) {
-                line = line.trim();
+        if ("ARBOL".equals(datos.getTipo())) {
 
-                if (line.equals("RELACIONES")) {
-                    break;
-                }
+            nuevaRaiz = datos.getRaiz();
+            nuevasRelaciones.addAll(datos.getRelaciones());
 
-                if (line.startsWith("RAIZ=")) {
-                    nuevaRaiz = line.substring(5).trim();
-                }
-            }
+        } else if ("GRAFO_GENERADOR".equals(datos.getTipo())) {
 
-            if (nuevaRaiz == null || nuevaRaiz.isEmpty()) {
-                mostrarAlerta("Error", "Archivo inválido: no tiene raíz.");
+            if (datos.getVertices().isEmpty()) {
+                mostrarAlerta("Error", "El grafo no tiene vértices.");
                 return;
             }
 
-            while ((line = br.readLine()) != null) {
-                line = line.trim();
+            nuevaRaiz = datos.getVertices().get(0);
 
-                if (line.equals("END")) {
-                    break;
-                }
-
-                if (line.isEmpty()) continue;
-
-                String[] parts = line.split("\\|", -1);
-                if (parts.length < 2) continue;
-
-                String padre = parts[0].trim();
-                String hijo = parts[1].trim();
-
-                if (!padre.isEmpty() && !hijo.isEmpty()) {
-                    nuevasRelaciones.add(new String[]{padre, hijo});
-                }
+            for (AristaPonderada a : datos.getAristas()) {
+                nuevasRelaciones.add(new String[]{
+                        a.getOrigen(),
+                        a.getDestino()
+                });
             }
 
-            // Limpiar estado actual
-            nombreRaiz = nuevaRaiz;
-            relaciones.clear();
-            nodosExistentes.clear();
-            panelArbol.getChildren().clear();
-            infoArea.clear();
-
-            // Cargar datos nuevos
-            relaciones.addAll(nuevasRelaciones);
-            reconstruirNodosExistentes();
-            actualizarPadresCombo();
-
-            raizField.setText(nombreRaiz);
-            hijoField.clear();
-
-            if (!nodosExistentes.isEmpty()) {
-                padreCombo.setValue(nombreRaiz);
-            }
-
-            // Reconstruir y dibujar automáticamente
-            arbol = construirArbolActual();
-            ArbolVisual.dibujar(arbol, panelArbol);
-            mostrarInformacion();
-
-            mostrarInformacionTemporal("Árbol cargado: " + file.getName());
-            mostrarInformacion();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            mostrarAlerta("Error", "Error cargando: " + e.getMessage());
+        } else {
+            mostrarAlerta("Error", "Este archivo no se puede cargar como árbol simple.");
+            return;
         }
+
+        if (nuevaRaiz == null || nuevaRaiz.isEmpty()) {
+            mostrarAlerta("Error", "Archivo inválido: no tiene raíz.");
+            return;
+        }
+
+        nombreRaiz = nuevaRaiz;
+        relaciones.clear();
+        nodosExistentes.clear();
+        panelArbol.getChildren().clear();
+        infoArea.clear();
+
+        relaciones.addAll(nuevasRelaciones);
+        reconstruirNodosExistentes();
+        actualizarPadresCombo();
+
+        raizField.setText(nombreRaiz);
+        hijoField.clear();
+
+        if (!nodosExistentes.isEmpty()) {
+            padreCombo.setValue(nombreRaiz);
+        }
+
+        arbol = construirArbolActual();
+        ArbolVisual.dibujar(arbol, panelArbol);
+        mostrarInformacion();
+
+        mostrarInformacionTemporal("Estructura cargada: " + file.getName());
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        mostrarAlerta("Error", "Error cargando: " + e.getMessage());
     }
+}
 
     @FXML
     private void dibujarArbol() {

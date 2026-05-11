@@ -1,113 +1,103 @@
 package utilities;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class DistanciaArbolesService {
 
-    public static double calcularDistancia(List<AristaPonderada> arbol1, List<AristaPonderada> arbol2) {
-        List<Integer> pesos1 = extraerPesos(arbol1);
-        List<Integer> pesos2 = extraerPesos(arbol2);
+    public static double calcularDistancia(List<AristaPonderada> arbol1,
+                                           List<AristaPonderada> arbol2) {
 
-        int sumaUnion = sumar(pesos1) + sumar(pesos2);
-        int sumaInterseccion = sumarInterseccionConRepetidos(pesos1, pesos2);
+        Set<String> aristas1 = extraerAristas(arbol1);
+        Set<String> aristas2 = extraerAristas(arbol2);
 
-        return (sumaUnion - sumaInterseccion) / 2.0;
-    }
+        double sumaNoComunes = 0;
 
-    public static List<Integer> obtenerComunes(List<AristaPonderada> arbol1, List<AristaPonderada> arbol2) {
-        List<Integer> pesos1 = extraerPesos(arbol1);
-        List<Integer> pesos2 = extraerPesos(arbol2);
-
-        List<Integer> comunes = new ArrayList<>();
-        List<Integer> copiaPesos2 = new ArrayList<>(pesos2);
-
-        for (Integer peso : pesos1) {
-            if (copiaPesos2.contains(peso)) {
-                comunes.add(peso);
-                copiaPesos2.remove(peso);
+        for (AristaPonderada arista : arbol1) {
+            if (!aristas2.contains(representarArista(arista))) {
+                sumaNoComunes += arista.getPeso();
             }
         }
 
-        return comunes;
-    }
-
-    public static List<Integer> obtenerSoloArbol1(List<AristaPonderada> arbol1, List<AristaPonderada> arbol2) {
-        List<Integer> pesos1 = extraerPesos(arbol1);
-        List<Integer> pesos2 = extraerPesos(arbol2);
-
-        List<Integer> solo1 = new ArrayList<>();
-        List<Integer> copiaPesos2 = new ArrayList<>(pesos2);
-
-        for (Integer peso : pesos1) {
-            if (copiaPesos2.contains(peso)) {
-                copiaPesos2.remove(peso);
-            } else {
-                solo1.add(peso);
+        for (AristaPonderada arista : arbol2) {
+            if (!aristas1.contains(representarArista(arista))) {
+                sumaNoComunes += arista.getPeso();
             }
         }
 
-        return solo1;
+        return sumaNoComunes / 2.0;
     }
 
-    public static List<Integer> obtenerSoloArbol2(List<AristaPonderada> arbol1, List<AristaPonderada> arbol2) {
-        List<Integer> pesos1 = extraerPesos(arbol1);
-        List<Integer> pesos2 = extraerPesos(arbol2);
-
-        List<Integer> solo2 = new ArrayList<>();
-        List<Integer> copiaPesos1 = new ArrayList<>(pesos1);
-
-        for (Integer peso : pesos2) {
-            if (copiaPesos1.contains(peso)) {
-                copiaPesos1.remove(peso);
-            } else {
-                solo2.add(peso);
-            }
-        }
-
-        return solo2;
+    public static int calcularRango(List<String> vertices) {
+        return vertices.size() - 1;
     }
 
-    public static List<Integer> obtenerNoComunes(List<AristaPonderada> arbol1, List<AristaPonderada> arbol2) {
-        List<Integer> noComunes = new ArrayList<>();
+    public static int calcularNulidad(List<String> vertices,
+                                      List<AristaPonderada> aristas) {
+        return aristas.size() - vertices.size() + 1;
+    }
 
-        noComunes.addAll(obtenerSoloArbol1(arbol1, arbol2));
+    public static Set<String> obtenerComunes(List<AristaPonderada> arbol1,
+                                             List<AristaPonderada> arbol2) {
+
+        Set<String> aristas1 = extraerAristas(arbol1);
+        Set<String> aristas2 = extraerAristas(arbol2);
+
+        aristas1.retainAll(aristas2);
+        return aristas1;
+    }
+
+    public static Set<String> obtenerSoloArbol1(List<AristaPonderada> arbol1,
+                                                List<AristaPonderada> arbol2) {
+
+        Set<String> aristas1 = extraerAristas(arbol1);
+        Set<String> aristas2 = extraerAristas(arbol2);
+
+        aristas1.removeAll(aristas2);
+        return aristas1;
+    }
+
+    public static Set<String> obtenerSoloArbol2(List<AristaPonderada> arbol1,
+                                                List<AristaPonderada> arbol2) {
+
+        Set<String> aristas1 = extraerAristas(arbol1);
+        Set<String> aristas2 = extraerAristas(arbol2);
+
+        aristas2.removeAll(aristas1);
+        return aristas2;
+    }
+
+    public static Set<String> obtenerNoComunes(List<AristaPonderada> arbol1,
+                                               List<AristaPonderada> arbol2) {
+
+        Set<String> noComunes = obtenerSoloArbol1(arbol1, arbol2);
         noComunes.addAll(obtenerSoloArbol2(arbol1, arbol2));
 
         return noComunes;
     }
 
-    private static List<Integer> extraerPesos(List<AristaPonderada> aristas) {
-        List<Integer> pesos = new ArrayList<>();
+    private static Set<String> extraerAristas(List<AristaPonderada> aristas) {
+        Set<String> resultado = new HashSet<>();
 
-        for (AristaPonderada a : aristas) {
-            pesos.add(a.getPeso());
+        for (AristaPonderada arista : aristas) {
+            resultado.add(representarArista(arista));
         }
 
-        return pesos;
+        return resultado;
     }
 
-    private static int sumar(List<Integer> valores) {
-        int suma = 0;
+    private static String representarArista(AristaPonderada arista) {
+        String origen = arista.getOrigen();
+        String destino = arista.getDestino();
 
-        for (Integer valor : valores) {
-            suma += valor;
+        // Para que a-b-2 sea igual que b-a-2
+        if (origen.compareTo(destino) > 0) {
+            String temp = origen;
+            origen = destino;
+            destino = temp;
         }
 
-        return suma;
-    }
-
-    private static int sumarInterseccionConRepetidos(List<Integer> pesos1, List<Integer> pesos2) {
-        int suma = 0;
-        List<Integer> copiaPesos2 = new ArrayList<>(pesos2);
-
-        for (Integer peso : pesos1) {
-            if (copiaPesos2.contains(peso)) {
-                suma += peso;
-                copiaPesos2.remove(peso);
-            }
-        }
-
-        return suma;
+        return origen + "-" + destino + "-" + arista.getPeso();
     }
 }
