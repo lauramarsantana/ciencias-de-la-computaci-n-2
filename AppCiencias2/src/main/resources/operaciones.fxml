@@ -20,20 +20,10 @@
          <children>
             <HBox alignment="CENTER" prefHeight="50.0">
                <children>
-                  <Label text="G1 vertices:" HBox.hgrow="ALWAYS" />
-                  <TextField fx:id="verticesG1" promptText="ej: A,B,C">
+                  <Label text="Número de vértices G2:" HBox.hgrow="ALWAYS" />
+                  <TextField fx:id="verticesG1" promptText="ej: 3">
                      <HBox.margin>
                         <Insets left="10.0" />
-                     </HBox.margin>
-                  </TextField>
-                  <Label text="G1 Aristas:">
-                     <HBox.margin>
-                        <Insets left="40.0" right="10.0" />
-                     </HBox.margin>
-                  </Label>
-                  <TextField fx:id="aristasG1" promptText="ej: A-C,D-B">
-                     <HBox.margin>
-                        <Insets />
                      </HBox.margin>
                   </TextField>
                   <Button mnemonicParsing="false" onMouseClicked="#dibujarG1" text="Ver G1">
@@ -45,20 +35,10 @@
             </HBox>
             <HBox alignment="CENTER" prefHeight="50.0">
                <children>
-                  <Label text="G2 vertices:" HBox.hgrow="ALWAYS" />
-                  <TextField fx:id="verticesG2" promptText="ej: A,B,C">
+                  <Label text="Número de vértices G2:" HBox.hgrow="ALWAYS" />
+                  <TextField fx:id="verticesG2" promptText="ej: 5">
                      <HBox.margin>
                         <Insets left="10.0" />
-                     </HBox.margin>
-                  </TextField>
-                  <Label text="G2 Aristas:">
-                     <HBox.margin>
-                        <Insets left="40.0" right="10.0" />
-                     </HBox.margin>
-                  </Label>
-                  <TextField fx:id="aristasG2" promptText="ej: A-B,C-D">
-                     <HBox.margin>
-                        <Insets />
                      </HBox.margin>
                   </TextField>
                   <Button mnemonicParsing="false" onMouseClicked="#dibujarG2" text="Ver G2">
