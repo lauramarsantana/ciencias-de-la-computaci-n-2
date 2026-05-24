@@ -23,6 +23,9 @@ import utilities.FuncionOrdinalVisual;
 import utilities.GrafoOrdinal;
 import utilities.ResultadoOrdinal;
 import utilities.VerticeOrdinal;
+import utilities.ArchivoEstructuraService;
+import utilities.AristaPonderada;
+import utilities.DatosArchivo;
 
 public class FuncionOrdinalController {
 
@@ -47,6 +50,7 @@ public class FuncionOrdinalController {
 
     private boolean modoEliminarArista = false;
     private String verticeOrigenSeleccionado = null;
+    
     
     @FXML
     private void generarVertices() {
@@ -233,127 +237,199 @@ public class FuncionOrdinalController {
     }
 
     @FXML
-    private void cargarGrafo() {
-        FileChooser fc = new FileChooser();
-        fc.setTitle("Cargar grafo ordinal");
-        fc.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Grafo Ordinal (*.ord)", "*.ord")
-        );
+private void cargarGrafo() {
 
-        File file = fc.showOpenDialog(panelGrafo.getScene().getWindow());
-        if (file == null) {
+    FileChooser fc = new FileChooser();
+
+    fc.setTitle("Cargar estructura");
+
+    fc.getExtensionFilters().add(
+            new FileChooser.ExtensionFilter(
+                    "Estructuras compatibles (*.ord, *.gra, *.arb)",
+                    "*.ord",
+                    "*.gra",
+                    "*.arb"
+            )
+    );
+
+    File file = fc.showOpenDialog(panelGrafo.getScene().getWindow());
+
+    if (file == null) {
+        return;
+    }
+
+    try {
+
+        DatosArchivo datos =
+                ArchivoEstructuraService.cargarArchivo(file);
+
+        if (!"GRAFO_ORDINAL".equals(datos.getTipo())
+                && !"GRAFO_CAMINOS".equals(datos.getTipo())
+                && !"GRAFO_GENERADOR".equals(datos.getTipo())
+                && !"ARBOL".equals(datos.getTipo())) {
+
+            mostrarAlerta(
+                    "Error",
+                    "El archivo no corresponde a una estructura compatible."
+            );
+
             return;
         }
 
-        try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
+        List<String[]> nuevosVertices = new ArrayList<>();
+        List<String[]> nuevasAristas = new ArrayList<>();
 
-            List<String[]> nuevosVertices = new ArrayList<>();
-            List<String[]> nuevasAristas = new ArrayList<>();
+        List<String> verticesCargados = new ArrayList<>();
 
-            String line;
-            boolean leyendoVertices = false;
-            boolean leyendoAristas = false;
+        // =========================
+        // VERTICES
+        // =========================
 
-            while ((line = br.readLine()) != null) {
-                line = line.trim();
+        if ("ARBOL".equals(datos.getTipo())) {
 
-                if (line.isEmpty()) {
-                    continue;
+            if (datos.getRaiz() != null
+                    && !datos.getRaiz().isEmpty()) {
+
+                verticesCargados.add(datos.getRaiz());
+            }
+
+            for (String[] relacion : datos.getRelaciones()) {
+
+                if (!verticesCargados.contains(relacion[0])) {
+                    verticesCargados.add(relacion[0]);
                 }
 
-                if (line.startsWith("TIPO=")) {
-                    if (!line.equals("TIPO=GRAFO_ORDINAL")) {
-                        mostrarAlerta("Error", "El archivo no corresponde a un grafo ordinal.");
-                        return;
-                    }
-                    continue;
-                }
-
-                if (line.equals("VERTICES")) {
-                    leyendoVertices = true;
-                    leyendoAristas = false;
-                    continue;
-                }
-
-                if (line.equals("ARISTAS")) {
-                    leyendoVertices = false;
-                    leyendoAristas = true;
-                    continue;
-                }
-
-                if (line.equals("END")) {
-                    break;
-                }
-
-                if (leyendoVertices) {
-                    String[] parts = line.split("\\|", -1);
-
-                    if (parts.length == 3) {
-                        String nombre = parts[0].trim();
-                        String x = parts[1].trim();
-                        String y = parts[2].trim();
-
-                        if (!nombre.isEmpty() && !x.isEmpty() && !y.isEmpty()) {
-                            nuevosVertices.add(new String[]{nombre, x, y});
-                        }
-                    }
-                }
-
-                if (leyendoAristas) {
-                    String[] parts = line.split("\\|", -1);
-
-                    if (parts.length == 2) {
-                        String origen = parts[0].trim();
-                        String destino = parts[1].trim();
-
-                        if (!origen.isEmpty() && !destino.isEmpty()) {
-                            nuevasAristas.add(new String[]{origen, destino});
-                        }
-                    }
+                if (!verticesCargados.contains(relacion[1])) {
+                    verticesCargados.add(relacion[1]);
                 }
             }
 
-            if (nuevosVertices.isEmpty()) {
-                mostrarAlerta("Error", "El archivo no contiene vértices válidos.");
-                return;
-            }
+        } else {
 
-            grafo = null;
-            verticeOrigenSeleccionado = null;
-
-            verticesTemporales.clear();
-            aristasTemporales.clear();
-            nombresVertices.clear();
-
-            panelGrafo.getChildren().clear();
-            infoArea.clear();
-
-            verticesTemporales.addAll(nuevosVertices);
-            aristasTemporales.addAll(nuevasAristas);
-
-            for (String[] vertice : verticesTemporales) {
-                nombresVertices.add(vertice[0]);
-            }
-
-            grafo = construirGrafoActual();
-
-            FuncionOrdinalVisual.dibujarSinNombres(
-                    grafo,
-                    panelGrafo,
-                    this::seleccionarVerticeVisual
-            );
-
-            mostrarInformacionTemporal(
-                    "Grafo cargado: " + file.getName() + "\n" +
-                    "Puedes seguir agregando aristas haciendo clic en un vértice origen y luego en un destino."
-            );
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            mostrarAlerta("Error", "Error cargando: " + e.getMessage());
+            verticesCargados.addAll(datos.getVertices());
         }
+
+        if (verticesCargados.isEmpty()) {
+
+            mostrarAlerta(
+                    "Error",
+                    "La estructura no contiene vértices."
+            );
+
+            return;
+        }
+
+        int ancho = 700;
+        int alto = 420;
+
+        int total = verticesCargados.size();
+
+        for (int i = 0; i < total; i++) {
+
+            String nombre = verticesCargados.get(i);
+
+            double angulo =
+                    2 * Math.PI * i / total;
+
+            int x = (int) (
+                    ancho / 2
+                    + 180 * Math.cos(angulo)
+            );
+
+            int y = (int) (
+                    alto / 2
+                    + 180 * Math.sin(angulo)
+            );
+
+            nuevosVertices.add(
+                    new String[]{
+                            nombre,
+                            String.valueOf(x),
+                            String.valueOf(y)
+                    }
+            );
+        }
+
+        // =========================
+        // ARISTAS
+        // =========================
+
+        if ("ARBOL".equals(datos.getTipo())
+                || "GRAFO_ORDINAL".equals(datos.getTipo())) {
+
+            for (String[] relacion : datos.getRelaciones()) {
+
+                nuevasAristas.add(
+                        new String[]{
+                                relacion[0],
+                                relacion[1]
+                        }
+                );
+            }
+
+        } else {
+
+            for (AristaPonderada a : datos.getAristas()) {
+
+                nuevasAristas.add(
+                        new String[]{
+                                a.getOrigen(),
+                                a.getDestino()
+                        }
+                );
+            }
+        }
+
+        // =========================
+        // LIMPIAR
+        // =========================
+
+        grafo = null;
+        verticeOrigenSeleccionado = null;
+
+        verticesTemporales.clear();
+        aristasTemporales.clear();
+        nombresVertices.clear();
+
+        panelGrafo.getChildren().clear();
+        infoArea.clear();
+
+        // =========================
+        // CARGAR
+        // =========================
+
+        verticesTemporales.addAll(nuevosVertices);
+        aristasTemporales.addAll(nuevasAristas);
+
+        for (String[] vertice : verticesTemporales) {
+            nombresVertices.add(vertice[0]);
+        }
+
+        grafo = construirGrafoActual();
+
+        FuncionOrdinalVisual.dibujarSinNombres(
+                grafo,
+                panelGrafo,
+                this::seleccionarVerticeVisual
+        );
+
+        mostrarInformacionTemporal(
+                "Estructura cargada: "
+                + file.getName()
+                + "\n\n"
+                + "Puedes seguir agregando aristas."
+        );
+
+    } catch (Exception e) {
+
+        e.printStackTrace();
+
+        mostrarAlerta(
+                "Error",
+                "Error cargando: " + e.getMessage()
+        );
     }
+}
     
     @FXML
     private void eliminarArista() {

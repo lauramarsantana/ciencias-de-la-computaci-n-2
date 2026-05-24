@@ -126,6 +126,13 @@ public class LayoutController {
             if (controller instanceof ArbolesMenuController arbolesMenuController){
                 arbolesMenuController.setLayoutController(this);
             }
+            if (controller instanceof AlgoritmosGrafosController) {
+                ((AlgoritmosGrafosController) controller).setLayoutController(this);
+            }
+            if (controller instanceof MenuRepresentacionMetricasController) {
+            ((MenuRepresentacionMetricasController) controller).setLayoutController(this);
+            }
+            
             
 
             // incrementar contador de cambios

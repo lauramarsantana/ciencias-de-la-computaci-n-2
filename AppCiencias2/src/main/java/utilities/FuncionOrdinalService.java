@@ -31,7 +31,7 @@ public class FuncionOrdinalService {
         int etiquetaActual = 1;
 
         while (ordenEtiquetado.size() < vertices.size()) {
-
+            
             List<VerticeOrdinal> candidatos = new ArrayList<>();
 
             for (VerticeOrdinal v : vertices) {
@@ -51,23 +51,30 @@ public class FuncionOrdinalService {
                               .thenComparingInt(VerticeOrdinal::getX)
             );
 
-            List<VerticeOrdinal> rondaActual = new ArrayList<>(candidatos);
+            VerticeOrdinal elegido = candidatos.get(0);
 
-            for (VerticeOrdinal elegido : rondaActual) {
-                etiquetas.put(elegido.getNombre(), etiquetaActual);
-                elegido.setEtiquetaOrdinal(etiquetaActual);
-                ordenEtiquetado.add(elegido.getNombre());
+            etiquetas.put(elegido.getNombre(), etiquetaActual);
+            elegido.setEtiquetaOrdinal(etiquetaActual);
+            ordenEtiquetado.add(elegido.getNombre());
 
-                pasos.add("Etiqueta " + etiquetaActual + ": vértice seleccionado.");
-                etiquetaActual++;
-            }
+            pasos.add(
+                    "Etiqueta "
+                    + etiquetaActual
+                    + ": vértice "
+                    + elegido.getNombre()
+                    + " seleccionado."
+            );
 
-            for (VerticeOrdinal elegido : rondaActual) {
-                for (AristaDirigida arista : aristas) {
-                    if (arista.getOrigen().equals(elegido.getNombre())) {
-                        String destino = arista.getDestino();
-                        gradosEntrada.put(destino, gradosEntrada.get(destino) - 1);
-                    }
+            etiquetaActual++;
+
+            for (AristaDirigida arista : aristas) {
+                if (arista.getOrigen().equals(elegido.getNombre())) {
+                    String destino = arista.getDestino();
+
+                    gradosEntrada.put(
+                            destino,
+                            gradosEntrada.get(destino) - 1
+                    );
                 }
             }
         }

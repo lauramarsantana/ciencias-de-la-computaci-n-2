@@ -25,8 +25,13 @@ public class GrafosController {
     }
     
     @FXML
-    private void openFuncionOrdinal(MouseEvent event) {
-        layoutController.loadPanel("/funcionOrdinal.fxml");
+    private void openAlgoritmosGrafos() {
+        layoutController.loadPanel("/algoritmosGrafos.fxml");
+    }
+    
+    @FXML
+    private void openRepresentacionMetricas(MouseEvent event) {
+        layoutController.loadPanel("/menuRepresentacionMetricas.fxml");
     }
 
     @FXML

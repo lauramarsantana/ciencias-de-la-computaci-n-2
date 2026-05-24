@@ -61,25 +61,63 @@
             </VBox>
             
             <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
-               <children>
-                  <ImageView fx:id="btnFuncionOrdinal" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#openFuncionOrdinal" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@icono-busquedas.png" />
-                     </image>
-                     <cursor>
-                        <Cursor fx:constant="HAND" />
-                     </cursor>
-                  </ImageView>
-                  <Label text="FUNCION ORDINAL" textFill="#000204">
-                     <font>
-                        <Font name="Myanmar Text Bold" size="24.0" />
-                     </font>
-                  </Label>
-               </children>
-               <cursor>
-                  <Cursor fx:constant="DEFAULT" />
-               </cursor>
-            </VBox>
+                <children>
+
+                   <ImageView fx:id="btnAlgoritmosGrafos"
+                              accessibleRole="BUTTON"
+                              fitHeight="150.0"
+                              fitWidth="200.0"
+                              onMouseClicked="#openAlgoritmosGrafos"
+                              pickOnBounds="true"
+                              preserveRatio="true">
+
+                      <image>
+                         <Image url="@icono-busquedas.png" />
+                      </image>
+
+                      <cursor>
+                         <Cursor fx:constant="HAND" />
+                      </cursor>
+
+                   </ImageView>
+
+                   <Label text="ALGORITMOS DE GRAFOS"
+                          textFill="#000204">
+
+                      <font>
+                         <Font name="Myanmar Text Bold" size="24.0" />
+                      </font>
+
+                   </Label>
+
+                </children>
+                
+                <ImageView fx:id="btnRepresentacionMetricas"
+                            accessibleRole="BUTTON"
+                            fitHeight="150.0"
+                            fitWidth="200.0"
+                            onMouseClicked="#openRepresentacionMetricas"
+                            pickOnBounds="true"
+                            preserveRatio="true">
+                    <image>
+                       <Image url="@icono-busquedas.png" />
+                    </image>
+                    <cursor>
+                       <Cursor fx:constant="HAND" />
+                    </cursor>
+                 </ImageView>
+
+                 <Label text="REPRESENTACIÓN Y MÉTRICAS" textFill="#000204">
+                    <font>
+                       <Font name="Myanmar Text Bold" size="24.0" />
+                    </font>
+                 </Label>
+
+                <cursor>
+                   <Cursor fx:constant="DEFAULT" />
+                </cursor>
+
+             </VBox>
             <VBox alignment="CENTER" layoutX="927.0" layoutY="10.0" HBox.hgrow="ALWAYS">
                <children>
                   <ImageView fx:id="btnFuncionOrdinal1" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#openTeoriaColoracion" pickOnBounds="true" preserveRatio="true">
