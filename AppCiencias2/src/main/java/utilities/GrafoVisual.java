@@ -319,6 +319,7 @@ public class GrafoVisual {
         Line linea = new Line(a.getVerticeOrigen().getPositionX(), a.getVerticeOrigen().getPositionY(), a.getVerticeDestino().getPositionX(), a.getVerticeDestino().getPositionY());
         linea.setStroke(color);
         linea.setStrokeWidth(3);
+        linea.toBack();
         pane.getChildren().add(linea);
     }
 }
