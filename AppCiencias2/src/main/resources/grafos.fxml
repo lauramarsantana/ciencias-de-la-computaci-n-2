@@ -11,122 +11,119 @@
 <?import javafx.scene.text.Font?>
 
 <AnchorPane fx:id="contentPane" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.GrafosController">
-   <stylesheets>
-      <URL value="@styles.css" />
-   </stylesheets>
-   <children>
-      <HBox alignment="CENTER" prefHeight="600.0" prefWidth="1280.0">
-         <children>
+    <stylesheets>
+        <URL value="@styles.css" />
+    </stylesheets>
+    <children>
+        <HBox alignment="CENTER" prefHeight="600.0" prefWidth="1280.0">
+            <children>
 
-            <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
-               <children>
-                  <ImageView fx:id="btnBusquedas1" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#openOperaciones" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@icono-busquedas.png" />
-                     </image>
-                     <cursor>
-                        <Cursor fx:constant="HAND" />
-                     </cursor>
-                  </ImageView>
-                  <Label text="OPERACIONES CON GRAFOS" textFill="#000204">
-                     <font>
-                        <Font name="Myanmar Text Bold" size="24.0" />
-                     </font>
-                  </Label>
-               </children>
-               <cursor>
-                  <Cursor fx:constant="DEFAULT" />
-               </cursor>
-            </VBox>
-
-            <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
-               <children>
-                  <ImageView fx:id="btnArboles" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#openArboles" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@icono-busquedas.png" />
-                     </image>
-                     <cursor>
-                        <Cursor fx:constant="HAND" />
-                     </cursor>
-                  </ImageView>
-                  <Label text="ÁRBOLES" textFill="#000204">
-                     <font>
-                        <Font name="Myanmar Text Bold" size="24.0" />
-                     </font>
-                  </Label>
-               </children>
-               <cursor>
-                  <Cursor fx:constant="DEFAULT" />
-               </cursor>
-            </VBox>
-            
-            <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
-                <children>
-
-                   <ImageView fx:id="btnAlgoritmosGrafos" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#openAlgoritmosGrafos" pickOnBounds="true" preserveRatio="true">
-
-                      <image>
-                         <Image url="@icono-busquedas.png" />
-                      </image>
-
-                      <cursor>
-                         <Cursor fx:constant="HAND" />
-                      </cursor>
-
-                   </ImageView>
-
-                   <Label text="ALGORITMOS DE GRAFOS" textFill="#000204">
-
-                      <font>
-                         <Font name="Myanmar Text Bold" size="24.0" />
-                      </font>
-
-                   </Label>
-
-                </children>
-                
-                <ImageView fx:id="btnRepresentacionMetricas" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#openRepresentacionMetricas" pickOnBounds="true" preserveRatio="true">
-                    <image>
-                       <Image url="@icono-busquedas.png" />
-                    </image>
+                <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
+                    <children>
+                        <ImageView fx:id="btnBusquedas1" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#openOperaciones" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@icono-busquedas.png" />
+                            </image>
+                            <cursor>
+                                <Cursor fx:constant="HAND" />
+                            </cursor>
+                        </ImageView>
+                        <Label text="OPERACIONES CON GRAFOS" textFill="#000204">
+                            <font>
+                                <Font name="Myanmar Text Bold" size="24.0" />
+                            </font>
+                        </Label>
+                    </children>
                     <cursor>
-                       <Cursor fx:constant="HAND" />
+                        <Cursor fx:constant="DEFAULT" />
                     </cursor>
-                 </ImageView>
+                </VBox>
 
-                 <Label text="REPRESENTACIÓN Y MÉTRICAS" textFill="#000204">
-                    <font>
-                       <Font name="Myanmar Text Bold" size="24.0" />
-                    </font>
-                 </Label>
+                <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
+                    <children>
+                        <ImageView fx:id="btnArboles" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#openArboles" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@icono-busquedas.png" />
+                            </image>
+                            <cursor>
+                                <Cursor fx:constant="HAND" />
+                            </cursor>
+                        </ImageView>
+                        <Label text="ÁRBOLES" textFill="#000204">
+                            <font>
+                                <Font name="Myanmar Text Bold" size="24.0" />
+                            </font>
+                        </Label>
+                    </children>
+                    <cursor>
+                        <Cursor fx:constant="DEFAULT" />
+                    </cursor>
+                </VBox>
 
-                <cursor>
-                   <Cursor fx:constant="DEFAULT" />
-                </cursor>
+                <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
+                    <children>
+                        <ImageView fx:id="btnAlgoritmosGrafos" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#openAlgoritmosGrafos" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@icono-busquedas.png" />
+                            </image>
+                            <cursor>
+                                <Cursor fx:constant="HAND" />
+                            </cursor>
+                        </ImageView>
+                        <Label text="ALGORITMOS DE GRAFOS" textFill="#000204">
+                            <font>
+                                <Font name="Myanmar Text Bold" size="24.0" />
+                            </font>
+                        </Label>
+                    </children>
+                    <cursor>
+                        <Cursor fx:constant="DEFAULT" />
+                    </cursor>
+                </VBox>
 
-             </VBox>
-            <VBox alignment="CENTER" layoutX="927.0" layoutY="10.0" HBox.hgrow="ALWAYS">
-               <children>
-                  <ImageView fx:id="btnFuncionOrdinal1" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#openTeoriaColoracion" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@icono-coloreadoGrafos.png" />
-                     </image>
-                     <cursor>
-                        <Cursor fx:constant="HAND" />
-                     </cursor>
-                  </ImageView>
-                  <Label text="OPTIMIZACIÓN Y COLORACIÓN" textFill="#000204">
-                     <font>
-                        <Font name="Myanmar Text Bold" size="24.0" />
-                     </font>
-                  </Label>
-               </children>
-               <cursor>
-                  <Cursor fx:constant="DEFAULT" />
-               </cursor>
-            </VBox>
+                <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
+                    <children>
+                        <ImageView fx:id="btnRepresentacionGrafos" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#openRepresentacionMetricas" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@icono-busquedas.png" />
+                            </image>
+                            <cursor>
+                                <Cursor fx:constant="HAND" />
+                            </cursor>
+                        </ImageView>
+                        <Label text="REPRESENTACIÓN Y MÉTRICAS" textFill="#000204">
+                            <font>
+                                <Font name="Myanmar Text Bold" size="22.0" />
+                            </font>
+                        </Label>
+                    </children>
+                    <cursor>
+                        <Cursor fx:constant="DEFAULT" />
+                    </cursor>
+                </VBox>
 
-         </children>
-      </HBox>
-   </children>
+                <VBox alignment="CENTER" layoutX="927.0" layoutY="10.0" HBox.hgrow="ALWAYS">
+                    <children>
+                        <ImageView fx:id="btnFuncionOrdinal1" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#openTeoriaColoracion" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@icono-coloreadoGrafos.png" />
+                            </image>
+                            <cursor>
+                                <Cursor fx:constant="HAND" />
+                            </cursor>
+                        </ImageView>
+                        <Label text="OPTIMIZACIÓN Y COLORACIÓN" textFill="#000204">
+                            <font>
+                                <Font name="Myanmar Text Bold" size="24.0" />
+                            </font>
+                        </Label>
+                    </children>
+                    <cursor>
+                        <Cursor fx:constant="DEFAULT" />
+                    </cursor>
+                </VBox>
+
+            </children>
+        </HBox>
+    </children>
 </AnchorPane>
