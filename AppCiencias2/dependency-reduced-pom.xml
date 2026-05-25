@@ -27,7 +27,7 @@
               <shadedArtifactAttached>false</shadedArtifactAttached>
               <transformers>
                 <transformer>
-                  <mainClass>application.App</mainClass>
+                  <mainClass>application.Launcher</mainClass>
                 </transformer>
               </transformers>
               <filters>
