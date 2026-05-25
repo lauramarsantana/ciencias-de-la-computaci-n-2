@@ -8,7 +8,7 @@ import javafx.scene.shape.QuadCurve;
 import javafx.scene.text.Text;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
-import javafx.scene.Node;
+import javafx.scene.input.MouseButton;
 import java.util.*;
 
 public class GrafoVisual {
@@ -25,7 +25,7 @@ public class GrafoVisual {
         }
 
         // 1. Dibujar las aristas de fondo primero
-        dibujarAristasFondo(grafo, panel);
+        dibujarAristasFondo(grafo, panel, infoLabel);
 
         // 2. Dibujar los vértices e inyectar las físicas estables
         for (Vertice v : grafo.getVertices().values()) {
@@ -86,7 +86,7 @@ public class GrafoVisual {
                 v.setPositionY(nuevoY + 15);
 
                 // RECALCULAR SOLO LAS ARISTAS (Sin destruir los StackPane)
-                dibujarAristasFondo(grafo, panel);
+                dibujarAristasFondo(grafo, panel, infoLabel);
 
                 e.consume();
             });
@@ -123,7 +123,7 @@ public class GrafoVisual {
     }
 
     // MÉTODO AUXILIAR: Limpia y redibuja únicamente las líneas de fondo, protegiendo los StackPanes
-    private static void dibujarAristasFondo(Grafo grafo, Pane panel) {
+    private static void dibujarAristasFondo(Grafo grafo, Pane panel, Label infoLabel) {
         // Remover del panel únicamente las líneas y curvas viejas (remanentes)
         panel.getChildren().removeIf(node -> node instanceof Line || node instanceof QuadCurve || (node instanceof Circle && ((Circle) node).getFill() == null));
 
@@ -152,11 +152,33 @@ public class GrafoVisual {
                     lazo.setFill(null);
                     lazo.setStroke(Color.BLUE);
                     lazo.setStrokeWidth(1.5);
+                    lazo.setUserData(a); // Vinculamos para recuperarlo al pintar colores
+
+                    // DETECTAR CLIC DERECHO PARA ELIMINAR EL LAZO
+                    lazo.setOnMouseClicked(event -> {
+                        if (event.getButton() == MouseButton.SECONDARY) {
+                            grafo.getAristas().remove(a);
+                            dibujarInteractivo(grafo, panel, infoLabel);
+                            event.consume();
+                        }
+                    });
+
                     panel.getChildren().add(insercionIndex++, lazo);
                 } else if (total == 1) {
                     Line linea = new Line(x1, y1, x2, y2);
                     linea.setStroke(Color.BLUE);
                     linea.setStrokeWidth(1.5);
+                    linea.setUserData(a); // Vinculamos para recuperarlo al pintar colores
+
+                    // DETECTAR CLIC DERECHO PARA ELIMINAR LA ARISTA RECTILÍNEA
+                    linea.setOnMouseClicked(event -> {
+                        if (event.getButton() == MouseButton.SECONDARY) {
+                            grafo.getAristas().remove(a);
+                            dibujarInteractivo(grafo, panel, infoLabel);
+                            event.consume();
+                        }
+                    });
+
                     panel.getChildren().add(insercionIndex++, linea);
                 } else {
                     double midX = (x1 + x2) / 2;
@@ -169,6 +191,17 @@ public class GrafoVisual {
                         Line linea = new Line(x1, y1, x2, y2);
                         linea.setStroke(Color.BLUE);
                         linea.setStrokeWidth(1.5);
+                        linea.setUserData(a);
+
+                        // DETECTAR CLIC DERECHO PARA ELIMINAR LA ARISTA BASE DEL MULTIGRAFO
+                        linea.setOnMouseClicked(event -> {
+                            if (event.getButton() == MouseButton.SECONDARY) {
+                                grafo.getAristas().remove(a);
+                                dibujarInteractivo(grafo, panel, infoLabel);
+                                event.consume();
+                            }
+                        });
+
                         panel.getChildren().add(insercionIndex++, linea);
                     } else {
                         double offsetCurve = (i % 2 == 0 ? 35.0 : -35.0) * ((i + 1) / 2);
@@ -176,6 +209,17 @@ public class GrafoVisual {
                         curva.setStroke(Color.BLUE);
                         curva.setStrokeWidth(1.5);
                         curva.setFill(null);
+                        curva.setUserData(a);
+
+                        // DETECTAR CLIC DERECHO PARA ELIMINAR LA ARISTA CURVA DEL MULTIGRAFO
+                        curva.setOnMouseClicked(event -> {
+                            if (event.getButton() == MouseButton.SECONDARY) {
+                                grafo.getAristas().remove(a);
+                                dibujarInteractivo(grafo, panel, infoLabel);
+                                event.consume();
+                            }
+                        });
+
                         panel.getChildren().add(insercionIndex++, curva);
                     }
                 }

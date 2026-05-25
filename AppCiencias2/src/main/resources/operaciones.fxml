@@ -20,13 +20,13 @@
          <children>
             <HBox alignment="CENTER" prefHeight="50.0">
                <children>
-                  <Label text="Número de vértices G2:" HBox.hgrow="ALWAYS" />
+                  <Label text="Cantidad de vértices G2:" HBox.hgrow="ALWAYS" />
                   <TextField fx:id="verticesG1" promptText="ej: 3">
                      <HBox.margin>
                         <Insets left="10.0" />
                      </HBox.margin>
                   </TextField>
-                  <Button mnemonicParsing="false" onMouseClicked="#dibujarG1" text="Ver G1">
+                  <Button mnemonicParsing="false" onMouseClicked="#dibujarG1" text="Ver vértices">
                      <HBox.margin>
                         <Insets left="40.0" />
                      </HBox.margin>

@@ -13,90 +13,90 @@
 <?import javafx.scene.layout.VBox?>
 
 <AnchorPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.TeoriaColorController">
-   <stylesheets>
-      <URL value="@styles.css" />
-   </stylesheets>
-   <children>
-      <VBox prefHeight="650.0" prefWidth="1280.0" style="-fx-background-color: white;">
-         <children>
-            <HBox alignment="CENTER" prefHeight="50.0">
-               <children>
-                  <Label text="G1 vertices:" HBox.hgrow="ALWAYS" />
-                  <TextField fx:id="verticesG1" promptText="ej: A,B,C">
-                     <HBox.margin>
-                        <Insets left="10.0" />
-                     </HBox.margin>
-                  </TextField>
-                  <Button mnemonicParsing="false" onMouseClicked="#dibujarG1" text="Ver G1">
-                     <HBox.margin>
-                        <Insets left="40.0" />
-                     </HBox.margin>
-                  </Button>
-               </children>
-            </HBox>
-             <HBox alignment="CENTER" prefHeight="50.0">
-                 <children>
-                     <Label text="Elemento:">
-                         <HBox.margin>
-                             <Insets left="20.0" right="5.0" />
-                         </HBox.margin>
-                     </Label>
-                     <ComboBox fx:id="comboElemento" onAction="#cambiarCategoria" prefWidth="110.0" />
+    <stylesheets>
+        <URL value="@styles.css" />
+    </stylesheets>
+    <children>
+        <VBox prefHeight="650.0" prefWidth="1280.0" style="-fx-background-color: white;">
+            <children>
+                <HBox alignment="CENTER" prefHeight="50.0">
+                    <children>
+                        <Label text="Cantidad de vértices:" HBox.hgrow="ALWAYS" />
+                        <TextField fx:id="verticesG1" promptText="ej: 2,3,4 ...">
+                            <HBox.margin>
+                                <Insets left="10.0" />
+                            </HBox.margin>
+                        </TextField>
+                        <Button mnemonicParsing="false" onMouseClicked="#dibujarG1" text="Ver vértices">
+                            <HBox.margin>
+                                <Insets left="40.0" />
+                            </HBox.margin>
+                        </Button>
+                    </children>
+                </HBox>
+                <HBox alignment="CENTER" prefHeight="50.0">
+                    <children>
+                        <Label text="Elemento:">
+                            <HBox.margin>
+                                <Insets left="20.0" right="5.0" />
+                            </HBox.margin>
+                        </Label>
+                        <ComboBox fx:id="comboElemento" onAction="#cambiarCategoria" prefWidth="110.0" />
 
-                     <Label text="Operación:">
-                         <HBox.margin>
-                             <Insets left="20.0" right="5.0" />
-                         </HBox.margin>
-                     </Label>
-                     <ComboBox fx:id="operacion" prefWidth="220.0" />
+                        <Label text="Operación:">
+                            <HBox.margin>
+                                <Insets left="20.0" right="5.0" />
+                            </HBox.margin>
+                        </Label>
+                        <ComboBox fx:id="operacion" prefWidth="220.0" />
 
-                     <Button mnemonicParsing="false" onMouseClicked="#hacerOperacion" text="Ver resultado de operación">
-                         <HBox.margin>
-                             <Insets left="30.0" />
-                         </HBox.margin>
-                     </Button>
-                     <Button mnemonicParsing="false" onMouseClicked="#handleGuardar" text="Guardar">
-                         <HBox.margin>
-                             <Insets left="20.0" />
-                         </HBox.margin>
-                     </Button>
-                     <Button mnemonicParsing="false" onMouseClicked="#handleCargar" text="Cargar">
-                         <HBox.margin>
-                             <Insets left="20.0" />
-                         </HBox.margin>
-                     </Button>
-                     <Button mnemonicParsing="false" onMouseClicked="#handleLimpiar" text="Limpiar">
-                         <HBox.margin>
-                             <Insets left="20.0" />
-                         </HBox.margin>
-                     </Button>
-                 </children>
-             </HBox>
-            <HBox prefHeight="332.0" VBox.vgrow="ALWAYS">
-               <children>
-                  <VBox alignment="TOP_CENTER" HBox.hgrow="ALWAYS">
-                     <children>
-                        <Pane fx:id="paneG1" prefWidth="406.0" style="-fx-border-color: blue; -fx-border-radius: 10px; -fx-background-color: white;" VBox.vgrow="ALWAYS" />
-                     </children>
-                     <HBox.margin>
-                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                     </HBox.margin>
-                  </VBox>
-                   <VBox alignment="TOP_CENTER" HBox.hgrow="ALWAYS">
-                       <children>
-                           <ScrollPane fitToWidth="true" style="-fx-background-color: white; -fx-border-color: blue; -fx-border-radius: 10px;" VBox.vgrow="ALWAYS">
-                               <content>
-                                   <Label fx:id="infoG3" style="-fx-padding: 10;" text="Esperando análisis..." wrapText="true" />
-                               </content>
-                           </ScrollPane>
-                       </children>
-                       <HBox.margin>
-                           <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                       </HBox.margin>
-                   </VBox>
-               </children>
-            </HBox>
-         </children>
-      </VBox>
-   </children>
+                        <Button mnemonicParsing="false" onMouseClicked="#hacerOperacion" text="Ver resultado de operación">
+                            <HBox.margin>
+                                <Insets left="30.0" />
+                            </HBox.margin>
+                        </Button>
+                        <Button mnemonicParsing="false" onMouseClicked="#handleGuardar" text="Guardar">
+                            <HBox.margin>
+                                <Insets left="20.0" />
+                            </HBox.margin>
+                        </Button>
+                        <Button mnemonicParsing="false" onMouseClicked="#handleCargar" text="Cargar">
+                            <HBox.margin>
+                                <Insets left="20.0" />
+                            </HBox.margin>
+                        </Button>
+                        <Button mnemonicParsing="false" onMouseClicked="#handleLimpiar" text="Limpiar">
+                            <HBox.margin>
+                                <Insets left="20.0" />
+                            </HBox.margin>
+                        </Button>
+                    </children>
+                </HBox>
+                <HBox prefHeight="332.0" VBox.vgrow="ALWAYS">
+                    <children>
+                        <VBox alignment="TOP_CENTER" prefWidth="800.0" HBox.hgrow="ALWAYS">
+                            <children>
+                                <Pane fx:id="paneG1" style="-fx-border-color: blue; -fx-border-radius: 10px; -fx-background-color: white;" VBox.vgrow="ALWAYS" />
+                            </children>
+                            <HBox.margin>
+                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                            </HBox.margin>
+                        </VBox>
+                        <VBox alignment="TOP_CENTER" prefWidth="430.0" HBox.hgrow="NEVER">
+                            <children>
+                                <ScrollPane fitToWidth="true" style="-fx-background-color: white; -fx-border-color: blue; -fx-border-radius: 10px;" VBox.vgrow="ALWAYS">
+                                    <content>
+                                        <Label fx:id="infoG3" style="-fx-padding: 10;" text="Esperando análisis..." wrapText="true" />
+                                    </content>
+                                </ScrollPane>
+                            </children>
+                            <HBox.margin>
+                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                            </HBox.margin>
+                        </VBox>
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </children>
 </AnchorPane>

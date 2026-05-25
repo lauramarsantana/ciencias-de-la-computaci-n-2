@@ -63,13 +63,7 @@
             <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
                 <children>
 
-                   <ImageView fx:id="btnAlgoritmosGrafos"
-                              accessibleRole="BUTTON"
-                              fitHeight="150.0"
-                              fitWidth="200.0"
-                              onMouseClicked="#openAlgoritmosGrafos"
-                              pickOnBounds="true"
-                              preserveRatio="true">
+                   <ImageView fx:id="btnAlgoritmosGrafos" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#openAlgoritmosGrafos" pickOnBounds="true" preserveRatio="true">
 
                       <image>
                          <Image url="@icono-busquedas.png" />
@@ -81,8 +75,7 @@
 
                    </ImageView>
 
-                   <Label text="ALGORITMOS DE GRAFOS"
-                          textFill="#000204">
+                   <Label text="ALGORITMOS DE GRAFOS" textFill="#000204">
 
                       <font>
                          <Font name="Myanmar Text Bold" size="24.0" />
@@ -92,13 +85,7 @@
 
                 </children>
                 
-                <ImageView fx:id="btnRepresentacionMetricas"
-                            accessibleRole="BUTTON"
-                            fitHeight="150.0"
-                            fitWidth="200.0"
-                            onMouseClicked="#openRepresentacionMetricas"
-                            pickOnBounds="true"
-                            preserveRatio="true">
+                <ImageView fx:id="btnRepresentacionMetricas" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="200.0" onMouseClicked="#openRepresentacionMetricas" pickOnBounds="true" preserveRatio="true">
                     <image>
                        <Image url="@icono-busquedas.png" />
                     </image>
@@ -128,7 +115,7 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </ImageView>
-                  <Label text="TEORÍA DE COLORACIÓN" textFill="#000204">
+                  <Label text="OPTIMIZACIÓN Y COLORACIÓN" textFill="#000204">
                      <font>
                         <Font name="Myanmar Text Bold" size="24.0" />
                      </font>
