@@ -64,6 +64,12 @@
                           onAction="#calcularMatrizAdyacenciaAristas"
                           prefWidth="190.0" />
                   
+                  <Button text="Circuitos"
+                            onAction="#calcularMatrizCircuitos" />
+
+                    <Button text="Circuitos fundamentales"
+                            onAction="#calcularMatrizCircuitosFundamentales" />
+                  
                   <Button text="Guardar"
                             onAction="#guardarGrafo"
                             prefWidth="120.0" />
