@@ -20,6 +20,7 @@ import javafx.stage.FileChooser;
 import utilities.ArchivoEstructuraService;
 import utilities.AristaPonderada;
 import utilities.DatosArchivo;
+import utilities.MatrizCircuitosService;
 
 public class RepresentacionGrafosController {
 
@@ -458,6 +459,81 @@ private void cargarGrafo() {
                 matriz
         );
     }
+    
+    @FXML
+private void calcularMatrizCircuitos() {
+    if (!validarGrafo()) {
+        return;
+    }
+
+    MatrizCircuitosService service = new MatrizCircuitosService();
+
+    List<List<String>> circuitos = service.obtenerCircuitos(
+            nombresVertices,
+            aristasTemporales,
+            esDirigido()
+    );
+
+    if (circuitos.isEmpty()) {
+        mostrarAlerta("Error", "El grafo no tiene circuitos.");
+        return;
+    }
+
+    int[][] matriz = service.generarMatrizCircuitos(
+            aristasTemporales,
+            circuitos,
+            esDirigido()
+    );
+
+    mostrarMatriz(
+            "MATRIZ DE CIRCUITOS",
+            obtenerNombresCircuitos(circuitos),
+            obtenerNombresAristas(),
+            matriz
+    );
+}
+
+        @FXML
+        private void calcularMatrizCircuitosFundamentales() {
+            if (!validarGrafo()) {
+                return;
+            }
+
+            MatrizCircuitosService service = new MatrizCircuitosService();
+
+            List<List<String>> circuitos = service.obtenerCircuitosFundamentales(
+                    nombresVertices,
+                    aristasTemporales
+            );
+
+            if (circuitos.isEmpty()) {
+                mostrarAlerta("Error", "El grafo no tiene circuitos fundamentales.");
+                return;
+            }
+
+            int[][] matriz = service.generarMatrizCircuitosFundamentales(
+                    aristasTemporales,
+                    circuitos,
+                    esDirigido()
+            );
+
+            mostrarMatriz(
+                    "MATRIZ DE CIRCUITOS FUNDAMENTALES",
+                    obtenerNombresCircuitos(circuitos),
+                    obtenerNombresAristas(),
+                    matriz
+            );
+        }
+
+        private List<String> obtenerNombresCircuitos(List<List<String>> circuitos) {
+            List<String> nombres = new ArrayList<>();
+
+            for (int i = 0; i < circuitos.size(); i++) {
+                nombres.add("C" + (i + 1));
+            }
+
+            return nombres;
+        }
 
     @FXML
     private void limpiar() {

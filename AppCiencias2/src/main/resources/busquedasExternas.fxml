@@ -12,72 +12,149 @@
 <?import javafx.scene.text.Font?>
 
 <AnchorPane fx:id="externasPane" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.BusquedasExternasController">
+
    <stylesheets>
       <URL value="@/styles.css" />
    </stylesheets>
 
    <children>
-      <HBox alignment="CENTER" prefHeight="600.0" prefWidth="1280.0">
+
+      <HBox alignment="CENTER" prefHeight="600.0" prefWidth="1280.0" spacing="20">
+
          <children>
 
+            <!-- Búsqueda lineal externa -->
             <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
                <children>
-                  <ImageView fx:id="btnBusquedasDinamicas" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="180.0" onMouseClicked="#openBusquedasDinamicas" pickOnBounds="true" preserveRatio="true">
+
+                  <ImageView fx:id="btnLinealExterna" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="180.0" onMouseClicked="#openBusquedaLinealExterna" pickOnBounds="true" preserveRatio="true">
+
                      <image>
                         <Image url="@icono-busquedas.png" />
                      </image>
+
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
+
                   </ImageView>
+
+                  <Label text="BÚSQUEDA LINEAL">
+                     <font>
+                        <Font name="Myanmar Text Bold" size="18.0" />
+                     </font>
+                  </Label>
+
+               </children>
+            </VBox>
+
+            <!-- Búsqueda Binaria externa -->
+            <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
+               <children>
+
+                  <ImageView fx:id="btnBinariaExterna" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="180.0" onMouseClicked="#openBusquedaBinariaExterna" pickOnBounds="true" preserveRatio="true">
+
+                     <image>
+                        <Image url="@icono-busquedas.png" />
+                     </image>
+
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+
+                  </ImageView>
+
+                  <Label text="BÚSQUEDA BINARIA">
+                     <font>
+                        <Font name="Myanmar Text Bold" size="18.0" />
+                     </font>
+                  </Label>
+
+               </children>
+            </VBox>
+            
+            <!-- Búsquedas dinámicas -->
+            <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
+               <children>
+
+                  <ImageView fx:id="btnBusquedasDinamicas" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="180.0" onMouseClicked="#openBusquedasDinamicas" pickOnBounds="true" preserveRatio="true">
+
+                     <image>
+                        <Image url="@icono-busquedas.png" />
+                     </image>
+
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+
+                  </ImageView>
+
                   <Label text="BÚSQUEDAS DINÁMICAS">
                      <font>
                         <Font name="Myanmar Text Bold" size="18.0" />
                      </font>
                   </Label>
+
                </children>
             </VBox>
 
+            <!-- Hash externa -->
             <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
                <children>
+
                   <ImageView fx:id="btnHashExterna" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="180.0" onMouseClicked="#openFuncionHashExterna" pickOnBounds="true" preserveRatio="true">
+
                      <image>
                         <Image url="@icono-b.i.funcionHash.png" />
                      </image>
+
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
+
                   </ImageView>
-                  <Label text="HASH EXTERNA">
+
+                  <Label text="HASH ">
                      <font>
                         <Font name="Myanmar Text Bold" size="18.0" />
                      </font>
                   </Label>
+
                </children>
             </VBox>
 
+            <!-- Índices -->
             <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
                <children>
+
                   <ImageView fx:id="btnIndices" accessibleRole="BUTTON" fitHeight="150.0" fitWidth="180.0" onMouseClicked="#openIndices" pickOnBounds="true" preserveRatio="true">
+
                      <image>
                         <Image url="@icono-B.porResiduos.png" />
                      </image>
+
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
+
                   </ImageView>
+
                   <Label text="ÍNDICES">
                      <font>
                         <Font name="Myanmar Text Bold" size="18.0" />
                      </font>
                   </Label>
+
                </children>
             </VBox>
 
          </children>
+
          <opaqueInsets>
             <Insets left="40.0" />
          </opaqueInsets>
+
       </HBox>
+
    </children>
 </AnchorPane>

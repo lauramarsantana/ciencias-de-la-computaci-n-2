@@ -11,6 +11,16 @@ public class BusquedasExternasController {
     public void setLayoutController(LayoutController layoutController) {
         this.layoutController = layoutController;
     }
+    
+    @FXML
+    private void openBusquedaLinealExterna() {
+        layoutController.loadPanel("/busquedaLinealExterna.fxml");
+    }
+    
+    @FXML
+    private void openBusquedaBinariaExterna() {
+        layoutController.loadPanel("/busquedaBinariaExterna.fxml");
+    }
 
     @FXML
     private void openBusquedasDinamicas(MouseEvent event){

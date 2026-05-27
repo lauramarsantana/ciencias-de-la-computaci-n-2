@@ -10,20 +10,16 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="700.0" prefWidth="1280.0"
-            xmlns="http://javafx.com/javafx/25"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="controller.IndiceSecundarioController">
+<AnchorPane prefHeight="600.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.IndiceSecundarioController">
 
     <stylesheets>
         <URL value="@/styles.css" />
     </stylesheets>
 
     <children>
-        <VBox alignment="TOP_CENTER" prefHeight="700.0" prefWidth="1280.0"
-              spacing="14" style="-fx-background-color: #fff;">
+        <VBox alignment="TOP_CENTER" prefHeight="600.0" prefWidth="1280.0" spacing="14" style="-fx-background-color: #fff;">
             <padding>
-                <Insets top="16" right="16" bottom="16" left="16"/>
+                <Insets bottom="16" left="16" right="16" top="16" />
             </padding>
 
             <children>
@@ -31,23 +27,22 @@
                 <HBox alignment="CENTER" spacing="10">
                     <children>
                         <Label text="Registros (r):" />
-                        <TextField fx:id="registrosField" prefWidth="80" promptText="30000"/>
+                        <TextField fx:id="registrosField" prefWidth="80" promptText="30000" />
 
                         <Label text="Bloque (B):" />
-                        <TextField fx:id="bloqueField" prefWidth="80" promptText="1024"/>
+                        <TextField fx:id="bloqueField" prefWidth="80" promptText="1024" />
 
                         <Label text="Registro dato (R):" />
-                        <TextField fx:id="registroDatoField" prefWidth="80" promptText="100"/>
+                        <TextField fx:id="registroDatoField" prefWidth="80" promptText="100" />
 
                         <Label text="Registro índice (Ri):" />
-                        <TextField fx:id="registroIndiceField" prefWidth="80" promptText="15"/>
+                        <TextField fx:id="registroIndiceField" prefWidth="80" promptText="15" />
 
-                        <Button text="Crear estructura" onAction="#crearEstructura"/>
+                        <Button onAction="#crearEstructura" text="Crear estructura" />
                     </children>
                 </HBox>
 
-                <VBox spacing="6"
-                      style="-fx-border-color: #0e2ebe; -fx-border-width: 1; -fx-padding: 10; -fx-background-color: #f8faff;">
+                <VBox spacing="6" style="-fx-border-color: #0e2ebe; -fx-border-width: 1; -fx-padding: 10; -fx-background-color: #f8faff;">
                     <children>
                         <Label fx:id="bfrLabel" text="Registros por bloque de datos (bfr) = " />
                         <Label fx:id="bLabel" text="Bloques para datos (b) = " />
@@ -59,32 +54,24 @@
 
                 <HBox alignment="CENTER">
                     <children>
-                        <Label fx:id="explicacionLabel"
-                               wrapText="true"
-                               prefWidth="760"
-                               maxWidth="760"
-                               style="-fx-font-size: 14px; -fx-text-fill: #333333;" />
+                        <Label fx:id="explicacionLabel" maxWidth="760" prefWidth="760" style="-fx-font-size: 14px; -fx-text-fill: #333333;" wrapText="true" />
                     </children>
                 </HBox>
 
                 <HBox alignment="TOP_CENTER" spacing="30">
                     <children>
 
-                        <VBox spacing="8" alignment="TOP_CENTER">
+                        <VBox alignment="TOP_CENTER" spacing="8">
                             <children>
-                                <Label text="ÍNDICE SECUNDARIO" style="-fx-font-weight: bold; -fx-font-size: 16px;" />
-                                <VBox fx:id="indiceBox" prefWidth="320" prefHeight="250"
-                                      spacing="8"
-                                      style="-fx-border-color: black; -fx-padding: 8;" />
+                                <Label style="-fx-font-weight: bold; -fx-font-size: 16px;" text="ÍNDICE SECUNDARIO" />
+                                <VBox fx:id="indiceBox" prefHeight="250" prefWidth="320" spacing="8" style="-fx-border-color: black; -fx-padding: 8;" />
                             </children>
                         </VBox>
 
-                        <VBox spacing="8" alignment="TOP_CENTER">
+                        <VBox alignment="TOP_CENTER" spacing="8">
                             <children>
-                                <Label text="ESTRUCTURA PRINCIPAL DE DATOS" style="-fx-font-weight: bold; -fx-font-size: 16px;" />
-                                <VBox fx:id="datosBox" prefWidth="320" prefHeight="250"
-                                      spacing="8"
-                                      style="-fx-border-color: black; -fx-padding: 8;" />
+                                <Label style="-fx-font-weight: bold; -fx-font-size: 16px;" text="ESTRUCTURA PRINCIPAL DE DATOS" />
+                                <VBox fx:id="datosBox" prefHeight="250" prefWidth="320" spacing="8" style="-fx-border-color: black; -fx-padding: 8;" />
                             </children>
                         </VBox>
 
@@ -93,9 +80,9 @@
 
                 <HBox alignment="CENTER" spacing="20">
                     <children>
-                        <Button text="Limpiar" onAction="#limpiarEstructura"/>
-                        <Button text="Guardar Estructura" onAction="#guardarEstructura"/>
-                        <Button text="Recuperar Estructura" onAction="#cargarEstructura"/>
+                        <Button onAction="#limpiarEstructura" text="Limpiar" />
+                        <Button onAction="#guardarEstructura" text="Guardar Estructura" />
+                        <Button onAction="#cargarEstructura" text="Recuperar Estructura" />
                     </children>
                 </HBox>
 
