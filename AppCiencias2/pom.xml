@@ -102,12 +102,14 @@
                     <appVersion>1.0.0</appVersion>
                     <vendor>Universidad</vendor>
                     <destination>target/instalador</destination>
-                    <mainJar>AppCiencias2-1.0-SNAPSHOT.jar</mainJar>
+                    <!-- Usa el jar sombreado que genera shade -->
+                    <mainJar>AppCiencias2-1.0-SNAPSHOT-shaded.jar</mainJar>
                     <mainClass>application.App</mainClass>
                     <type>EXE</type>
                     <winMenu>true</winMenu>
                     <winShortcut>true</winShortcut>
                     <winDirChooser>true</winDirChooser>
+                    <input>target</input>
                 </configuration>
             </plugin>
         </plugins>
